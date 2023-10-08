@@ -1,17 +1,17 @@
 import { useRoutes, BrowserRouter as Router } from 'react-router-dom';
 
 //Páginas
-import Mercado from "./pages/mercado";
-import Inicio from "./pages/inicio";
-import Foro from "./pages/foro";
-import Login from "./pages/login";
-import Registro from "./pages/login";
-import Nosotros from "./pages/nosotros";
-import Contacto from "./pages/contacto";
+import Mercado from "./pages/mercado/Mercado.js";
+import Inicio from "./pages/inicio/Inicio.js";
+import Foro from "./pages/foro/Foro.js";
+import Login from "./pages/login/Login.js";
+import Registro from "./pages/login/Registro.js";
+import Nosotros from "./pages/nosotros/Nosotros.js";
+import Contacto from "./pages/contacto/Contacto.js";
 
 //Componentes
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import Header from "./components/Header.js";
+import Footer from "./components/Footer.js";
 
 const AppRoutes = () => {
   let routes = useRoutes([
