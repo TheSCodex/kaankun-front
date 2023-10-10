@@ -9,9 +9,9 @@ import {
 
 function Footer() {
   return (
-    <footer className="bg-[#27272a] p-8 relative text-white sm:flex-col">
-      <div className="container mx-auto">
-        <div className="flex justify-between">
+    <footer className="bg-[#27272a] p-8 relative text-white">
+      <div className="container mx-auto lg:ml-8">
+        <div className="flex justify-between flex-col lg:flex-row">
           <div className="w-full sm:w-1/2 md:w-1/4 lg:w-1/4 xl:w-1/4 px-4 mb-6">
             <h2 className="text-lg font-semibold mb-3 relative">
               <span className="border-l-4 border-[#43B8E8] h-6 mr-3" />
