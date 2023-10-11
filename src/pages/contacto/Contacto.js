@@ -45,9 +45,8 @@ const Contacto = () => {
   };
   return (
     <>
-      <div>
-        <div className='Foto relative'>
-          
+      <div className='bg-[#ECECEC]'>
+        <div className=''>
         </div>
         <div className="bg-white top-40 shadow-md rounded-md p-6 w-full md:max-w-6xl mx-auto flex">
           <div className="w-1/2 mr-4 relative">
