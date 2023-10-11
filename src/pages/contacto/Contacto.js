@@ -1,9 +1,39 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faPhone, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faTwitter, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import emailjs from '@emailjs/browser';
+import Swal from 'sweetalert2';
 
-function Contacto() {
+const Contacto = () => {
+  const form = useRef();
+  const sendEmail = (e) => {
+    e.preventDefault();
+
+    emailjs.sendForm(
+      'service_09lqzbg',
+      'template_wclyidd',
+      form.current,
+      '7QlKXMCsvXzFOcJFw'
+    )
+      .then(
+        (result) => {
+          console.log(result.text);
+          form.current.reset();
+          return Swal.fire({
+                    title: 'Envio Exitoso',
+                    icon: 'success',
+                    text: "Gracias por contactarnos",
+                    timer:3000,
+                    timerProgressBar:true,
+                    showConfirmButton:false
+                })
+        },
+        (error) => {
+          console.log(error.text);
+        }
+      );
+  };
   return (
     <div className="bg-white shadow-md rounded-md p-6 w-full md:max-w-7xl mx-auto flex">
       <div className="w-1/2 mr-4 relative">
@@ -76,7 +106,7 @@ function Contacto() {
               style={{ color: "#1737D3", fontSize: "3.7rem" }}
             />
           </div>
-          <div className="w-15 h-15 bg-[#E7E7E7] rounded-full flex items-center justify-center">
+          <div className="w-14 h-14 bg-[#E7E7E7] rounded-full flex items-center justify-center">
             <FontAwesomeIcon
               icon={faTwitter}
               style={{ color: "#24ACF2", fontSize: "2.4rem" }}
@@ -88,11 +118,12 @@ function Contacto() {
         <h2 className="text-lg font-semibold mb-4">
           Mandanos un correo!
         </h2>
-        <form>
+        <form ref={form} onSubmit={sendEmail}>
           <div className="mb-4">
             <input
               type="text"
               placeholder="Nombre"
+              name='user_name'
               className="bg-[#ECECEC] p-2 rounded-md w-full"
             />
           </div>
@@ -100,19 +131,14 @@ function Contacto() {
             <input
               type="email"
               placeholder="Correo"
-              className="bg-[#ECECEC] p-2 rounded-md w-full"
-            />
-          </div>
-          <div className="mb-4">
-            <input
-              type="text"
-              placeholder="Asunto"
+              name='user_email'
               className="bg-[#ECECEC] p-2 rounded-md w-full"
             />
           </div>
           <div className="mb-4">
             <textarea
               placeholder="Redacta tu mensaje"
+              name='message'
               className="bg-[#ECECEC]  p-2 rounded-md w-full h-32 resize-none"
             ></textarea>
           </div>
