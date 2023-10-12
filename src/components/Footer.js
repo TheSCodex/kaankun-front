@@ -6,6 +6,7 @@ import {
   faHome,
   faCalendar,
 } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 function Footer() {
   return (
@@ -60,10 +61,12 @@ function Footer() {
           </div>
 
           <div className="w-full sm:w-1/2 md:w-1/4 lg:w-1/4 xl:w-1/4 px-4 mb-6">
+            <Link to= '/contacto'>
             <h2 className="text-lg font-semibold mb-4 ml relative">
               <span className="border-l-4 border-[#43B8E8] h-6 ml-3 mr-5"></span>
               Contacto
             </h2>
+            </Link>
             <div className="text-gray-300 mb-4 flex items-center">
               <FontAwesomeIcon
                 icon={faPhone}
@@ -82,7 +85,7 @@ function Footer() {
               />
               <div className="flex flex-col">
                 <h2 className="text-gray-300 hover:text-white">Email:</h2>
-                <p>kaankun@gmail.com</p>
+                <p>kankuun.contacto@gmail.com</p>
               </div>
             </li>
           </div>

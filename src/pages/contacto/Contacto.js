@@ -51,7 +51,6 @@ const Contacto = () => {
             timer: 3000,
             timerProgressBar: true,
             showConfirmButton: false,
-            
           });
         },
         (error) => {
@@ -73,7 +72,7 @@ const Contacto = () => {
       <div className="bg-[#E7E7E7] lg:h-[600px] h-[1000px]">
         <div className="relative">
           <div
-            className="flex pl-8 pr-8 items-center justify-between foto bg-cover w-full shrink-0 h-[200px]"
+            className="flex pl-8 pr-8 items-center justify-between foto bg-cover w-full shrink-0 h-[600px]"
             style={{ backgroundImage: `url(${cancun})` }}
           ></div>
           <div className="flex lg:ml-0 ml-12 justify-center absolute top-[100px] h-auto w-[300px] lg:w-full">
@@ -123,8 +122,7 @@ const Contacto = () => {
                     />
                     <div className="flex flex-col">
                       <p className="text-sm leading-6">
-                        kankuun.contacto@gmail.com
-                      </p>
+                                  </p>
                     </div>
                   </div>
                 </div>
