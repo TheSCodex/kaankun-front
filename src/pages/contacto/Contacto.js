@@ -31,6 +31,15 @@ const Contacto = () => {
         form.current,
         "7QlKXMCsvXzFOcJFw"
       )
+      return Swal.fire({
+        title: "Enviando",
+        icon: "info",
+        text: "Su correo se esta enviando",
+        timer: "4000",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        allowOutsideClick: false
+      })
       .then(
         (result) => {
           console.log(result.text);
@@ -42,6 +51,7 @@ const Contacto = () => {
             timer: 3000,
             timerProgressBar: true,
             showConfirmButton: false,
+            
           });
         },
         (error) => {
