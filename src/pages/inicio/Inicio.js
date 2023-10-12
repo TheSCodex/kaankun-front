@@ -9,7 +9,7 @@ function Inicio() {
           <div className="relative">
             <div
               div
-              className="flex pl-8 pr-8 items-center justify-between foto container bg-cover w-full shrink-0 h-[500px]"
+              className="flex pl-8 pr-8 items-center justify-between foto bg-cover h-[500px]"
               style={{ backgroundImage: `url(${tortilla})` }}
             >
               <section className="Left flex items-center">
@@ -51,43 +51,45 @@ function Inicio() {
                 />
               </svg>
             </div>
-            <div className="botones font-montserrat overflow-hidden flex pl-8 pr-8 justify-center absolute top-[400px]">
-              <div className="boton1 rounded-md ml-[90px] mr-[85px] p-8 relative border bg-white w-[550px] h-[375px]">
-                <h1 className="text-4xl mb-4 font-semibold">
-                  Visita el
-                  <br />
-                  Mercado
-                </h1>
-                <p className="mb-[104px]">
-                  Un lugar ideal para comprar y <br />
-                  vender productos hechos 100% por <br />
-                  locales
-                </p>
-                <button className="border text-sm rounded-md font-bold text-white bg-[#43B8E8] w-[115px] h-[35px]">
-                  Ir ahora!
-                </button>
-              </div>
-              <div className="boton1 rounded-md ml-[90px] mr-[85px] p-8 relative border bg-white w-[550px] h-[375px]">
-                <h1 className="text-4xl mb-4 font-semibold">
-                  ¿Quiénes
-                  <br />
-                  Somos?
-                </h1>
-                <p className="mb-8">
-                  En Kaan Kun nuestro propósito es crear un
-                  <br />
-                  espacio seguro para que productores y<br />
-                  artesanos locales puedan compartir
-                  <br />
-                  información sobre las tradiciones
-                  <br />
-                  de nuestra región y exponer los productos que
-                  <br />
-                  realizan a través de sus nobles artes
-                </p>
-                <button className="border text-sm rounded-md font-bold text-white bg-[#43B8E8] w-[115px] h-[35px]">
-                  Conoce más
-                </button>
+            <div className="font-montserrat overflow-hidden pl-8 pr-8 absolute w-full top-[400px]">
+              <div className="relative flex justify-evenly">
+                <div className="boton1 rounded-md p-8 border bg-white w-[470px] h-[375px]">
+                  <h1 className="text-4xl mb-4 font-semibold">
+                    Visita el
+                    <br />
+                    Mercado
+                  </h1>
+                  <p className="mb-[104px]">
+                    Un lugar ideal para comprar y <br />
+                    vender productos hechos 100% por <br />
+                    locales
+                  </p>
+                  <button className="border text-sm rounded-md font-bold text-white bg-[#43B8E8] w-[115px] h-[35px]">
+                    Ir ahora!
+                  </button>
+                </div>
+                <div className="boton1 rounded-md p-8 border bg-white w-[470px] h-[375px]">
+                  <h1 className="text-4xl mb-4 font-semibold">
+                    ¿Quiénes
+                    <br />
+                    Somos?
+                  </h1>
+                  <p className="mb-8">
+                    En Kaan Kun nuestro propósito es crear un
+                    <br />
+                    espacio seguro para que productores y<br />
+                    artesanos locales puedan compartir
+                    <br />
+                    información sobre las tradiciones
+                    <br />
+                    de nuestra región y exponer los productos que
+                    <br />
+                    realizan a través de sus nobles artes
+                  </p>
+                  <button className="border text-sm rounded-md font-bold text-white bg-[#43B8E8] w-[115px] h-[35px]">
+                    Conoce más
+                  </button>
+                </div>
               </div>
             </div>
           </div>

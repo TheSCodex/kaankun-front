@@ -40,11 +40,11 @@ function Footer() {
                   icon={faHome}
                   className="text-[#43B8E8] text-2xl mr-4"
                 />
-                <a href="#" className="text-gray-300 hover:text-white">
+                <p className="text-gray-300 hover:text-white">
                   Calz. de Tlalpan #2191
                   <br />
                   Col. Ciudad Jardín, Coyoacán, 04370 CDMX.
-                </a>
+                </p>
               </li>
 
               <li className="flex items-center">
@@ -52,9 +52,9 @@ function Footer() {
                   icon={faCalendar}
                   className="text-[#43B8E8] text-2xl mr-6"
                 />
-                <a href="#" className="text-gray-300 hover:text-white">
+                <p className="text-gray-300 hover:text-white">
                   Lunes a sábado 10:00 am a 7:00 pm. Domingo 11:00 am a 7:00 pm
-                </a>
+                </p>
               </li>
             </ul>
           </div>
@@ -94,15 +94,15 @@ function Footer() {
         <h6 className="mr-4">
           KAANKUN © 2023 - Todos los derechos reservados.
         </h6>
-        <a href="#" className="text-gray-300 hover:text-white mr-4">
+        <p className="text-gray-300 hover:text-white mr-4">
           Términos y Condiciones
-        </a>
-        <a href="#" className="text-gray-300 hover:text-white mr-4">
+        </p>
+        <p className="text-gray-300 hover:text-white mr-4">
           Aviso de privacidad
-        </a>
-        <a href="#" className="text-gray-300 hover:text-white">
+        </p>
+        <p className="text-gray-300 hover:text-white">
           Política
-        </a>
+        </p>
       </div>
     </footer>
   );

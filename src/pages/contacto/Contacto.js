@@ -66,11 +66,11 @@ const Contacto = () => {
             className="flex pl-8 pr-8 items-center justify-between foto bg-cover w-full shrink-0 h-[200px]"
             style={{ backgroundImage: `url(${cancun})` }}
           ></div>
-          <div className="lg:ml-[200px] ml-12 absolute top-[100px] h-auto w-[300px] lg:w-[1152px]">
+          <div className="flex lg:ml-0 ml-12 justify-center absolute top-[100px] h-auto w-[300px] lg:w-full">
             <div className="bg-white shadow-md rounded-md p-6 w-full md:max-w-6xl mx-auto flex lg:flex-row flex-col-reverse">
-              <div className="lg:w-1/2 mr-4 relative">
+              <div className="lg:w-1/2 mr-4 font-montserrat relative">
                 <div className="mt-4">
-                  <h2 className="text-2xl font-semibold lg:ml-0 ml-14">Contactanos</h2>
+                  <h2 className="text-2xl font-bold font-manjari mb-2 ml-14">Contactanos</h2>
                 </div>
                 <div className="w-full sm:w-2/3 md:w-1/2 lg:w-1/2 xl:w-1/2 px-4 mb-6">
                   <h2 className="text-lg font-semibold mb-2 relative"></h2>
@@ -118,7 +118,7 @@ const Contacto = () => {
                     </div>
                   </div>
                 </div>
-                <div className="mb-4 flex items-center justify-center space-x-4">
+                <div className="mb-4 flex items-center ml-12 space-x-4">
                   <div className="w-14 h-14 bg-[#00B341] rounded-full flex items-center justify-center">
                     <FontAwesomeIcon
                       icon={faWhatsapp}
@@ -140,7 +140,7 @@ const Contacto = () => {
                 </div>
               </div>
               <div className="lg:w-1/2">
-                <h2 className="text-lg font-semibold mb-4">
+                <h2 className="font-manjari text-2xl font-bold mb-4">
                   Mandanos un correo!
                 </h2>
                 <form ref={form} onSubmit={sendEmail}>

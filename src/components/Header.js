@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import usuario from "../assets/usuario.png";
@@ -46,7 +46,7 @@ function Header() {
               <div className="lg:w-[1px] lg:h-[40px] h-[20px] mr-[40px] border bg-[rgba(0, 0, 0, 0.17)]"></div>
               <div>
                 <Link to="/login">
-                  <img src={usuario} className="lg:h-8 lg:w-8 h-6 w-6 mb-2" />
+                  <img src={usuario} className="lg:h-8 lg:w-8 h-6 w-6 mb-2"/>
                 </Link>
               </div>
             </div>
