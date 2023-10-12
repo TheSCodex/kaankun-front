@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome, faPhone, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -6,14 +6,23 @@ import {
   faTwitter,
   faWhatsapp,
 } from "@fortawesome/free-brands-svg-icons";
-import tortilla from "../../assets/tortilla.jpg";
+import cancun from "../../assets/cancun.jpg";
 import emailjs from "@emailjs/browser";
 import Swal from "sweetalert2";
 
 const Contacto = () => {
   const form = useRef();
+  const [canSendEmail, setCanSendEmail] = useState(true);
+
   const sendEmail = (e) => {
     e.preventDefault();
+
+    if (!canSendEmail) {
+      return;
+    }
+
+    setCanSendEmail(false);
+    setTimeout(() => setCanSendEmail(true), 4000);
 
     emailjs
       .sendForm(
@@ -55,7 +64,7 @@ const Contacto = () => {
         <div className="relative">
           <div
             className="flex pl-8 pr-8 items-center justify-between foto bg-cover w-full shrink-0 h-[200px]"
-            style={{ backgroundImage: `url(${tortilla})` }}
+            style={{ backgroundImage: `url(${cancun})` }}
           ></div>
           <div className="lg:ml-[200px] ml-12 absolute top-[100px] h-auto w-[300px] lg:w-[1152px]">
             <div className="bg-white shadow-md rounded-md p-6 w-full md:max-w-6xl mx-auto flex lg:flex-row flex-col-reverse">
