@@ -26,8 +26,15 @@ const Contacto = () => {
       return;
     }
 
+
+
     const { user_name, user_email, message } = form.current.elements;
     let isValid = true;
+    const emailRegex = /\S+@\S+\.\S+/;
+    const nameRegex = /^[A-Za-z\s]+$/;
+
+
+
 
     if (user_name.value.trim() === "") {
       setValidationErrors((prevState) => ({
