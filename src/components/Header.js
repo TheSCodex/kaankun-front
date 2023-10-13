@@ -12,21 +12,21 @@ import {
 function Header() {
   return (
     <header>
-      <div className="flex lg:justify-end justify-center bg-black text-white py-1 px-8">
+      <div className="flex lg:justify-end justify-center bg-black text-white px-8">
         <div>
           <FontAwesomeIcon icon={faFacebook} className="mr-4" />
           <FontAwesomeIcon icon={faTwitter} className="mr-4" />
           <FontAwesomeIcon icon={faWhatsapp} />
         </div>
       </div>
-      <div className="bg-white font-manjari text-black py-3 px-8 border-b-2">
+      <div className="bg-white font-manjari text-black py-1 px-8 border-b-2">
         <div className="container mx-auto flex lg:flex-row flex-col items-center justify-between">
           <div className="flex items-center">
-            <img src={logo} alt="" className="h-12 w-12" />
+            <img src={logo} alt="" className="h-10 w-10" />
           </div>
           <div className="flex lg:mt-0 mt-4">
             <div className="flex items-center">
-              <nav className="lg:text-xl text-lg flex items-center mr-4 lg:mr-[20px]">
+              <nav className="lg:text-lg text-lg flex items-center mr-4 lg:mr-[20px]">
                 <Link to="/">
                   <h1 className="hover:text-gray-300 hover:cursor-pointer mr-6 lg:mr-16">
                     <strong>INICIO</strong>
@@ -46,7 +46,7 @@ function Header() {
               <div className="lg:w-[1px] lg:h-[40px] h-[20px] mr-[40px] border bg-[rgba(0, 0, 0, 0.17)]"></div>
               <div>
                 <Link to="/login">
-                  <img src={usuario} className="lg:h-8 lg:w-8 h-6 w-6 mb-2"/>
+                  <img src={usuario} className="lg:h-6 lg:w-6 h-6 w-6 mb-2"/>
                 </Link>
               </div>
             </div>
