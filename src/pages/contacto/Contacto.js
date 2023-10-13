@@ -13,6 +13,11 @@ import Swal from "sweetalert2";
 const Contacto = () => {
   const form = useRef();
   const [canSendEmail, setCanSendEmail] = useState(true);
+  const [validationErrors, setValidationErrors] = useState({
+    user_name: "",
+    user_email: "",
+    message: "",
+  });
 
   const sendEmail = (e) => {
     e.preventDefault();
@@ -21,6 +26,51 @@ const Contacto = () => {
       return;
     }
 
+    const { user_name, user_email, message } = form.current.elements;
+    let isValid = true;
+
+    if (user_name.value.trim() === "") {
+      setValidationErrors((prevState) => ({
+        ...prevState,
+        user_name: "Nombre es requerido",
+      }));
+      isValid = false;
+    }
+    if (user_email.value.trim() === "") {
+      setValidationErrors((prevState) => ({
+        ...prevState,
+        user_email: "Correo es requerido",
+      }));
+      isValid = false;
+    }
+    if (message.value.trim() === "") {
+      setValidationErrors((prevState) => ({
+        ...prevState,
+        message: "Mensaje es requerido",
+      }));
+      isValid = false;
+    }
+
+    if (!isValid) {
+      return;
+    }
+
+    setValidationErrors({
+      user_name: "",
+      user_email: "",
+      message: "",
+    });
+
+    if (!navigator.onLine) {
+      return Swal.fire({
+        title: "Envio Fallido",
+        icon: "error",
+        text: "No tienes conexión a Internet. Por favor, verifica tu conexión.",
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
+    }
     setCanSendEmail(false);
     setTimeout(() => setCanSendEmail(true), 4000);
 
@@ -31,15 +81,15 @@ const Contacto = () => {
         form.current,
         "7QlKXMCsvXzFOcJFw"
       )
-      return Swal.fire({
-        title: "Enviando",
-        icon: "info",
-        text: "Su correo se esta enviando",
-        timer: "4000",
-        showConfirmButton: false,
-        timerProgressBar: true,
-        allowOutsideClick: false
-      })
+    return Swal.fire({
+      title: "Enviando",
+      icon: "info",
+      text: "Su correo se esta enviando",
+      timer: "4000",
+      showConfirmButton: false,
+      timerProgressBar: true,
+      allowOutsideClick: false
+    })
       .then(
         (result) => {
           console.log(result.text);
@@ -122,7 +172,7 @@ const Contacto = () => {
                     />
                     <div className="flex flex-col">
                       <p className="text-sm leading-6">
-                                  </p>
+                      kankuun.contacto@gmail.com</p>
                     </div>
                   </div>
                 </div>
@@ -159,6 +209,9 @@ const Contacto = () => {
                       name="user_name"
                       className="bg-[#ECECEC] p-2 rounded-md w-full"
                     />
+                    {validationErrors.user_name && (
+                      <p className="text-red-500">{validationErrors.user_name}</p>
+                    )}
                   </div>
                   <div className="mb-4">
                     <input
@@ -167,6 +220,9 @@ const Contacto = () => {
                       name="user_email"
                       className="bg-[#ECECEC] p-2 rounded-md w-full"
                     />
+                    {validationErrors.user_email && (
+                      <p className="text-red-500">{validationErrors.user_email}</p>
+                    )}
                   </div>
                   <div className="mb-4">
                     <textarea
@@ -174,6 +230,9 @@ const Contacto = () => {
                       name="message"
                       className="bg-[#ECECEC]  p-2 rounded-md w-full h-32 resize-none"
                     ></textarea>
+                    {validationErrors.message && (
+                      <p className="text-red-500">{validationErrors.message}</p>
+                    )}
                   </div>
                   <div className="mb-4">
                     <button
