@@ -68,7 +68,7 @@ const settings = {
 
   return (
     <>
-      <div className="">
+      <div className="mt-[73px]">
         <div className="bg-[#E7E7E7] overflow-auto">
           <div className="relative">
             <Slider {...settings}>
@@ -147,14 +147,14 @@ const settings = {
               </div>
             </div>
           </div>
-          <div className="foroCanal lg:justify-center items-center flex lg:flex-row flex-col lg:mb-[30px] mb-[300px] lg:mt-[310px] mt-[760px] h-[300px] border w-full">
+          <div className="foroCanal lg:justify-center items-center flex lg:flex-row flex-col lg:mb-[30px] mb-[300px] lg:mt-[340px] mt-[760px] h-[300px] border w-full">
             <div className="fotoCanal h-full">
               <img
                 src={faro}
-                className="h-[300px] w-[350px] lg:rounded-l-md rounded-t-md object-cover"
+                className="h-[300px] w-[350px] lg:rounded-l-md object-cover"
               />
             </div>
-            <div className="infoCanal p-6 pl-8 font-montserrat lg:rounded-r-md rounded-b-md text-white bg-[#2C2828] h-[300px] w-[350px] lg:w-[695px]">
+            <div className="infoCanal p-6 pl-8 font-montserrat lg:rounded-r-md text-white bg-[#2C2828] h-[300px] w-[350px] lg:w-[715px]">
               <div className="flex mb-4 justify-between">
                 <section>
                   <h1 className="text-4xl font-semibold mb-4">El foro</h1>

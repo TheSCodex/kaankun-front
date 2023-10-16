@@ -26,15 +26,10 @@ const Contacto = () => {
       return;
     }
 
-
-
     const { user_name, user_email, message } = form.current.elements;
     let isValid = true;
     const emailRegex = /\S+@\S+\.\S+/;
     const nameRegex = /^[A-Za-z\s]+$/;
-
-
-
 
     if (user_name.value.trim() === "") {
       setValidationErrors((prevState) => ({
@@ -81,13 +76,12 @@ const Contacto = () => {
     setCanSendEmail(false);
     setTimeout(() => setCanSendEmail(true), 4000);
 
-    emailjs
-      .sendForm(
-        "service_09lqzbg",
-        "template_wclyidd",
-        form.current,
-        "7QlKXMCsvXzFOcJFw"
-      )
+    emailjs.sendForm(
+      "service_09lqzbg",
+      "template_wclyidd",
+      form.current,
+      "7QlKXMCsvXzFOcJFw"
+    );
     return Swal.fire({
       title: "Enviando",
       icon: "info",
@@ -95,34 +89,33 @@ const Contacto = () => {
       timer: "4000",
       showConfirmButton: false,
       timerProgressBar: true,
-      allowOutsideClick: false
-    })
-      .then(
-        (result) => {
-          console.log(result.text);
-          form.current.reset();
-          return Swal.fire({
-            title: "Envio Exitoso",
-            icon: "success",
-            text: "Gracias por contactarnos",
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-          });
-        },
-        (error) => {
-          console.log(error.text);
-          form.current.reset();
-          return Swal.fire({
-            title: "Envio Fallido",
-            icon: "error",
-            text: "A ocurrido un error inesperado",
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-          });
-        }
-      );
+      allowOutsideClick: false,
+    }).then(
+      (result) => {
+        console.log(result.text);
+        form.current.reset();
+        return Swal.fire({
+          title: "Envio Exitoso",
+          icon: "success",
+          text: "Gracias por contactarnos",
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+      },
+      (error) => {
+        console.log(error.text);
+        form.current.reset();
+        return Swal.fire({
+          title: "Envio Fallido",
+          icon: "error",
+          text: "A ocurrido un error inesperado",
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+      }
+    );
   };
   return (
     <>
@@ -136,7 +129,9 @@ const Contacto = () => {
             <div className="bg-white shadow-md rounded-md p-6 w-full md:max-w-6xl mx-auto flex lg:flex-row flex-col-reverse">
               <div className="lg:w-1/2 mr-4 font-montserrat relative">
                 <div className="mt-4">
-                  <h2 className="text-2xl font-bold font-manjari mb-2 ml-14">Contactanos</h2>
+                  <h2 className="text-2xl font-bold font-manjari mb-2 ml-14">
+                    Contactanos
+                  </h2>
                 </div>
                 <div className="w-full sm:w-2/3 md:w-1/2 lg:w-1/2 xl:w-1/2 px-4 mb-6">
                   <h2 className="text-lg font-semibold mb-2 relative"></h2>
@@ -179,7 +174,8 @@ const Contacto = () => {
                     />
                     <div className="flex flex-col">
                       <p className="text-sm leading-6">
-                      kankuun.contacto@gmail.com</p>
+                        kankuun.contacto@gmail.com
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -214,10 +210,15 @@ const Contacto = () => {
                       type="text"
                       placeholder="Nombre"
                       name="user_name"
+                      pattern="^[A-Za-z\s]+$"
+                      title="Solo se permiten letras y espacios"
                       className="bg-[#ECECEC] p-2 rounded-md w-full"
+                      required
                     />
                     {validationErrors.user_name && (
-                      <p className="text-red-500">{validationErrors.user_name}</p>
+                      <p className="text-red-500">
+                        {validationErrors.user_name}
+                      </p>
                     )}
                   </div>
                   <div className="mb-4">
@@ -228,7 +229,9 @@ const Contacto = () => {
                       className="bg-[#ECECEC] p-2 rounded-md w-full"
                     />
                     {validationErrors.user_email && (
-                      <p className="text-red-500">{validationErrors.user_email}</p>
+                      <p className="text-red-500">
+                        {validationErrors.user_email}
+                      </p>
                     )}
                   </div>
                   <div className="mb-4">
