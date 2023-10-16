@@ -1,13 +1,13 @@
 import { useRoutes, BrowserRouter as Router } from 'react-router-dom';
 
 //Páginas
-import Mercado from "./pages/mercado";
-import Inicio from "./pages/inicio";
-import Foro from "./pages/foro";
-import Login from "./pages/login";
-import Registro from "./pages/login";
-import Nosotros from "./pages/nosotros";
-import Contacto from "./pages/contacto";
+import Mercado from "./pages/mercado/Mercado";
+import Inicio from "./pages/inicio/Inicio";
+import Foro from "./pages/foro/Foro";
+import Login from "./pages/login/Login";
+import Registro from "./pages/login/Registro";
+import Nosotros from "./pages/nosotros/Nosotros";
+import Contacto from "./pages/contacto/Contacto";
 
 //Componentes
 import Header from "./components/Header";
