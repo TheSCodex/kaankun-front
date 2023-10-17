@@ -11,7 +11,7 @@ import {
 
 function Header() {
   return (
-    <header>
+    <header className="fixed top-0 bottom-0 w-full z-50 max-h-[73px] ">
       <div className="flex lg:justify-end justify-center bg-black text-white px-8">
         <div>
           <FontAwesomeIcon icon={faFacebook} className="mr-4" />

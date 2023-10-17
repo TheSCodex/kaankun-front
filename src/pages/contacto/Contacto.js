@@ -13,6 +13,11 @@ import Swal from "sweetalert2";
 const Contacto = () => {
   const form = useRef();
   const [canSendEmail, setCanSendEmail] = useState(true);
+  const [validationErrors, setValidationErrors] = useState({
+    user_name: "",
+    user_email: "",
+    message: "",
+  });
 
   const sendEmail = (e) => {
     e.preventDefault();
@@ -21,51 +26,96 @@ const Contacto = () => {
       return;
     }
 
+    const { user_name, user_email, message } = form.current.elements;
+    let isValid = true;
+    const emailRegex = /\S+@\S+\.\S+/;
+    const nameRegex = /^[A-Za-z\s]+$/;
+
+    if (user_name.value.trim() === "") {
+      setValidationErrors((prevState) => ({
+        ...prevState,
+        user_name: "Nombre es requerido",
+      }));
+      isValid = false;
+    }
+    if (user_email.value.trim() === "") {
+      setValidationErrors((prevState) => ({
+        ...prevState,
+        user_email: "Correo es requerido",
+      }));
+      isValid = false;
+    }
+    if (message.value.trim() === "") {
+      setValidationErrors((prevState) => ({
+        ...prevState,
+        message: "Mensaje es requerido",
+      }));
+      isValid = false;
+    }
+
+    if (!isValid) {
+      return;
+    }
+
+    setValidationErrors({
+      user_name: "",
+      user_email: "",
+      message: "",
+    });
+
+    if (!navigator.onLine) {
+      return Swal.fire({
+        title: "Envio Fallido",
+        icon: "error",
+        text: "No tienes conexión a Internet. Por favor, verifica tu conexión.",
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
+    }
     setCanSendEmail(false);
     setTimeout(() => setCanSendEmail(true), 4000);
 
-    emailjs
-      .sendForm(
-        "service_09lqzbg",
-        "template_wclyidd",
-        form.current,
-        "7QlKXMCsvXzFOcJFw"
-      )
-      return Swal.fire({
-        title: "Enviando",
-        icon: "info",
-        text: "Su correo se esta enviando",
-        timer: "4000",
-        showConfirmButton: false,
-        timerProgressBar: true,
-        allowOutsideClick: false
-      })
-      .then(
-        (result) => {
-          console.log(result.text);
-          form.current.reset();
-          return Swal.fire({
-            title: "Envio Exitoso",
-            icon: "success",
-            text: "Gracias por contactarnos",
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-          });
-        },
-        (error) => {
-          console.log(error.text);
-          form.current.reset();
-          return Swal.fire({
-            title: "Envio Fallido",
-            icon: "error",
-            text: "A ocurrido un error inesperado",
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-          });
-        }
-      );
+    emailjs.sendForm(
+      "service_09lqzbg",
+      "template_wclyidd",
+      form.current,
+      "7QlKXMCsvXzFOcJFw"
+    );
+    return Swal.fire({
+      title: "Enviando",
+      icon: "info",
+      text: "Su correo se esta enviando",
+      timer: "4000",
+      showConfirmButton: false,
+      timerProgressBar: true,
+      allowOutsideClick: false,
+    }).then(
+      (result) => {
+        console.log(result.text);
+        form.current.reset();
+        return Swal.fire({
+          title: "Envio Exitoso",
+          icon: "success",
+          text: "Gracias por contactarnos",
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+      },
+      (error) => {
+        console.log(error.text);
+        form.current.reset();
+        return Swal.fire({
+          title: "Envio Fallido",
+          icon: "error",
+          text: "A ocurrido un error inesperado",
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+      }
+    );
   };
   return (
     <>
@@ -79,7 +129,9 @@ const Contacto = () => {
             <div className="bg-white shadow-md rounded-md p-6 w-full md:max-w-6xl mx-auto flex lg:flex-row flex-col-reverse">
               <div className="lg:w-1/2 mr-4 font-montserrat relative">
                 <div className="mt-4">
-                  <h2 className="text-2xl font-bold font-manjari mb-2 ml-14">Contactanos</h2>
+                  <h2 className="text-2xl font-bold font-manjari mb-2 ml-14">
+                    Contactanos
+                  </h2>
                 </div>
                 <div className="w-full sm:w-2/3 md:w-1/2 lg:w-1/2 xl:w-1/2 px-4 mb-6">
                   <h2 className="text-lg font-semibold mb-2 relative"></h2>
@@ -122,7 +174,8 @@ const Contacto = () => {
                     />
                     <div className="flex flex-col">
                       <p className="text-sm leading-6">
-                                  </p>
+                        kankuun.contacto@gmail.com
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -157,8 +210,16 @@ const Contacto = () => {
                       type="text"
                       placeholder="Nombre"
                       name="user_name"
+                      pattern="^[A-Za-z\s]+$"
+                      title="Solo se permiten letras y espacios"
                       className="bg-[#ECECEC] p-2 rounded-md w-full"
+                      required
                     />
+                    {validationErrors.user_name && (
+                      <p className="text-red-500">
+                        {validationErrors.user_name}
+                      </p>
+                    )}
                   </div>
                   <div className="mb-4">
                     <input
@@ -167,6 +228,11 @@ const Contacto = () => {
                       name="user_email"
                       className="bg-[#ECECEC] p-2 rounded-md w-full"
                     />
+                    {validationErrors.user_email && (
+                      <p className="text-red-500">
+                        {validationErrors.user_email}
+                      </p>
+                    )}
                   </div>
                   <div className="mb-4">
                     <textarea
@@ -174,6 +240,9 @@ const Contacto = () => {
                       name="message"
                       className="bg-[#ECECEC]  p-2 rounded-md w-full h-32 resize-none"
                     ></textarea>
+                    {validationErrors.message && (
+                      <p className="text-red-500">{validationErrors.message}</p>
+                    )}
                   </div>
                   <div className="mb-4">
                     <button

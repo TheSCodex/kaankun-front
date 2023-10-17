@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -7,7 +8,6 @@ import faro from "../../assets/faro.jpg";
 function Inicio() {
   const [images, setImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [currentImageAuthor, setCurrentImageAuthor] = useState("");
 
   useEffect(() => {
     const apiKey = "d9yrUdtArLQ05DlzcdVJN3CiKTzlzAehEfRf2OnDsq5mhuGc20tkTcDZ";
@@ -24,9 +24,7 @@ function Inicio() {
       .then((response) => response.json())
       .then((data) => {
         const fetchedImages = data.photos.map((photo) => photo.src.large);
-        const fetchedAuthors = data.photos.map((photo) => photo.photographer);
         setImages(fetchedImages);
-        setCurrentImageAuthor(fetchedAuthors[currentImageIndex]);
       })
       .catch((error) => console.error(error));
   }, [currentImageIndex]);
@@ -68,7 +66,7 @@ const settings = {
 
   return (
     <>
-      <div className="">
+      <div className="lg:mt-[73px] mt-[122px]">
         <div className="bg-[#E7E7E7] overflow-auto">
           <div className="relative">
             <Slider {...settings}>
@@ -141,20 +139,22 @@ const settings = {
                   <br />
                   realizan a través de sus nobles artes
                 </p>
+                <Link to='/nosotros'>
                 <button className="border text-sm rounded-md font-bold text-white bg-[#43B8E8] w-[115px] h-[35px]">
                   Conoce más
                 </button>
+                </Link>
               </div>
             </div>
           </div>
-          <div className="foroCanal lg:justify-center items-center flex lg:flex-row flex-col lg:mb-[30px] mb-[300px] lg:mt-[310px] mt-[760px] h-[300px] border w-full">
+          <div className="foroCanal lg:justify-center items-center flex lg:flex-row flex-col lg:mb-[30px] mb-[300px] lg:mt-[340px] mt-[760px] h-[300px] border w-full">
             <div className="fotoCanal h-full">
               <img
                 src={faro}
-                className="h-[300px] w-[350px] lg:rounded-l-md rounded-t-md object-cover"
+                className="h-[300px] w-[350px] lg:rounded-l-md object-cover"
               />
             </div>
-            <div className="infoCanal p-6 pl-8 font-montserrat lg:rounded-r-md rounded-b-md text-white bg-[#2C2828] h-[300px] w-[350px] lg:w-[695px]">
+            <div className="infoCanal p-6 pl-8 font-montserrat lg:rounded-r-md text-white bg-[#2C2828] h-[300px] w-[350px] lg:w-[715px]">
               <div className="flex mb-4 justify-between">
                 <section>
                   <h1 className="text-4xl font-semibold mb-4">El foro</h1>
