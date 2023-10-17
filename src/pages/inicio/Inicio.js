@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -138,9 +139,11 @@ const settings = {
                   <br />
                   realizan a través de sus nobles artes
                 </p>
+                <Link to='/nosotros'>
                 <button className="border text-sm rounded-md font-bold text-white bg-[#43B8E8] w-[115px] h-[35px]">
                   Conoce más
                 </button>
+                </Link>
               </div>
             </div>
           </div>

@@ -31,8 +31,8 @@ function Nosotros() {
               </div>
             </div>
           </div>
-          <div className="Preguntas flex lg:flex-row lg:justify-evenly items-center flex-col lg:mt-[240px] mt-[390px] mb-16">
-            <div className="bg-white rounded-lg mb-4 p-4 lg:w-[400px] lg:h-[380px] w-[95%]">
+          <div className="Preguntas flex lg:flex-row lg:justify-center items-center flex-col lg:mt-[240px] mt-[390px] mb-16">
+            <div className="bg-white rounded-lg lg:mr-4 mb-4 p-4 lg:w-[400px] lg:h-[380px] w-[95%]">
               <h2 className="text-lg font-semibold text-center">MISION</h2>
               <p>
                 Nuestra misión en Kaan Kun es crear un espacio seguro y acogedor
@@ -45,7 +45,7 @@ function Nosotros() {
                 nuestros productores.
               </p>
             </div>
-            <div className="bg-white rounded-lg mb-4 p-4 lg:w-[400px] h-[380px] w-[95%]">
+            <div className="bg-white rounded-lg lg:ml-4 mb-4 p-4 lg:w-[400px] h-[380px] w-[95%]">
               <h2 className="text-lg font-semibold text-center">VISION</h2>
               <p>
                 En Kaan Kun, visualizamos un mundo en el que los productores y
