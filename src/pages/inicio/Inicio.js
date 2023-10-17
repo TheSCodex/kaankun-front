@@ -7,7 +7,6 @@ import faro from "../../assets/faro.jpg";
 function Inicio() {
   const [images, setImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [currentImageAuthor, setCurrentImageAuthor] = useState("");
 
   useEffect(() => {
     const apiKey = "d9yrUdtArLQ05DlzcdVJN3CiKTzlzAehEfRf2OnDsq5mhuGc20tkTcDZ";
@@ -24,9 +23,7 @@ function Inicio() {
       .then((response) => response.json())
       .then((data) => {
         const fetchedImages = data.photos.map((photo) => photo.src.large);
-        const fetchedAuthors = data.photos.map((photo) => photo.photographer);
         setImages(fetchedImages);
-        setCurrentImageAuthor(fetchedAuthors[currentImageIndex]);
       })
       .catch((error) => console.error(error));
   }, [currentImageIndex]);
@@ -68,7 +65,7 @@ const settings = {
 
   return (
     <>
-      <div className="mt-[73px]">
+      <div className="lg:mt-[73px] mt-[122px]">
         <div className="bg-[#E7E7E7] overflow-auto">
           <div className="relative">
             <Slider {...settings}>
