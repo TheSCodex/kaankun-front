@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { storage } from "../../firebaseConfig.js";
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
-//IMÁGENES
+// IMÁGENES
 import carrito from "../../assets/carrito.png";
 import lupa from "../../assets/lupa.png";
 import mercado from "../../assets/mercado.png";
@@ -25,6 +23,31 @@ function Mercado() {
   const [precio, setPrecio] = useState("");
   const [categoria, setCategoria] = useState("");
   const [image, setImage] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [datos, setDatos] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const getProducts = async () => {
+    setLoading(true);
+    try {
+      const result = await fetch(serverUrl);
+      if (!result.ok) {
+        console.log("Algo salió mal");
+      }
+
+      const products = await result.json();
+      console.log(products);
+      setDatos(products);
+    } catch (error) {
+      console.log("Ha ocurrido un error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getProducts();
+  }, []);
 
   const createProduct = async (e) => {
     e.preventDefault();
@@ -81,18 +104,54 @@ function Mercado() {
   const handleShopping = () => {
     setShopping(true);
     setSelling(false);
+    setSidebarOpen(false);
   };
 
   const handleSelling = () => {
     setSelling(true);
     setShopping(false);
+    setSidebarOpen(false);
   };
 
   return (
-    <>
-      <div className="mt-[73px] bg-[#E7E7E7] z-40">
-        <div className="overflow-hidden flex w-full">
-          <div className="fixed bg-white border w-[325px] p-6 h-screen overflow-y-auto">
+    <div className="lg:mt-[73px] mt-[122px]">
+      <div className="bg-[#E7E7E7] h-screen overflow-y-scroll no-scrollbar">
+        <div className="flex w-full">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className={`lg:hidden absolute top-10 left-10 z-50 ${
+              sidebarOpen ? "" : ""
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {sidebarOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
+          <div
+            className={`lg:fixed bg-white border lg:w-[325px] p-6 lg:h-screen ${
+              sidebarOpen ? "" : "hidden"
+            } lg:block`}
+          >
             <div>
               <div className="flex mb-4">
                 <h1 className="mr-20 font-bold font-montserrat text-2xl">
@@ -171,20 +230,51 @@ function Mercado() {
               </div>
             </div>
           </div>
-          <div className="ml-[335px] w-full">
+          <div className="lg:ml-[335px] h-full w-full">
             <div className="h-screen">
-              <div className="h-auto p-6">
+              <div className="p-6 lg:pl-14">
                 {shopping ? (
                   <>
-                    <h2>PRODUCTOS</h2>
+                    <div className="grid lg:grid-cols-4 grid-cols-2 gap-7 lg:gap-4">
+                      {loading ? (
+                        <div className="flex flex-col items-center justify-center p-4 font-semibold text-center">
+                          <p className="mb-4">Cargando...</p>
+                          <FontAwesomeIcon
+                            icon={faSpinner}
+                            className="text-6xl"
+                            spin
+                            pulse
+                          />
+                        </div>
+                      ) : (
+                        datos.map((product) => {
+                          return (
+                            <div
+                              key={product.id}
+                              className="lg:h-[325px] h-auto w-[150px] lg:w-[200px]"
+                            >
+                              <img
+                                src={product.imageUrl}
+                                className="rounded-sm h-[180px] w-full"
+                              />
+                              <h2 className="font-montserrat font-bold text-lg">${product.precio}MXN</h2>
+                              <p className="font-montserrat font-semibold">{product.name}</p>
+                              <p className="font-montserrat text-sm">{product.description}</p>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
                   </>
                 ) : (
                   <div>
-                    <h2>¿Qué vas a ofertar hoy?</h2>
+                    <h2 className="font-manjari text-xl font-bold mb-4">
+                      ¿Qué vas a ofertar hoy?
+                    </h2>
                     <div>
                       <form onSubmit={createProduct} className="space-y-4">
-                        <div className="flex">
-                          <div className="space-y-2 mr-2">
+                        <div className="flex lg:flex-row flex-col">
+                          <div className="space-y-2 mr-2 lg:mb-0 mb-2">
                             <input
                               type="text"
                               placeholder="Nombre del producto"
@@ -211,20 +301,20 @@ function Mercado() {
                               className="w-full p-2 border rounded-md"
                             />
                           </div>
-                          <div className="w-2/3">
-                            <input
-                              type="text"
+                          <div className="lg:w-2/3 relative lg:mb-0 mb-2">
+                            <textarea
                               placeholder="Descripción"
                               value={description}
                               onChange={(e) => setDescription(e.target.value)}
-                              className="w-[95%] h-full p-2 border rounded-md"
+                              className="w-[98%] h-full p-2 border rounded-md resize-none overflow-y-auto"
+                              style={{ verticalAlign: "top" }}
                             />
                           </div>
                           <div className="relative">
                             <div>
                               <label
                                 htmlFor="image-upload"
-                                className="w-[100%] text-center bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 cursor-pointer absolute"
+                                className="lg:w-full w-[98%] text-center bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 cursor-pointer absolute"
                               >
                                 Elegir Imagen
                               </label>
@@ -233,19 +323,19 @@ function Mercado() {
                                 accept="image/*"
                                 id="image-upload"
                                 onChange={handleImageChange}
-                                className="w-full opacity-0 p-2 border rounded-md"
+                                className="lg:w-full w-[98%] opacity-0 p-2 border rounded-md"
                                 style={{ cursor: "pointer" }}
                               />
                             </div>
                             <div
                               id="thumbnail-container"
-                              className="ml-12"
+                              className="lg:ml-12 ml-32"
                             ></div>
                           </div>
                         </div>
                         <button
                           type="submit"
-                          className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
+                          className="lg:w-full w-[98%] bg-blue-500 text-white p-2 rounded-md hover-bg-blue-600"
                         >
                           Agregar Producto!
                         </button>
@@ -258,7 +348,7 @@ function Mercado() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

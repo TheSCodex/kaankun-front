@@ -1,4 +1,5 @@
-import { useRoutes, BrowserRouter as Router } from 'react-router-dom';
+import { useRoutes, BrowserRouter as Router } from "react-router-dom";
+import "./index.css";
 
 //Páginas
 import Mercado from "./pages/mercado/Mercado.js";
@@ -15,32 +16,26 @@ import Footer from "./components/Footer.js";
 
 const AppRoutes = () => {
   let routes = useRoutes([
-    {path: '/', element: <Inicio />},
-    {path: '/mercado', element: <Mercado />},
-    {path: '/foro', element: <Foro />},
-    {path: '/nosotros', element: <Nosotros />},
-    {path: '/login', element: <Login />},
-    {path: '/registro', element: <Registro />},
-    {path: '/contacto', element: <Contacto />}
+    { path: "/", element: <Inicio /> },
+    { path: "/mercado", element: <Mercado /> },
+    { path: "/foro", element: <Foro /> },
+    { path: "/nosotros", element: <Nosotros /> },
+    { path: "/login", element: <Login /> },
+    { path: "/registro", element: <Registro /> },
+    { path: "/contacto", element: <Contacto /> },
   ]);
 
   return routes;
-}
-
-function AppContent(){
-  return(
-    <>
-      <Header />
-        <AppRoutes />
-      <Footer /> 
-    </>
-  );
-}
+};
 
 function App() {
   return (
     <Router>
-      <AppContent />
+      <div>
+        <Header />
+        <AppRoutes  className="overflow-y-scroll no-scrollbar" />
+        <Footer />
+      </div>
     </Router>
   );
 }
