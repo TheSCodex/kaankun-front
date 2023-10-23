@@ -1,6 +1,10 @@
 import React, { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome, faPhone, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { 
+faHome, 
+faPhone, 
+faEnvelope 
+} from "@fortawesome/free-solid-svg-icons";
 import {
   faFacebook,
   faTwitter,
@@ -32,9 +36,6 @@ const Contacto = () => {
     let isValid = true;
     const emailRegex = /\S+@\S+\.\S+/;
     const nameRegex = /^[A-Za-z\s]+$/;
-
-
-
 
     if (user_name.value.trim() === "") {
       setValidationErrors((prevState) => ({
