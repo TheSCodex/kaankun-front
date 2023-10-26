@@ -4,6 +4,8 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import faro from "../../assets/faro.jpg";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
 
 function Inicio() {
   const [images, setImages] = useState([]);
@@ -29,43 +31,44 @@ function Inicio() {
       .catch((error) => console.error(error));
   }, [currentImageIndex]);
 
-const settings = {
-  dots: true,
-  infinite: true,
-  speed: 500,
-  slidesToShow: 2,
-  slidesToScroll: 1,
-  nextArrow: <></>,
-  responsive: [
-    {
-      breakpoint: 1024,
-      settings: {
-        slidesToShow: 3,
-        slidesToScroll: 1,
-        infinite: true,
-        dots: true
-      }
-    },
-    {
-      breakpoint: 600,
-      settings: {
-        slidesToShow: 2,
-        slidesToScroll: 1,
-        initialSlide: 2
-      }
-    },
-    {
-      breakpoint: 480,
-      settings: {
-        slidesToShow: 1,
-        slidesToScroll: 1
-      }
-    }
-  ]
-};
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 2,
+    slidesToScroll: 1,
+    nextArrow: <></>,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+          infinite: true,
+          dots: true,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          initialSlide: 2,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
 
   return (
     <>
+      <Header />
       <div className="lg:mt-[73px] mt-[122px]">
         <div className="bg-[#E7E7E7] overflow-auto">
           <div className="relative">
@@ -139,10 +142,10 @@ const settings = {
                   <br />
                   realizan a través de sus nobles artes
                 </p>
-                <Link to='/nosotros'>
-                <button className="border text-sm rounded-md font-bold text-white bg-[#43B8E8] w-[115px] h-[35px]">
-                  Conoce más
-                </button>
+                <Link to="/nosotros">
+                  <button className="border text-sm rounded-md font-bold text-white bg-[#43B8E8] w-[115px] h-[35px]">
+                    Conoce más
+                  </button>
                 </Link>
               </div>
             </div>
@@ -180,6 +183,7 @@ const settings = {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 }

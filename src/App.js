@@ -6,13 +6,8 @@ import Mercado from "./pages/mercado/Mercado.js";
 import Inicio from "./pages/inicio/Inicio.js";
 import Foro from "./pages/foro/Foro.js";
 import Login from "./pages/login/Login.js";
-import Registro from "./pages/login/Registro.js";
 import Nosotros from "./pages/nosotros/Nosotros.js";
 import Contacto from "./pages/contacto/Contacto.js";
-
-//Componentes
-import Header from "./components/Header.js";
-import Footer from "./components/Footer.js";
 
 const AppRoutes = () => {
   let routes = useRoutes([
@@ -21,7 +16,6 @@ const AppRoutes = () => {
     { path: "/foro", element: <Foro /> },
     { path: "/nosotros", element: <Nosotros /> },
     { path: "/login", element: <Login /> },
-    { path: "/registro", element: <Registro /> },
     { path: "/contacto", element: <Contacto /> },
   ]);
 
@@ -31,11 +25,7 @@ const AppRoutes = () => {
 function App() {
   return (
     <Router>
-      <div>
-        <Header />
         <AppRoutes  className="overflow-y-scroll no-scrollbar" />
-        <Footer />
-      </div>
     </Router>
   );
 }
