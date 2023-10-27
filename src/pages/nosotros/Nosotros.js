@@ -1,10 +1,13 @@
 import React from "react";
 import Fondo from "./fondo_nosotros.jpg";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
 
 function Nosotros() {
   return (
     <>
       <div className="lg:mt-[73px] mt-[122px] bg-gray-200 overflow-auto">
+        <Header/>
         <div className="relative w-full">
           <div
             className="h-48 lg:h-[325px] bg-no-repeat bg-cover bg-center"
@@ -63,6 +66,7 @@ function Nosotros() {
             </div>
           </div>
         </div>
+        <Footer/>
       </div>
     </>
   );

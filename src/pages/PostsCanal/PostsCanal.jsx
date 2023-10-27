@@ -1,9 +1,12 @@
 import React from 'react'
 import Cun from "../../assets/Cun.jpg";
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 function PostsCanal() {
   return (
     <div className='bg-[#E7E7E7] lg:h-full h-full font-montserrat lg:mt-[73px] mt-[122px] '>
+      <Header/>
       <div className="relative">
         <div
           className="flex flex-col  justify-center pl-8 pr-8 foto bg-cover w-full shrink-0 h-[200px]"
@@ -17,6 +20,7 @@ function PostsCanal() {
           
         </div>
       </div>
+      <Footer/>
     </div>
   )
 }

@@ -2,10 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleUser, faComment, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 function Canal() {
   return (
     <div className='bg-[#E7E7E7] lg:h-full h-full font-montserrat lg:mt-[73px] mt-[122px]'>
+      <Header/>
       <div className="relative">
         <div className="flex flex-col justify-center pl-8 pr-8 w-4/6 shrink-0 h-[200px]">
           <h1 className='font-semibold text-left text-5xl mt-5 ml-4'>Kaan-Kun</h1>
@@ -39,6 +42,7 @@ function Canal() {
           </div>
         </Link>
       </div>
+      <Footer/>
     </div>
   );
 }

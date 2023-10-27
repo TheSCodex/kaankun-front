@@ -3,10 +3,13 @@ import Cun from "../../assets/Cun.jpg";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleUser, faComment, faCommentDots, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 function Foro() {
   return (
     <div className='bg-[#E7E7E7] lg:h-full h-full font-montserrat lg:mt-[73px] mt-[122px] '>
+      <Header/>
       <div className="relative">
         <div
           className="flex flex-col items-center justify-center pl-8 pr-8 foto bg-cover w-full shrink-0 h-[200px]"
@@ -113,11 +116,11 @@ function Foro() {
               </div>
             </div>
           </div>
-
-
         </div>
       </div>
+      <Footer/>
     </div>
+    
   )
 }
 
