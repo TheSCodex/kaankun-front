@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../../Auth.js";
 import { storage } from "../../firebaseConfig.js";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import Swal from "sweetalert2";
 import Header from "../../components/Header.js";
 import Footer from "../../components/Footer.js";
 
@@ -18,6 +22,7 @@ import miscelaneo from "../../assets/miscelaneo.png";
 
 function Mercado() {
   const serverUrl = "http://localhost:8080/api/products";
+  const { isLoggedIn } = useAuth();
   const [shopping, setShopping] = useState(true);
   const [selling, setSelling] = useState(false);
   const [name, setName] = useState("");
@@ -27,7 +32,16 @@ function Mercado() {
   const [image, setImage] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [datos, setDatos] = useState([]);
+  const [userDatos, setUserDatos] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  let decodedToken;
+  const userToken = localStorage.getItem("token");
+  if (userToken) {
+    decodedToken = jwtDecode(userToken);
+  }
+  const userId = decodedToken ? decodedToken.userId : null;
+  console.log(userId);
 
   const getProducts = async () => {
     setLoading(true);
@@ -47,6 +61,30 @@ function Mercado() {
     }
   };
 
+  const getUserProducts = async () => {
+    setLoading(true);
+    try {
+      const result = await fetch(
+        `http://localhost:8080/api/products/user/${userId}`
+      );
+      if (!result.ok) {
+        console.log("Algo salió mal");
+      }
+
+      const userProducts = await result.json();
+      console.log(userProducts);
+      setUserDatos(userProducts);
+    } catch (error) {
+      console.log("Ha ocurrido un error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getUserProducts();
+  }, []);
+
   useEffect(() => {
     getProducts();
   }, []);
@@ -59,12 +97,14 @@ function Mercado() {
         const snapshot = await uploadBytes(storageRef, image);
         const imageUrl = await getDownloadURL(snapshot.ref);
         const productData = {
+          userId,
           name,
           description,
           precio,
           categoria,
           imageUrl,
         };
+
         fetch(serverUrl, {
           method: "POST",
           headers: {
@@ -75,15 +115,30 @@ function Mercado() {
           .then((response) => {
             if (response.ok) {
               console.log("Producto creado exitosamente");
+              Swal.fire({
+                title: "Producto creado",
+                text: "El producto ha sido creado exitosamente",
+                icon: "success",
+              }).then(() => {
+                setName("");
+                setDescription("");
+                setPrecio("");
+                setCategoria("");
+                setImage(null);
+                getUserProducts();
+                getProducts();
+              });
             } else {
               console.error("Fallo al crear producto");
+              Swal.fire("Error", "Ha ocurrido un error al crear el producto", "error");
             }
           })
           .catch((error) => {
             console.error("Fallo al crear producto:", error);
+            Swal.fire("Error", "Ha ocurrido un error al crear el producto", "error");
           });
       } catch (error) {
-        console.error("Error error subiendo imagen o generando URL:", error);
+        console.error("Error subiendo imagen o generando URL:", error);
       }
     }
   };
@@ -193,22 +248,27 @@ function Mercado() {
                     )}
                   </button>
                 </div>
-                <div className="mt-8">
-                  <button
-                    onClick={handleSelling}
-                    className="items-center focus:outline-none w-full"
-                  >
-                    <div className="flex">
-                      <img src={venta} className="h-[30px] mr-6" />
-                      <h1 className="font-montserrat font-semibold">Venta</h1>
-                    </div>
-                    {selling ? (
-                      <div className="bg-[#00000063] h-[1px] w-[85%] mt-4"></div>
-                    ) : (
-                      ""
-                    )}
-                  </button>
-                </div>
+                {isLoggedIn ? (
+                  <div className="mt-8">
+                    <button
+                      onClick={handleSelling}
+                      className="items-center focus:outline-none w-full"
+                    >
+                      <div className="flex">
+                        <img src={venta} className="h-[30px] mr-6" />
+                        <h1 className="font-montserrat font-semibold">Venta</h1>
+                      </div>
+                      {selling ? (
+                        <div className="bg-[#00000063] h-[1px] w-[85%] mt-4"></div>
+                      ) : (
+                        ""
+                      )}
+                    </button>
+                  </div>
+                ) : (
+                  ""
+                )}
+
                 <div className="mt-12">
                   <div className="mb-6">
                     <div className="bg-[#000] h-[.8px] w-[100%]"></div>
@@ -264,17 +324,19 @@ function Mercado() {
                                 key={product.id}
                                 className="lg:h-[325px] h-auto w-[150px] lg:w-[200px]"
                               >
-                                <img
-                                  src={product.imageUrl}
-                                  className="rounded-sm h-[180px] w-full"
-                                />
+                                <Link to={`/mercado/${product.id}`}>
+                                  <img
+                                    src={product.imageUrl}
+                                    className="rounded-sm h-[180px] w-full"
+                                  />
+                                </Link>
                                 <h2 className="font-montserrat font-bold text-lg">
                                   ${product.precio}MXN
                                 </h2>
                                 <p className="font-montserrat font-semibold">
                                   {product.name}
                                 </p>
-                                <p className="font-montserrat text-sm">
+                                <p className="font-montserrat text-sm line-clamp-2">
                                   {product.description}
                                 </p>
                               </div>
@@ -360,6 +422,27 @@ function Mercado() {
                           </button>
                         </form>
                       </div>
+                      <div className="mt-6">
+                      {userDatos.length > 0 ? (
+                        <>
+                          <h1 className="font-manjari text-xl font-bold mb-1 mt-6">Tus productos:</h1>
+                          <section className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                            {userDatos.map((product) => (
+                              <div key={product.id} className="flex flex-col justify-center p-4">
+                                <Link to={`/mercado/${product.id}`}>
+                                  <img src={product.imageUrl} alt={product.name} />
+                                </Link>
+                                <p className="font-montserrat font-bold text-xl mt-2">${product.precio}MXN</p>
+                                <h2 className="font-montserrat font-semibold">{product.name}</h2>
+                                <p className="line-clamp-2">{product.description}</p>
+                              </div>
+                            ))}
+                          </section>
+                        </>
+                      ) : (
+                        <h1>No se encontraron productos.</h1>
+                      )}
+                    </div>
                     </div>
                   )}
                 </div>

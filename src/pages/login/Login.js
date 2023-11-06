@@ -246,16 +246,16 @@ function Login() {
   };
   return (
     <div className="bg-gradient-to-r from-white via-[#bedaf3] to-[#d7e1ed] w-screen h-screen flex items-center justify-center">
-      <div className="bg-white w-[1000px] lg:h-[500px] flex-shrink-0 flex lg:rounded-md">
+      <div className="bg-white lg:w-[1000px] w-[350px] lg:h-[500px] flex flex-col lg:flex-row lg:rounded-md">
         <img
-          className="lg: rounded-l-md h-full lg:w-[430px] object-cover "
+          className="lg:rounded-l-md lg:h-full lg:w-[430px] lg:object-cover lg:block hidden"
           src={catrin}
         />
-        <div className="px-20 w-[570px]">
+        <div className="lg:px-20 lg:w-[570px]">
           {register ? (
             <form
               onSubmit={handleRegister}
-              className="w-full py-10 font-manjari font-semibold"
+              className="w-full lg:py-10 p-6 font-manjari font-semibold"
             >
               <label>Nombre</label>
               <section className="flex relative items-center mb-3">
@@ -370,7 +370,7 @@ function Login() {
           ) : recover ? (
             <form
               onSubmit={handleValidateCode}
-              className="w-full font-manjari font-semibold py-16 text-center"
+              className="w-full font-manjari font-semibold lg:py-16 p-6 text-center"
             >
               <label>Escribe el correo que utilizas para iniciar sesión</label>
               <section className="flex relative items-center mb-12">
@@ -456,7 +456,7 @@ function Login() {
           ) : (
             <form
               onSubmit={handleLogin}
-              className="w-full font-manjari font-semibold py-16"
+              className="w-full font-manjari font-semibold p-6 lg:py-16"
             >
               <label>Email</label>
               <section className="flex relative items-center mb-12">

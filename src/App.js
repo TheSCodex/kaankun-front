@@ -10,6 +10,7 @@ import Nosotros from "./pages/nosotros/Nosotros.js";
 import Contacto from "./pages/contacto/Contacto.js";
 import { AuthProvider } from "./Auth";
 import Recover from "./pages/login/Recover.js";
+import DetallesProducto from "./components/DetallesProducto.js";
 
 const AppRoutes = () => {
   let routes = useRoutes([
@@ -19,7 +20,8 @@ const AppRoutes = () => {
     { path: "/nosotros", element: <Nosotros /> },
     { path: "/login", element: <Login /> },
     { path: "/contacto", element: <Contacto /> },
-    { path: "/recovery/:email", element: <Recover /> }
+    { path: "/recovery/:email", element: <Recover /> },
+    { path: "/mercado/:productId", element: <DetallesProducto /> }
   ]);
 
   return routes;

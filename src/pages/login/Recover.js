@@ -76,13 +76,13 @@ function Recover() {
     <div className="bg-gradient-to-r from-white via-[#FFC8E6] to-[#FB99C0] w-screen h-screen flex items-center justify-center">
       <div className="bg-white w-[1000px] lg:h-[500px] flex-shrink-0 flex lg:rounded-md">
         <img
-          className="lg: rounded-l-md h-full lg:w-[430px] object-cover "
+          className="lg:rounded-l-md lg:h-full lg:w-[430px] lg:object-cover lg:block hidden"
           src={calavera}
         />
         <div className="px-20 w-[570px]">
           <form
             onSubmit={handlePasswordReset}
-            className="w-full py-16 font-manjari font-semibold"
+            className="w-full lg:py-16 p-6 font-manjari font-semibold"
           >
             <h1 className="font-manjari font-bold text-xl mb-8">Establece tu nueva contraseña</h1>
             <label>Contraseña</label>
