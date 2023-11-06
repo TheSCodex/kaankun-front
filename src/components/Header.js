@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import usuario from "../assets/usuario.png";
@@ -8,8 +8,54 @@ import {
   faTwitter,
   faWhatsapp,
 } from "@fortawesome/free-brands-svg-icons";
+import { faUserPen } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../Auth.js";
+import { jwtDecode } from "jwt-decode";
+import Profile from "./Profile.js";
 
 function Header() {
+  const { isLoggedIn } = useAuth();
+  const [viewingProfile, setViewingProfile] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState([]);
+
+  const handleViewProfile = () => {
+    setViewingProfile(true);
+  };
+
+  let decodedToken;
+  const userToken = localStorage.getItem("token");
+  if (userToken) {
+    decodedToken = jwtDecode(userToken);
+  }
+
+  const userId = decodedToken ? decodedToken.userId : null;
+
+  useEffect(() => {
+    if(userId != null){
+      getLoggedUser();
+    }
+  }, []);
+
+  const getLoggedUser = async () => {
+    try {
+      setLoading(true);
+      const results = await fetch(`http://localhost:8080/api/users/${userId}`);
+      if (!results.ok) {
+        console.log(results);
+        alert("Algo salió mal");
+      }
+
+      const user = await results.json();
+      console.log(user);
+      setUser(user);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <header className="fixed top-0 bottom-0 w-full z-50 max-h-[73px] ">
       <div className="flex lg:justify-end justify-center bg-black text-white px-8">
@@ -45,14 +91,21 @@ function Header() {
               </nav>
               <div className="lg:w-[1px] lg:h-[40px] h-[20px] mr-[40px] border bg-[rgba(0, 0, 0, 0.17)]"></div>
               <div>
-                <Link to="/login">
-                  <img src={usuario} className="lg:h-6 lg:w-6 h-6 w-6 mb-2"/>
-                </Link>
+                {isLoggedIn ? (
+                  <button onClick={handleViewProfile}>
+                    <FontAwesomeIcon icon={faUserPen} />
+                  </button>
+                ) : (
+                  <Link to="/login">
+                    <img src={usuario} className="lg:h-6 lg:w-6 h-6 w-6 mb-2" />
+                  </Link>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
+      {viewingProfile && <Profile user={user} getLoggedUser={getLoggedUser} setViewingProfile={setViewingProfile}/>}
     </header>
   );
 }
