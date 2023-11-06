@@ -10,6 +10,7 @@ import Nosotros from "./pages/nosotros/Nosotros.js";
 import Contacto from "./pages/contacto/Contacto.js";
 import Canal from './pages/Canal/canal.jsx';
 import Posts from './pages/PostsCanal/PostsCanal.jsx'
+import Tarjeta from "./pages/PostsCanal/tarjeta";
 
 
 const AppRoutes = () => {
@@ -21,7 +22,8 @@ const AppRoutes = () => {
     { path: "/login", element: <Login /> },
     { path: "/contacto", element: <Contacto /> },,
     {path: '/canal', element: <Canal/>},
-    {path: '/post', element: <Posts/>}
+    {path: '/post', element: <Posts/>},
+    {path: '/tarjeta', element:<Tarjeta/>}
   ]);
 
   return routes;
