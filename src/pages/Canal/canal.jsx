@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faEllipsis, faShare, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import faro from "../../assets/faro.jpg";
+import Swal from 'sweetalert2';
 
 
 function Canal() {
@@ -36,13 +37,26 @@ function Canal() {
         console.log('Publicación creada con éxito. ID de la publicación:', data.postId);
         // Cierra el modal
         handleCloseModal();
+        Swal.fire({
+          icon: 'success',
+          title: 'Agregado',
+          text: 'La publicacion fue exitosa'
+        });
       } else {
         const errorData = await response.json();
         console.error('Error al crear la publicación:', errorData.message);
-      }
+      } Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Algo salió mal'
+      });
     } catch (error) {
       console.error('Error de red:', error);
-    }
+    } Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Algo salió mal'
+    });
   };
 
   return (
@@ -57,7 +71,7 @@ function Canal() {
                 Crea tu publicacion
               </button>
             </div>
-            <div className="Post bg-white p-4 mx-5 mb-4 rounded-lg shadow-lg">
+            <div className="Post bg-white p-4 mx-3 mb-4 rounded-lg shadow-lg">
               <Link to='/post'>
                 <h3 className="font-monserrat font-semibold text-lg">Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. </h3>
                 <p className=' text-md'>Fecha</p>
@@ -94,7 +108,7 @@ function Canal() {
         </div>
       </div>
       {isModalVisible && (
-        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-900 bg-opacity-80">
+        <div className="fixed top-0 left-0 w-full h-full lg:mt-[73px] mt-[122px] flex items-center justify-center bg-gray-900 bg-opacity-80">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-xl font-semibold mb-4">Crea tu publicación</h2>
             <form onSubmit={handleSubmit}>
