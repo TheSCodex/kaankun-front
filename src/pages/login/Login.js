@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Auth";
+import { GoogleLoginButton } from "./GoogleLogin";
 import Swal from "sweetalert2";
 import catrin from "../../assets/catrin.jpg";
 import {
@@ -88,6 +89,51 @@ function Login() {
     } catch (error) {
       console.error(error);
       setError("Error interno. Por favor, inténtalo de nuevo más tarde.");
+    }
+  };
+
+  const handleGoogleResponse = async (response) => {
+    if (response.error) {
+      console.error("Google Sign-In Error:", response.error);
+    } else {
+      const googleToken = response.tokenId;
+
+      const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ googleToken }),
+      };
+
+      try {
+        const res = await fetch(
+          "http://localhost:8080/api/users/login-g",
+          requestOptions
+        );
+        if (res.ok) {
+          const data = await res.json();
+          const token = data.token;
+          localStorage.setItem("token", token);
+          console.log("Inicio de Sesión exitoso");
+          login();
+          Swal.fire({
+            title: "Inicio de Sesión exitoso",
+            html: "Redireccionando",
+            icon: "success",
+            timer: 1000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            onBeforeOpen: () => {
+              Swal.showLoading();
+            },
+          }).then(() => {
+            navigate("/");
+          });
+        } else {
+          console.error("Server error:", res.statusText);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
     }
   };
 
@@ -447,11 +493,11 @@ function Login() {
                 </div>
               </div>
               <button
-                  type="submit"
-                  className="p-2 bg-[#24ACF2] w-fit rounded-md text-white font-manjari hover:bg-blue-600 shadow-md shadow-blue-600"
-                >
-                  Validar
-                </button>
+                type="submit"
+                className="p-2 bg-[#24ACF2] w-fit rounded-md text-white font-manjari hover:bg-blue-600 shadow-md shadow-blue-600"
+              >
+                Validar
+              </button>
             </form>
           ) : (
             <form
@@ -522,12 +568,15 @@ function Login() {
                 </button>
               </section>
               <section className="mt-10 flex justify-between">
-                <button className="border rounded-sm bg-white font-manjari text-sm w-[150px] h-[30px] shadow-md p-2">
-                  Login with Google
-                </button>
+                <GoogleLoginButton
+                  clientId="677314278003-2ri0qhn89skjpfbq400n1n9ptl0n04gh.apps.googleusercontent.com"
+                  onSuccess={handleGoogleResponse}
+                  onFailure={handleGoogleResponse}
+                  className="w-[180px] h-[40px] shadow-md p-2"
+                />
                 <button
                   type="submit"
-                  className="rounded-sm bg-[#43B8E8] font-manjari text-sm text-white w-[150px] h-[30px] p-2"
+                  className="rounded-sm bg-[#43B8E8] font-manjari text-sm text-white w-[150px] h-[40px] p-2"
                 >
                   Login
                 </button>

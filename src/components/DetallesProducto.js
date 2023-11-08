@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../Auth.js";
 import { jwtDecode } from "jwt-decode";
 import Header from "./Header.js";
 import Footer from "./Footer.js";
 import EditProductForm from "./EditForm.js";
 
 function DetallesProducto() {
+  const { isLoggedIn } = useAuth();
   const { productId } = useParams();
   const [product, setProduct] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -85,7 +87,7 @@ function DetallesProducto() {
                 ))}
                 <div className="bg-[#00000063] h-[1px] w-[100%] mt-[30%] lg:mt-[50%]"></div>
                 <div>
-                  {isProductOwnedByCurrentUser ? (
+                  {isLoggedIn && isProductOwnedByCurrentUser ? (
                     <>
                       <button className="font-manjari text-lg font-bold mt-2 text-[#43B8E8]" onClick={handleEditProduct}>Editar</button>
                       {isEditing && (
