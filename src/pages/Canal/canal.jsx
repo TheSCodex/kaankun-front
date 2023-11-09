@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faEllipsis, faShare, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
@@ -6,30 +6,53 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import faro from "../../assets/faro.jpg";
 import Swal from 'sweetalert2';
+import { useParams } from 'react-router-dom';
+import { jwtDecode } from "jwt-decode";
 
 
 function Canal() {
+  const { id } = useParams();
   const [isModalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [channel, setChannel] = useState({});
+  const [posts, setPosts] = useState([]);
+
+  let decodedToken;
+  const userToken = localStorage.getItem("token");
+  if (userToken) {
+    decodedToken = jwtDecode(userToken);
+  }
+
+  const userId = decodedToken ? decodedToken.userId : null;
 
   const handleOpenModal = () => {
     setModalVisible(true);
+    console.log(userId);
   };
 
   const handleCloseModal = () => {
     setModalVisible(false);
+    setTitle('');
+    setContent('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/createPost', {
+      const postData = {
+        Id_User: userId,
+        title,
+        content,
+        Id_Channel: id,
+      };
+
+      const response = await fetch('http://localhost:8080/api/createPost', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ title, content }),
+        body: JSON.stringify(postData),
       });
 
       if (response.ok) {
@@ -40,24 +63,67 @@ function Canal() {
         Swal.fire({
           icon: 'success',
           title: 'Agregado',
-          text: 'La publicacion fue exitosa'
+          text: 'La publicación fue exitosa'
         });
+        loadPosts();
       } else {
         const errorData = await response.json();
         console.error('Error al crear la publicación:', errorData.message);
-      } Swal.fire({
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Parece que faltaron datos'
+        });
+      }
+    } catch (error) {
+      console.error('Error de red:', error);
+      Swal.fire({
         icon: 'error',
         title: 'Oops...',
         text: 'Algo salió mal'
       });
+    }
+  };
+
+  const loadPosts = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/GetPostByChannel/${id}`);
+
+      if (response.ok) {
+        const data = await response.json();
+        setPosts(data);
+      } else {
+        console.error('Error al obtener los posts:', response.statusText);
+      }
     } catch (error) {
       console.error('Error de red:', error);
-    } Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: 'Algo salió mal'
-    });
+    }
   };
+
+  
+
+  const loadChannel = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/ChannelsByID/${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+          const firstChannel = data[0]; // Accede al primer elemento del arreglo
+          setChannel(firstChannel);
+        }
+      } else {
+        console.error('Error al obtener los datos del canal', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error de red:', error);
+    }
+  }
+
+
+  useEffect(() => {
+    loadPosts();
+    loadChannel();
+  }, [id]);
 
   return (
     <div className='bg-[#E7E7E7] lg:h-full h-full font-montserrat lg:mt-[73px] mt-[122px]'>
@@ -66,44 +132,56 @@ function Canal() {
         <div>
           <div className="">
             <div className=" flex flex-col justify-center  w-4/6 shrink-0 h-[200px]">
-              <h1 className='font-semibold text-left text-5xl mt-5 ml-4'>Kaan-Kun</h1>
-              <button onClick={handleOpenModal} className="mt-4 ml-4 w-3/5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl">
-                Crea tu publicacion
+              <h1 className='font-semibold text-left text-5xl mt-5 ml-4'>  {channel && channel.nameC}
+              </h1>
+              <button onClick={handleOpenModal} className="mt-4 ml-4 w-3/5 bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl">
+                Crea tu publicación
               </button>
             </div>
-            <div className="Post bg-white p-4 mx-3 mb-4 rounded-lg shadow-lg">
-              <Link to='/post'>
-                <h3 className="font-monserrat font-semibold text-lg">Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. </h3>
-                <p className=' text-md'>Fecha</p>
-                <div className='flex items-center mt-4'>
-                  <div className='mr-8 flex items-center'>
-                    <FontAwesomeIcon icon={faThumbsUp} className="text-xl" />
-                    <p className='mx-3 text-md'>Me gusta</p>
+            {posts.map((post) => (
+              <div key={post.Id} className="Post  bg-white p-4 mx-3 mb-4 rounded-lg shadow-lg">
+                <Link to={`/post/${post.Id}`} >
+                  <h2 className="font-monserrat font-semibold text-xl">
+                    {post.userName ? post.userName : "User Guest"}
+                  </h2>
+                  <h2 className="font-monserrat font-semibold text-lg">{post.title}</h2>
+                  <h3 className="font-monserrat font-medium text-lg max-w-full overflow-ellipsis overflow-hidden whitespace-nowrap">
+                    {post.content}
+                  </h3>
+                  <p className='text-md'>{new Date(post.created).toLocaleDateString()}</p>
+                  <div className='flex items-center my-4'>
+                    <div className='mr-8 flex items-center'>
+                      <FontAwesomeIcon icon={faThumbsUp} className="text-xl" />
+                      <p className='mx-3 text-md'>Me gusta</p>
+                    </div>
+                    <div className='mr-8 flex items-center'>
+                      <FontAwesomeIcon icon={faComment} className="text-xl" />
+                      <p className='mx-3 text-md'>Comentar</p>
+                    </div>
+                    <div className='mr-8 flex items-center'>
+                      <FontAwesomeIcon icon={faShare} className="text-xl" />
+                      <p className='mx-3 text-md'>Compartir</p>
+                    </div>
+                    <div className='mr-8 flex items-center'>
+                      <FontAwesomeIcon icon={faEllipsis} className="text-xl" />
+                    </div>
                   </div>
-                  <div className='mr-8 flex items-center'>
-                    <FontAwesomeIcon icon={faComment} className="text-xl" />
-                    <p className='mx-3 text-md'>Comentar</p>
-                  </div>
-                  <div className='mr-8 flex items-center'>
-                    <FontAwesomeIcon icon={faShare} className="text-xl" />
-                    <p className='mx-3 text-md'>Compartir</p>
-                  </div>
-                  <div className='mr-8 flex items-center'>
-                    <FontAwesomeIcon icon={faEllipsis} className="text-xl" />
-                  </div>
-                </div>
-              </Link>
-            </div>
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
         <div>
-          <div className="foroCanal lg:justify-center items-center flex lg:flex-row flex-col lg:mb-[30px] mb-[300px] lg:mt-[340px] mt-[760px] h-[300px] border w-full">
+          <div className="foroCanal lg:justify-center items-center flex lg:flex-row flex-row lg:mb-[30px] mb-[300px] lg:mt-[340px] mt-[760px] h-[300px] border w-full">
             <div className="fotoCanal h-full">
               <img
                 src={faro}
                 className="h-[300px] w-[350px] lg:rounded-l-md object-cover"
               />
             </div>
+            {/* <div className="info bg-black h-[300px] w-[350px] lg:rounded-l-md object-cover flex flex-col">
+              * Contenido del div de info *
+            </div> */}
           </div>
         </div>
       </div>
@@ -134,7 +212,7 @@ function Canal() {
                   className="w-full border rounded-md p-2"
                 />
               </div>
-              <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl">
+              <button type="submit" className="bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl">
                 Crear Publicación
               </button>
             </form>

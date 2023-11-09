@@ -24,8 +24,8 @@ const AppRoutes = () => {
     { path: "/nosotros", element: <Nosotros /> },
     { path: "/login", element: <Login /> },
     { path: "/contacto", element: <Contacto /> },,
-    {path: '/canal', element: <Canal/>},
-    {path: '/post', element: <Posts/>},
+    {path: '/canal/:id', element: <Canal/>},
+    {path: '/post/:id', element: <Posts/>},
     {path: '/tarjeta', element:<Tarjeta/>},
     { path: "/recovery/:email", element: <Recover /> },
     { path: "/mercado/:productId", element: <DetallesProducto /> }
