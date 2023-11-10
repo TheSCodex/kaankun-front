@@ -34,6 +34,8 @@ function Mercado() {
   const [datos, setDatos] = useState([]);
   const [userDatos, setUserDatos] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   let decodedToken;
   const userToken = localStorage.getItem("token");
@@ -52,13 +54,30 @@ function Mercado() {
       }
 
       const products = await result.json();
-      console.log(products);
-      setDatos(products);
+
+      const filteredProducts = products.filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          (selectedCategory === "" || product.categoria === selectedCategory)
+      );
+      
+      
+      setDatos(filteredProducts);
     } catch (error) {
       console.log("Ha ocurrido un error:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    getProducts();
+  }, [searchTerm, selectedCategory]);
+
+  const handleCategoryFilter = (category) => {
+    setSelectedCategory(category, () => {
+      getProducts();
+    });
   };
 
   const getUserProducts = async () => {
@@ -130,12 +149,20 @@ function Mercado() {
               });
             } else {
               console.error("Fallo al crear producto");
-              Swal.fire("Error", "Ha ocurrido un error al crear el producto", "error");
+              Swal.fire(
+                "Error",
+                "Ha ocurrido un error al crear el producto",
+                "error"
+              );
             }
           })
           .catch((error) => {
             console.error("Fallo al crear producto:", error);
-            Swal.fire("Error", "Ha ocurrido un error al crear el producto", "error");
+            Swal.fire(
+              "Error",
+              "Ha ocurrido un error al crear el producto",
+              "error"
+            );
           });
       } catch (error) {
         console.error("Error subiendo imagen o generando URL:", error);
@@ -162,7 +189,9 @@ function Mercado() {
     setShopping(true);
     setSelling(false);
     setSidebarOpen(false);
+    setSelectedCategory(""); 
   };
+  
 
   const handleSelling = () => {
     setSelling(true);
@@ -222,7 +251,10 @@ function Mercado() {
                   <input
                     className="bg-[#D9D9D9] h-[35px] w-[245px] p-2 pl-12 font-montserrat rounded-sm"
                     placeholder="Buscar en el mercado"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
+
                   <i>
                     <img
                       src={lupa}
@@ -276,25 +308,38 @@ function Mercado() {
                       Categorías
                     </h1>
                   </div>
-                  <button className="flex items-center mt-8">
+                  <button
+                    onClick={() => handleCategoryFilter("Ropa y Accesorios")}
+                    className="flex items-center mt-8"
+                  >
                     <img src={ropa} className="h-[25px] mr-6" />
                     <h2 className="font-montserrat font-semibold">
                       Ropa y Accesorios
                     </h2>
                   </button>
-                  <button className="flex items-center mt-10">
+
+                  <button
+                    onClick={() => handleCategoryFilter("Artesanías")}
+                    className="flex items-center mt-10"
+                  >
                     <img src={artesania} className="h-[25px] mr-6" />
                     <h2 className="font-montserrat font-semibold">
                       Artesanías
                     </h2>
                   </button>
-                  <button className="flex items-center mt-10">
+                  <btton
+                    onClick={() => handleCategoryFilter("Gastronomía")}
+                    className="flex items-center mt-10"
+                  >
                     <img src={gastronomia} className="h-[25px] mr-6" />
                     <h2 className="font-montserrat font-semibold">
                       Gastronomía
                     </h2>
-                  </button>
-                  <button className="flex items-center mt-10">
+                  </btton>
+                  <button
+                    onClick={() => handleCategoryFilter("Otros")}
+                    className="flex items-center mt-10"
+                  >
                     <img src={miscelaneo} className="h-[25px] mr-6" />
                     <h2 className="font-montserrat font-semibold">Otros</h2>
                   </button>
@@ -423,26 +468,40 @@ function Mercado() {
                         </form>
                       </div>
                       <div className="mt-6">
-                      {userDatos.length > 0 ? (
-                        <>
-                          <h1 className="font-manjari text-xl font-bold mb-1 mt-6">Tus productos:</h1>
-                          <section className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                            {userDatos.map((product) => (
-                              <div key={product.id} className="flex flex-col justify-center p-4">
-                                <Link to={`/mercado/${product.id}`}>
-                                  <img src={product.imageUrl} alt={product.name} />
-                                </Link>
-                                <p className="font-montserrat font-bold text-xl mt-2">${product.precio}MXN</p>
-                                <h2 className="font-montserrat font-semibold">{product.name}</h2>
-                                <p className="line-clamp-2">{product.description}</p>
-                              </div>
-                            ))}
-                          </section>
-                        </>
-                      ) : (
-                        <h1>No se encontraron productos.</h1>
-                      )}
-                    </div>
+                        {userDatos.length > 0 ? (
+                          <>
+                            <h1 className="font-manjari text-xl font-bold mb-1 mt-6">
+                              Tus productos:
+                            </h1>
+                            <section className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                              {userDatos.map((product) => (
+                                <div
+                                  key={product.id}
+                                  className="flex flex-col justify-center p-4"
+                                >
+                                  <Link to={`/mercado/${product.id}`}>
+                                    <img
+                                      src={product.imageUrl}
+                                      alt={product.name}
+                                    />
+                                  </Link>
+                                  <p className="font-montserrat font-bold text-xl mt-2">
+                                    ${product.precio}MXN
+                                  </p>
+                                  <h2 className="font-montserrat font-semibold">
+                                    {product.name}
+                                  </h2>
+                                  <p className="line-clamp-2">
+                                    {product.description}
+                                  </p>
+                                </div>
+                              ))}
+                            </section>
+                          </>
+                        ) : (
+                          <h1>No se encontraron productos.</h1>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
