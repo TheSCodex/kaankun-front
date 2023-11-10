@@ -8,6 +8,7 @@ import faro from "../../assets/faro.jpg";
 import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
+import lupa from "../../assets/lupa.png";
 
 
 function Canal() {
@@ -17,6 +18,8 @@ function Canal() {
   const [content, setContent] = useState('');
   const [channel, setChannel] = useState({});
   const [posts, setPosts] = useState([]);
+
+
 
   let decodedToken;
   const userToken = localStorage.getItem("token");
@@ -100,8 +103,6 @@ function Canal() {
     }
   };
 
-  
-
   const loadChannel = async () => {
     try {
       const response = await fetch(`http://localhost:8080/api/ChannelsByID/${id}`);
@@ -171,7 +172,21 @@ function Canal() {
             ))}
           </div>
         </div>
-        <div>
+        <div className="buscador ml-auto">
+          <div className="relative mt-9 ml-9 w-4/5">
+            <div className="relative flex items-center">
+              <img
+                src={lupa}
+                className="left-3 top-2 h-[18px] absolute"
+              />
+              <input
+                type="text"
+                className="pl-10 w-full border rounded-md p-2"
+                placeholder="Buscar publicaciones"
+                value={''}
+              />
+            </div>
+          </div>
           <div className="foroCanal lg:justify-center items-center flex lg:flex-row flex-row lg:mb-[30px] mb-[300px] lg:mt-[340px] mt-[760px] h-[300px] border w-full">
             <div className="fotoCanal h-full">
               <img
