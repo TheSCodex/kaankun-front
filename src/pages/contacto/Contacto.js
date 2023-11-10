@@ -1,6 +1,10 @@
 import React, { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome, faPhone, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { 
+faHome, 
+faPhone, 
+faEnvelope 
+} from "@fortawesome/free-solid-svg-icons";
 import {
   faFacebook,
   faTwitter,
@@ -9,6 +13,8 @@ import {
 import cancun from "../../assets/cancun.jpg";
 import emailjs from "@emailjs/browser";
 import Swal from "sweetalert2";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
 
 const Contacto = () => {
   const form = useRef();
@@ -120,6 +126,7 @@ const Contacto = () => {
   return (
     <>
       <div className="bg-[#E7E7E7] lg:h-[600px] h-[1000px]">
+        <Header/>
         <div className="relative">
           <div
             className="flex pl-8 pr-8 items-center justify-between foto bg-cover w-full shrink-0 h-[600px]"
@@ -257,6 +264,7 @@ const Contacto = () => {
             </div>
           </div>
         </div>
+        <Footer/>
       </div>
     </>
   );
