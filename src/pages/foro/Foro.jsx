@@ -62,8 +62,6 @@ function Foro() {
 
   }, []);
 
-
-
   return (
     <div className='bg-[#E7E7E7] lg:h-full h-full font-montserrat lg:mt-[73px] mt-[122px] '>
       <Header />

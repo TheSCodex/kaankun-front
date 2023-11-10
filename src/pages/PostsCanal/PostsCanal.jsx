@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleUser, faComment, faEllipsis, faShare, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import { useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import Cun from "../../assets/Cun.jpg";
 
 
 
@@ -107,7 +108,7 @@ function PostsCanal() {
       <Header />
       <div className="relative">
         {post && (
-          <div className=" flex flex-col justify-center pl-8 pr-8 foto bg-cover w-full shrink-0 h-[200px] bg-black">
+          <div className=" flex flex-col justify-center pl-8 pr-8 foto bg-cover w-full shrink-0 h-[200px] " style={{ backgroundImage: `url(${Cun})` }}>
             <h1 className='mt-12 font-montserrat font-semibold text-3xl text-white text-left '>{post.channelName}</h1>
           </div>
         )}
