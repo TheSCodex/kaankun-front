@@ -99,7 +99,7 @@ function Foro() {
                   <FontAwesomeIcon icon={faCircleUser} className="text-4xl mr-2" />
                   <div>
                     <h3 className="font-bold font-montserrat text-xl">
-                      {post.userName ? post.userName : "User Guest"}
+                      {post.userName || post.name ? post.userName || post.name : "User Guest"}
                     </h3>
                     <p className="font-montserrat text-sm">{new Date(post.created).toLocaleDateString()}</p>
                   </div>

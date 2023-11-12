@@ -179,7 +179,7 @@ function Canal() {
               >
                 <Link to={`/post/${post.Id}`}>
                   <h2 className="font-monserrat font-semibold text-xl">
-                    {post.userName ? post.userName : "User Guest"}
+                    {post.userName || post.name ? post.userName || post.name : "User Guest"}
                   </h2>
                   <h2 className="font-monserrat font-semibold text-lg">
                     {post.title}
