@@ -13,10 +13,12 @@ import faro from "../../assets/faro.jpg";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../../Auth.js";
 import lupa from "../../assets/lupa.png";
 
 function Canal() {
   const { id } = useParams();
+  const { isLoggedIn } = useAuth();
   const [isModalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -36,11 +38,6 @@ function Canal() {
     setModalVisible(true);
     console.log(userId);
   };
-
-
-
-
-  
 
   const handleCloseModal = () => {
     setModalVisible(false);
@@ -101,25 +98,30 @@ function Canal() {
 
   const loadPosts = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/GetPostByChannel/${id}`);
-      
+      const response = await fetch(
+        `http://localhost:8080/api/GetPostByChannel/${id}`
+      );
+
       if (response.ok) {
         const data = await response.json();
         // Filtra los posts según el texto de búsqueda
-        const filteredPosts = data.filter(post => post.title.toLowerCase().includes(searchText.toLowerCase()) || post.content.toLowerCase().includes(searchText.toLowerCase()));
+        const filteredPosts = data.filter(
+          (post) =>
+            post.title.toLowerCase().includes(searchText.toLowerCase()) ||
+            post.content.toLowerCase().includes(searchText.toLowerCase())
+        );
         setPosts(filteredPosts);
       } else {
-        console.error('Error al obtener los posts:', response.statusText);
+        console.error("Error al obtener los posts:", response.statusText);
       }
     } catch (error) {
-      console.error('Error de red:', error);
+      console.error("Error de red:", error);
     }
   };
-  
+
   useEffect(() => {
     loadPosts();
   }, [id, searchText]);
-  
 
   const loadChannel = async () => {
     try {
@@ -159,12 +161,16 @@ function Canal() {
                 {" "}
                 {channel && channel.nameC}
               </h1>
-              <button
-                onClick={handleOpenModal}
-                className="mt-4 ml-4 w-3/5 bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
-              >
-                Crea tu publicación
-              </button>
+              {isLoggedIn ? (
+                <button
+                  onClick={handleOpenModal}
+                  className="mt-4 ml-4 w-3/5 bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
+                >
+                  Crea tu publicación
+                </button>
+              ) : (
+                ""
+              )}
             </div>
             {posts.map((post) => (
               <div
@@ -220,7 +226,7 @@ function Canal() {
             </div>
           </div>
           <div className="foroCanal lg:justify-center items-center flex lg:flex-row flex-row lg:mb-[30px] mb-[300px] lg:mt-[340px] mt-[760px] h-[300px] border w-full">
-            <div className="fotoCanal h-full">
+            {/* <div className="fotoCanal h-full">
               <img
                 src={faro}
                 className="h-[300px] w-[350px] lg:rounded-l-md object-cover"

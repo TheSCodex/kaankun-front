@@ -309,7 +309,7 @@ function Mercado() {
                     </h1>
                   </div>
                   <button
-                    onClick={() => handleCategoryFilter("Ropa y Accesorios")}
+                    onClick={() => handleCategoryFilter("ropa")}
                     className="flex items-center mt-8"
                   >
                     <img src={ropa} className="h-[25px] mr-6" />
@@ -319,7 +319,7 @@ function Mercado() {
                   </button>
 
                   <button
-                    onClick={() => handleCategoryFilter("Artesanías")}
+                    onClick={() => handleCategoryFilter("artesanias")}
                     className="flex items-center mt-10"
                   >
                     <img src={artesania} className="h-[25px] mr-6" />
@@ -327,17 +327,17 @@ function Mercado() {
                       Artesanías
                     </h2>
                   </button>
-                  <btton
-                    onClick={() => handleCategoryFilter("Gastronomía")}
+                  <button
+                    onClick={() => handleCategoryFilter("gastronomia")}
                     className="flex items-center mt-10"
                   >
                     <img src={gastronomia} className="h-[25px] mr-6" />
                     <h2 className="font-montserrat font-semibold">
                       Gastronomía
                     </h2>
-                  </btton>
+                  </button>
                   <button
-                    onClick={() => handleCategoryFilter("Otros")}
+                    onClick={() => handleCategoryFilter("otros")}
                     className="flex items-center mt-10"
                   >
                     <img src={miscelaneo} className="h-[25px] mr-6" />
