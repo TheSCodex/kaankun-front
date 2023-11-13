@@ -12,7 +12,7 @@ import lupa from "../../assets/lupa.png";
 import chan from "../../assets/blog-solid.svg"
 import publs from "../../assets/envelopes-bulk-solid.svg"
 import rules from "../../assets/scale-balanced-solid.svg"
-import serpen from "../../assets/_25335a0d-a346-4728-ab7a-3a014f1279e8.jpeg";
+import serpen from "../../assets/aaaaa.png";
 
 function Canal() {
   const { id } = useParams();
@@ -201,7 +201,7 @@ function Canal() {
             </i>
           </div>
           <div className="mt-10">
-            <button
+          <Link to="/foro"
               onClick={''}
               className="items-center focus:outline-none w-full"
             >
@@ -211,7 +211,7 @@ function Canal() {
                   Canales
                 </h1>
               </div>
-            </button>
+            </Link>
           </div>
           {isLoggedIn ? (
             <div className="mt-8">
@@ -265,12 +265,14 @@ function Canal() {
           <div className="p-6 lg:pl-14">
             <div className=" flex flex-col justify-center  w-4/6 shrink-0 h-[200px]">
               <h1 className="font-semibold text-left text-5xl mt-5 ml-4">
-                {" "}
                 {channel && channel.nameC}
               </h1>
+              <h2 className="font-semibold text-left text-2xl mt-2 ml-4">
+                {channel && channel.descriptionC}
+              </h2>
               <button
                 onClick={handleOpenModal}
-                className="mt-4 ml-4 w-3/5 bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
+                className="my-4 ml-4 w-3/5 bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
               >
                 Crea tu publicación
               </button>

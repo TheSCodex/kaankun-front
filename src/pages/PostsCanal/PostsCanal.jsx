@@ -13,7 +13,7 @@ import lupa from "../../assets/lupa.png";
 import chan from "../../assets/blog-solid.svg"
 import publs from "../../assets/envelopes-bulk-solid.svg"
 import rules from "../../assets/scale-balanced-solid.svg"
-import serpen from "../../assets/_25335a0d-a346-4728-ab7a-3a014f1279e8.jpeg";
+import serpen from "../../assets/aaaaa.png";
 
 function PostsCanal() {
   const { id } = useParams();
@@ -253,8 +253,8 @@ function PostsCanal() {
       >
         <div>
           <div className="flex mb-4">
-            <h1 className="mr-20 font-bold font-montserrat text-2xl">
-              Foro: Canales
+            <h1 className="mr-20  font-bold font-montserrat text-2xl">
+              Foro: Posts
             </h1>
             <img src={serpen} className="h-[60px]" />
           </div>
