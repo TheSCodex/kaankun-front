@@ -30,6 +30,7 @@ function Header() {
   }
 
   const userId = decodedToken ? decodedToken.userId : null;
+  const source = decodedToken ? decodedToken.source : null;
 
   useEffect(() => {
     if(userId != null){
@@ -40,13 +41,17 @@ function Header() {
   const getLoggedUser = async () => {
     try {
       setLoading(true);
-      const results = await fetch(`http://localhost:8080/api/users/${userId}`);
-      if (!results.ok) {
-        console.log(results);
-        alert("Algo salió mal");
+      let user;
+      if (decodedToken.source === 'Google') {
+        user = decodedToken;
+      } else {
+        const results = await fetch(`http://localhost:8080/api/users/${userId}`);
+        if (!results.ok) {
+          console.log(results);
+          alert("Algo salió mal");
+        }
+        user = await results.json();
       }
-
-      const user = await results.json();
       console.log(user);
       setUser(user);
     } catch (error) {
@@ -55,6 +60,7 @@ function Header() {
       setLoading(false);
     }
   };
+  
 
   return (
     <header className="fixed top-0 bottom-0 w-full z-50 max-h-[73px] ">
@@ -105,7 +111,7 @@ function Header() {
           </div>
         </div>
       </div>
-      {viewingProfile && <Profile user={user} getLoggedUser={getLoggedUser} setViewingProfile={setViewingProfile}/>}
+      {viewingProfile && <Profile user={user} getLoggedUser={getLoggedUser} setViewingProfile={setViewingProfile} source={source}/>}
     </header>
   );
 }
