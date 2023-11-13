@@ -5,7 +5,7 @@ import { useAuth } from "../Auth";
 import { storage } from "../firebaseConfig.js";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-function Profile({ user, setViewingProfile, getLoggedUser }) {
+function Profile({ user, setViewingProfile, getLoggedUser, source }) {
   const { logout } = useAuth();
   const [editing, setEditing] = useState(false);
   const [image, setImage] = useState(null);
@@ -153,24 +153,29 @@ function Profile({ user, setViewingProfile, getLoggedUser }) {
           </a>
           <img
             className="w-32 h-32 rounded-full mx-auto"
-            src={user.profileImage}
+            src={user.profileImage || user.picture}
             alt="Profile picture"
           />
           <h2 className="text-center text-2xl font-semibold mt-3">
-            {user.userName}
+            {user.userName || user.name}
           </h2>
           <section className="flex justify-center mt-1">
             <p className="text-center text-gray-600 mr-2">{user.name}</p>
             <p className="text-center text-gray-600">{user.lastName}</p>
           </section>
           <div className="flex flex-col items-center mt-3">
-            <button
-              onClick={() => {
-                setEditing(true);
-              }}
-            >
-              <FontAwesomeIcon className="text-xs" icon={faPen} />
-            </button>
+            {source === "Google" ? (
+              ""
+            ) : (
+              <button
+                onClick={() => {
+                  setEditing(true);
+                }}
+              >
+                <FontAwesomeIcon className="text-xs" icon={faPen} />
+              </button>
+            )}
+
             <a
               onClick={handleLogout}
               className="text-blue-500 hover:text-blue-700 mt-2 mx-3 hover:cursor-pointer"
@@ -179,8 +184,14 @@ function Profile({ user, setViewingProfile, getLoggedUser }) {
             </a>
           </div>
           <div className="mt-5">
-            <h3 className="text-xl font-semibold">Bio</h3>
-            <p className="text-gray-600 mt-2">{user.bio}</p>
+            {source === "Google" ? (
+              ""
+            ) : (
+              <>
+                <h3 className="text-xl font-semibold">Bio</h3>
+                <p className="text-gray-600 mt-2">{user.bio}</p>
+              </>
+            )}
           </div>
         </>
       )}
