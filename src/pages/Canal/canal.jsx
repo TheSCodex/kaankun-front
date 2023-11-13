@@ -8,7 +8,6 @@ import Footer from "../../components/Footer";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { useAuth } from "../../Auth.js";
 import lupa from "../../assets/lupa.png";
 import chan from "../../assets/blog-solid.svg"
 import publs from "../../assets/envelopes-bulk-solid.svg"
@@ -272,19 +271,15 @@ function Canal() {
               <h1 className="font-semibold text-left text-5xl mt-5 ml-4">
                 {channel && channel.nameC}
               </h1>
-              <h2 className="font-semibold text-left text-2xl mt-2 ml-4">
-                {channel && channel.descriptionC}
+              <h2 className="font-semibold text-left text-xl mt-2 ml-4">
+                {channel.descriptionC}
               </h2>
-              {isLoggedIn ? (
-                <button
-                  onClick={handleOpenModal}
-                  className="my-4 ml-4 w-3/5 bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
-                >
-                  Crea tu publicación
-                </button>
-              ) : (
-                ""
-              )}
+              <button
+                onClick={handleOpenModal}
+                className="my-4 ml-4 w-3/5 bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
+              >
+                Crea tu publicación
+              </button>
             </div>
             {posts.map((post) => (
               <div
@@ -340,11 +335,8 @@ function Canal() {
             </div>
           </div>
           <div className="foroCanal lg:justify-center items-center flex lg:flex-row flex-row lg:mb-[30px] mb-[300px] lg:mt-[340px] mt-[760px] h-[300px] border w-full">
-            {/* <div className="fotoCanal h-full">
-              <img
-                src={faro}
-                className="h-[300px] w-[350px] lg:rounded-l-md object-cover"
-              />
+            <div className="fotoCanal h-full">
+              
             </div>
             {/* <div className="info bg-black h-[300px] w-[350px] lg:rounded-l-md object-cover flex flex-col">
               * Contenido del div de info *
