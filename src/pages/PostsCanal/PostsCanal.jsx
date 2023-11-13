@@ -6,6 +6,7 @@ import { faCircleUser, faComment, faEllipsis, faShare, faThumbsUp } from '@forta
 import { useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Cun from "../../assets/Cun.jpg";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../Auth.js";
 import { jwtDecode } from "jwt-decode";
 import lupa from "../../assets/lupa.png";
@@ -18,13 +19,15 @@ function PostsCanal() {
   const { id } = useParams();
   const { isLoggedIn } = useAuth();
   const [isReplyVisible, setReplyVisible] = useState(false);
-  const [isCommentVisible, setCommentVisible] = useState(false)
+  const [isCommentVisible, setCommentVisible] = useState(false);
   const [content, setContent] = useState('');
   const [commentId, setCommentId] = useState(null);
   const [comments, setComments] = useState([]);
+  const [replys, setReplys] = useState([]);
   const [post, setPost] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [meGusta, setMeGusta] = useState(false);
 
 
   let decodedToken;
@@ -74,6 +77,49 @@ function PostsCanal() {
     getCommentsByPost();
   }, [id]);
 
+  useEffect(() => {
+    getReplys();
+  }, []);
+
+  const getReplys = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/GetReplys/${commentId}`);
+
+      if (response.ok) {
+        const data = await response.json();
+        setReplys(data);
+      } else {
+        const errorData = await response.json();
+        console.error('Error al obtener las respuestas:', errorData.message);
+      }
+    } catch (error) {
+      console.error('Error de red:', error);
+    }
+  }
+
+  const BotMegusta = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/GetMegustas/Like', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: id,
+          //Aqui debe ir el ID_post
+        }),
+      });
+
+      if (response.ok) {
+        setMeGusta(!meGusta); 
+      } else {
+        console.error('Error al dar like:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error al dar like:', error);
+    }
+  };
+
   const handleOpenReply = (commentId) => {
     setCommentId(commentId);
     setCommentVisible(true);
@@ -110,7 +156,7 @@ function PostsCanal() {
         Swal.fire({
           icon: 'success',
           title: 'Agregado',
-          text: 'La publicación fue exitosa'
+          text: 'Se añadio el comentario'
         });
         getCommentsByPost();
       } else {
@@ -158,9 +204,9 @@ function PostsCanal() {
         Swal.fire({
           icon: 'success',
           title: 'Agregado',
-          text: 'La publicación fue exitosa'
+          text: 'La respuesta fue exitosa'
         });
-        getCommentsByPost();
+        getReplys();
       } else {
         const errorData = await response.json();
         console.error('Error al comentar:', errorData.message);
@@ -227,8 +273,7 @@ function PostsCanal() {
             </i>
           </div>
           <div className="mt-10">
-            <button
-              onClick={''}
+            <Link to="/foro"
               className="items-center focus:outline-none w-full"
             >
               <div className="flex">
@@ -237,23 +282,8 @@ function PostsCanal() {
                   Canales
                 </h1>
               </div>
-            </button>
+            </Link>
           </div>
-          {isLoggedIn ? (
-            <div className="mt-8">
-              <button
-                onClick={''}
-                className="items-center focus:outline-none w-full"
-              >
-                <div className="flex">
-                  <img src={publs} className="h-[30px] mr-6" />
-                  <h1 className="font-montserrat font-semibold">Publicar</h1>
-                </div>
-              </button>
-            </div>
-          ) : (
-            ""
-          )}
           <div className="mt-12">
             <div className="bg-[#000] h-[.8px] w-[100%]"></div>
             <div className="mb-6 flex items-center">
@@ -266,7 +296,7 @@ function PostsCanal() {
               1. Respeto y Cortesía:
             </h2>
             <p>
-              - No se permiten insultos, ofensas o discriminaciones por motivos
+              - No se permiten insultos, ofensas o discriminaciones por motivos.
             </p>
 
             <h2 className="font-montserrat font-semibold">
@@ -277,10 +307,24 @@ function PostsCanal() {
             </p>
 
             <h2 className="font-montserrat font-semibold">
-              2. Relevancia del Tema:
+              3. No Spam ni Publicidad No Solicitada:
             </h2>
             <p>
-              - Asegúrate de que tus mensajes estén relacionados al tema del canal.
+              - Evita el spam y la publicidad no solicitada.
+            </p>
+
+            <h2 className="font-montserrat font-semibold">
+              4. Uso Adecuado del Lenguaje:
+            </h2>
+            <p>
+              - Expresa tus ideas de manera clara y evita mayúsculas innecesarias.
+            </p>
+
+            <h2 className="font-montserrat font-semibold">
+              5. Colaboración y Participación Activa:
+            </h2>
+            <p>
+              - Contribuye positivamente y participa activamente en las discusiones.
             </p>
 
           </div>
@@ -304,8 +348,8 @@ function PostsCanal() {
               <h3 className="font-monserrat font-medium text-lg">{post.content}</h3>
               <p className='font-monserrat text-md'>{new Date(post.created).toLocaleDateString()}</p>
               <div className='flex items-center mt-4'>
-                <div className='mr-8 flex items-center'>
-                  <FontAwesomeIcon icon={faThumbsUp} className="text-xl" />
+                <div className='mr-8 flex items-center' postId={post.id} onClick={BotMegusta} style={{ cursor: 'pointer' }}>
+                  <FontAwesomeIcon icon={faThumbsUp} className={`text-xl ${meGusta ? 'text-blue-500' : ''}`} />
                   <p className='mx-3 text-md'>Me gusta</p>
                 </div>
                 <div className='comentar mr-8 flex items-center'>
@@ -373,15 +417,21 @@ function PostsCanal() {
                   <FontAwesomeIcon icon={faComment} className="text-xl" />
                   <p className="mx-3 text-md" onClick={() => OpenReply(comment.Id_Comment)}>Responder</p>
                 </div>
+                {getReplys ? (
+                  <p className="hover:underline" onClick={() => getReplys(comment.Id_Comment)}>Ver respuestas</p>
+                ) : (
+                  ('')
+                )}
               </div>
               {isReplyVisible && commentId === commentId && (
-                <div className="Respuesta bg-white rounded-lg shadow-lg p-6 flex flex-col items-start mb-4 mx-8 w-[60%]">
+                <div >
+                  <div className="Linea separadora bg-[#43B8E8] h-[3px] mt-4 w-[%] mx-4"></div>
                   <textarea
                     rows="4"
                     placeholder="Postea tu respuesta!"
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    className="w-full"
+                    className="w-full mt-4"
                   />
                   <div className='flex items-center mt-4'>
                     <div className='mr-8 flex items-center'>
