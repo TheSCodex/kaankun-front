@@ -105,7 +105,7 @@ function Canal() {
       
       if (response.ok) {
         const data = await response.json();
-        // Filtra los posts según el texto de búsqueda
+        // Filtra los posts 
         const filteredPosts = data.filter(post => post.title.toLowerCase().includes(searchText.toLowerCase()) || post.content.toLowerCase().includes(searchText.toLowerCase()));
         setPosts(filteredPosts);
       } else {
