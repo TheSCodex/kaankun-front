@@ -8,7 +8,6 @@ import Footer from "../../components/Footer";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { useAuth } from "../../Auth.js";
 import lupa from "../../assets/lupa.png";
 import chan from "../../assets/blog-solid.svg"
 import publs from "../../assets/envelopes-bulk-solid.svg"
