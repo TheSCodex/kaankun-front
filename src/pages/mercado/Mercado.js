@@ -21,7 +21,6 @@ import gastronomia from "../../assets/gastronomia.png";
 import miscelaneo from "../../assets/miscelaneo.png";
 
 function Mercado() {
-  const serverUrl = "http://localhost:8080/api/products";
   const { isLoggedIn } = useAuth();
   const [shopping, setShopping] = useState(true);
   const [selling, setSelling] = useState(false);
@@ -43,7 +42,7 @@ function Mercado() {
     decodedToken = jwtDecode(userToken);
   }
   const userId = decodedToken ? decodedToken.userId : null;
-  console.log(userId);
+  const source = decodedToken ? decodedToken.source : null;
 
   const getProducts = async () => {
     setLoading(true);
@@ -60,8 +59,7 @@ function Mercado() {
           product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
           (selectedCategory === "" || product.categoria === selectedCategory)
       );
-      
-      
+
       setDatos(filteredProducts);
     } catch (error) {
       console.log("Ha ocurrido un error:", error);
@@ -83,16 +81,29 @@ function Mercado() {
   const getUserProducts = async () => {
     setLoading(true);
     try {
-      const result = await fetch(
-        `http://localhost:8080/api/products/user/${userId}`
-      );
-      if (!result.ok) {
-        console.log("Algo salió mal");
-      }
+      if (source === "Google") {
+        const result = await fetch(
+          `http://localhost:8080/api/products-g/user/${userId}`
+        );
+        if (!result.ok) {
+          console.log("Algo salió mal");
+        }
 
-      const userProducts = await result.json();
-      console.log(userProducts);
-      setUserDatos(userProducts);
+        const userProducts = await result.json();
+        console.log(userProducts);
+        setUserDatos(userProducts);
+      } else {
+        const result = await fetch(
+          `http://localhost:8080/api/products/user/${userId}`
+        );
+        if (!result.ok) {
+          console.log("Algo salió mal");
+        }
+
+        const userProducts = await result.json();
+        console.log(userProducts);
+        setUserDatos(userProducts);
+      }
     } catch (error) {
       console.log("Ha ocurrido un error:", error);
     } finally {
@@ -107,6 +118,9 @@ function Mercado() {
   useEffect(() => {
     getProducts();
   }, []);
+
+  const serverUrl = "http://localhost:8080/api/products";
+  const serverGoogleUrl = "http://localhost:8080/api/products-g";
 
   const createProduct = async (e) => {
     e.preventDefault();
@@ -124,46 +138,89 @@ function Mercado() {
           imageUrl,
         };
 
-        fetch(serverUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(productData),
-        })
-          .then((response) => {
-            if (response.ok) {
-              console.log("Producto creado exitosamente");
-              Swal.fire({
-                title: "Producto creado",
-                text: "El producto ha sido creado exitosamente",
-                icon: "success",
-              }).then(() => {
-                setName("");
-                setDescription("");
-                setPrecio("");
-                setCategoria("");
-                setImage(null);
-                getUserProducts();
-                getProducts();
-              });
-            } else {
-              console.error("Fallo al crear producto");
+        if (source === 'Google') {
+          fetch(serverGoogleUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(productData),
+          })
+            .then((response) => {
+              if (response.ok) {
+                console.log("Producto creado exitosamente");
+                Swal.fire({
+                  title: "Producto creado",
+                  text: "El producto ha sido creado exitosamente",
+                  icon: "success",
+                }).then(() => {
+                  setName("");
+                  setDescription("");
+                  setPrecio("");
+                  setCategoria("");
+                  setImage(null);
+                  getUserProducts();
+                  getProducts();
+                });
+              } else {
+                console.error("Fallo al crear producto");
+                Swal.fire(
+                  "Error",
+                  "Ha ocurrido un error al crear el producto",
+                  "error"
+                );
+              }
+            })
+            .catch((error) => {
+              console.error("Fallo al crear producto:", error);
               Swal.fire(
                 "Error",
                 "Ha ocurrido un error al crear el producto",
                 "error"
               );
-            }
+            });
+        } else {
+          fetch(serverUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(productData),
           })
-          .catch((error) => {
-            console.error("Fallo al crear producto:", error);
-            Swal.fire(
-              "Error",
-              "Ha ocurrido un error al crear el producto",
-              "error"
-            );
-          });
+            .then((response) => {
+              if (response.ok) {
+                console.log("Producto creado exitosamente");
+                Swal.fire({
+                  title: "Producto creado",
+                  text: "El producto ha sido creado exitosamente",
+                  icon: "success",
+                }).then(() => {
+                  setName("");
+                  setDescription("");
+                  setPrecio("");
+                  setCategoria("");
+                  setImage(null);
+                  getUserProducts();
+                  getProducts();
+                });
+              } else {
+                console.error("Fallo al crear producto");
+                Swal.fire(
+                  "Error",
+                  "Ha ocurrido un error al crear el producto",
+                  "error"
+                );
+              }
+            })
+            .catch((error) => {
+              console.error("Fallo al crear producto:", error);
+              Swal.fire(
+                "Error",
+                "Ha ocurrido un error al crear el producto",
+                "error"
+              );
+            });
+        }
       } catch (error) {
         console.error("Error subiendo imagen o generando URL:", error);
       }
@@ -189,9 +246,8 @@ function Mercado() {
     setShopping(true);
     setSelling(false);
     setSidebarOpen(false);
-    setSelectedCategory(""); 
+    setSelectedCategory("");
   };
-  
 
   const handleSelling = () => {
     setSelling(true);

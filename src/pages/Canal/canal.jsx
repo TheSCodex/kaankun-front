@@ -8,7 +8,6 @@ import Footer from "../../components/Footer";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { useAuth } from "../../Auth.js";
 import lupa from "../../assets/lupa.png";
 import chan from "../../assets/blog-solid.svg"
 import publs from "../../assets/envelopes-bulk-solid.svg"
@@ -293,7 +292,7 @@ function Canal() {
               >
                 <Link to={`/post/${post.Id}`}>
                   <h2 className="font-monserrat font-semibold text-xl">
-                    {post.userName ? post.userName : "User Guest"}
+                    {post.userName || post.name ? post.userName || post.name : "User Guest"}
                   </h2>
                   <h2 className="font-monserrat font-semibold text-lg">
                     {post.title}
