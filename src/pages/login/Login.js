@@ -93,7 +93,6 @@ function Login() {
   };
 
   const handleGoogleResponse = async (response) => {
-    console.log(response);
     if (response.error) {
       console.error("Google Sign-In Error:", response.error);
     } else {
