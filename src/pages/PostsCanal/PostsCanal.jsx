@@ -26,7 +26,7 @@ function PostsCanal() {
   const [replys, setReplys] = useState([]);
   const [post, setPost] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState('');
   const [meGusta, setMeGusta] = useState(false);
 
 
@@ -59,10 +59,16 @@ function PostsCanal() {
   const getCommentsByPost = async () => {
     try {
       const response = await fetch(`http://localhost:8080/api/getCommentsByPost/${id}`);
-
+  
       if (response.ok) {
         const data = await response.json();
-        setComments(data);
+        console.log('Datos recibidos:', data);
+  
+        const filteredComments = data.filter(
+          (comments) =>
+            comments.content.toLowerCase().includes(searchText.toLowerCase())
+        );  
+        setComments(filteredComments);
       } else {
         const errorData = await response.json();
         console.error('Error al obtener comentarios:', errorData.message);
@@ -71,6 +77,7 @@ function PostsCanal() {
       console.error('Error de red:', error);
     }
   };
+  
 
   useEffect(() => {
     GetPost();
