@@ -19,4 +19,16 @@
       }
     }
   }
+
+
+  .map-css {
+    height: 230px;
+    width: 100%;
+  }
+  
+  @media (min-width: 768px) {
+    .map-css {
+      width: 50%;
+    }
+  }
   
