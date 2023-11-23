@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment, faEllipsis, faShare, faThumbsUp, } from "@fortawesome/free-solid-svg-icons";
+import { faComment, faEllipsis, faThumbsUp, } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../Auth.js";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
@@ -32,6 +32,8 @@ function Canal() {
   }
 
   const userId = decodedToken ? decodedToken.userId : null;
+  const source = decodedToken ? decodedToken.source : null;
+
 
   const handleOpenModal = () => {
     setModalVisible(true);

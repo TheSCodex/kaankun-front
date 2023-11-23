@@ -37,6 +37,8 @@ function PostsCanal() {
   }
 
   const userId = decodedToken ? decodedToken.userId : null;
+  const source = decodedToken ? decodedToken.source : null;
+
 
   const GetPost = async () => {
     try {
@@ -366,7 +368,7 @@ function PostsCanal() {
                 {/* <div className='mr-8 flex items-center'>
                   <FontAwesomeIcon icon={faShare} className="text-xl" />
                   <p className='mx-3 text-md'>Compartir</p>
-                </div> */}
+                </div> */} 
                 <div className='mr-8 flex items-center'>
                   <FontAwesomeIcon icon={faEllipsis} className="text-xl" />
                 </div>
