@@ -20,10 +20,9 @@ import ReactMapGL, { Marker } from "react-map-gl";
 const DetallesProducto = () => {
   const { isLoggedIn } = useAuth();
   const { productId } = useParams();
-  const [product, setProduct] = useState(null); 
+  const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  
 
   useEffect(() => {
     fetchProduct();
@@ -56,6 +55,14 @@ const DetallesProducto = () => {
 
   const handleCancelEdit = () => {
     setIsEditing(false);
+  };
+
+  const handleContactarVendedor = () => {
+    const numeroVendedor = product ? product[0].tel : '';
+    const url = `https://wa.me/${numeroVendedor}`;
+
+    // Abrir enlace de WhatsApp en una nueva ventana o pestaña
+    window.open(url, '_blank');
   };
 
   const token = localStorage.getItem("token");
@@ -141,9 +148,7 @@ const DetallesProducto = () => {
                         longitude={-86.8312242}
                         offsetLeft={-20}
                         offsetTop={-10}
-                      >
-                        
-                      </Marker>
+                      ></Marker>
                     </ReactMapGL>
                   </div>
 
@@ -172,6 +177,15 @@ const DetallesProducto = () => {
                       <TelegramIcon size={32} round />
                     </TelegramShareButton>
                   </div>
+
+                  {isLoggedIn && (
+                    <button
+                      className="font-manjari text-lg font-bold mt-2 text-[#43B8E8] bg-transparent hover:bg-blue-500  hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+                      onClick={handleContactarVendedor}
+                    >
+                      Contactar al Vendedor 
+                    </button>
+                  )}
                 </div>
               </div>
             </section>
