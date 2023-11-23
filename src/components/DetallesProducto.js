@@ -52,9 +52,11 @@ function DetallesProducto() {
     decodedToken = jwtDecode(userToken);
   }
   const currentUserId = decodedToken ? decodedToken.userId : null;
-
-  const isProductOwnedByCurrentUser =
-    product.length > 0 && product[0].userId === currentUserId;
+  const source = decodedToken ? decodedToken.source : null;
+  
+  const isProductOwnedByCurrentUser = product.length > 0 &&
+    (source === 'Google' ? product[0].googleId === currentUserId : product[0].userId === currentUserId);
+  
 
   return (
     <>
