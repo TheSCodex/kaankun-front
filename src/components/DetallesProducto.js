@@ -15,18 +15,19 @@ import {
   WhatsappIcon,
   TelegramIcon,
 } from "react-share";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import ReactMapGL, { Marker } from "react-map-gl";
 
 const DetallesProducto = () => {
   const { isLoggedIn } = useAuth();
   const { productId } = useParams();
-  const [product, setProduct] = useState([]);
+  const [product, setProduct] = useState(null); 
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  
 
   useEffect(() => {
     fetchProduct();
-  }, []);
+  }, [productId]);
 
   const fetchProduct = async () => {
     try {
@@ -44,7 +45,7 @@ const DetallesProducto = () => {
         setLoading(false);
       }
     } catch (error) {
-      console.error("Error tratando de recuperar producto:", error);
+      console.error("Error tratando de recuperar producto:", error.message);
       setLoading(false);
     }
   };
@@ -73,7 +74,7 @@ const DetallesProducto = () => {
         <div className="bg-[#E7E7E7] h-full overflow-auto no-scrollbar">
           <div className="flex lg:flex-row flex-col lg:justify-between w-full p-10">
             <section>
-              {product.map((product) => (
+              {product && product.map((product) => (
                 <img
                   key={product.id}
                   className="lg:w-[700px] lg:h-[550px]"
@@ -84,7 +85,7 @@ const DetallesProducto = () => {
             </section>
             <section>
               <div className="bg-white lg:h-full lg:w-[520px] p-8">
-                {product.map((product) => (
+                {product && product.map((product) => (
                   <React.Fragment key={product.id}>
                     <h2 className="text-xl font-bold font-montserrat">
                       {product.name}
@@ -127,24 +128,23 @@ const DetallesProducto = () => {
                       <strong>Ubicacion del Vendedor</strong>
                     </h3>
 
-                    <LoadScript googleMapsApiKey="AIzaSyDXq0aYxIepKo7GzPwJuX2d9tXfWHYsxdo">
-                      <GoogleMap
-                        mapContainerStyle={{ height: "300px", width: "100%" }}
-                        zoom={15}
-                        center={{
-                          lat: 21.0814137,
-                          lng: -86.8312242,
-                        }}
+                    <ReactMapGL
+                      mapboxApiAccessToken="pk.eyJ1IjoicnZpbGxlZ2FzcyIsImEiOiJjbG9yYmJic3UwbzF5MmtsYTJka2c1eXB3In0.SV9Agi8TCgERUtXpUUNf_A"
+                      width="100%"
+                      height="300px"
+                      latitude={21.0814137}
+                      longitude={-86.8312242}
+                      zoom={15}
+                    >
+                      <Marker
+                        latitude={21.0814137}
+                        longitude={-86.8312242}
+                        offsetLeft={-20}
+                        offsetTop={-10}
                       >
-                        <Marker
-                          position={{
-                            lat: 21.0814137,
-                            lng: -86.8312242,
-                          }}
-                          title="Ubicación del Vendedor"
-                        />
-                      </GoogleMap>
-                    </LoadScript>
+                        
+                      </Marker>
+                    </ReactMapGL>
                   </div>
 
                   <div className="flex space-x-4 mt-4 ">

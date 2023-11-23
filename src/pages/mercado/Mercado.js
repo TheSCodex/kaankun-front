@@ -36,7 +36,7 @@ function Mercado() {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-
+  const [tel, setTel] = useState('');
   let decodedToken;
   const userToken = localStorage.getItem("token");
   if (userToken) {
@@ -60,8 +60,7 @@ function Mercado() {
           product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
           (selectedCategory === "" || product.categoria === selectedCategory)
       );
-      
-      
+
       setDatos(filteredProducts);
     } catch (error) {
       console.log("Ha ocurrido un error:", error);
@@ -122,6 +121,7 @@ function Mercado() {
           precio,
           categoria,
           imageUrl,
+          tel,  
         };
 
         fetch(serverUrl, {
@@ -143,6 +143,7 @@ function Mercado() {
                 setDescription("");
                 setPrecio("");
                 setCategoria("");
+                setTel("")
                 setImage(null);
                 getUserProducts();
                 getProducts();
@@ -189,9 +190,8 @@ function Mercado() {
     setShopping(true);
     setSelling(false);
     setSidebarOpen(false);
-    setSelectedCategory(""); 
+    setSelectedCategory("");
   };
-  
 
   const handleSelling = () => {
     setSelling(true);
@@ -424,6 +424,13 @@ function Mercado() {
                                 placeholder="Precio"
                                 value={precio}
                                 onChange={(e) => setPrecio(e.target.value)}
+                                className="w-full p-2 border rounded-md"
+                              />
+                              <input
+                                type="text"
+                                placeholder="Número de teléfono"
+                                value={tel}
+                                onChange={(e) => setTel(e.target.value)}
                                 className="w-full p-2 border rounded-md"
                               />
                             </div>
