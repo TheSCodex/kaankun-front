@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHref } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -161,14 +161,14 @@ function Inicio() {
               <div className="flex mb-4 justify-between">
                 <section>
                   <h1 className="text-4xl font-semibold mb-4">El foro</h1>
-                  <button className="bg-[#43B8E8] mb-5 text-white px-6 py-1 rounded-md hover:bg-blue-600">
-                    Seguir
-                  </button>
+                  <Link to={'/foro'} className="bg-[#43B8E8] mb-5 text-white px-6 py-1 rounded-md hover:bg-blue-600">
+                    Visitar
+                  </Link>
                 </section>
                 <p className="text-xs text-center">
                   150
                   <br />
-                  Miembros
+                  Posts
                 </p>
               </div>
               <div>

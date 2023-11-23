@@ -96,14 +96,14 @@ function Login() {
     if (response.error) {
       console.error("Google Sign-In Error:", response.error);
     } else {
-      const googleToken = response.tokenId;
-
+      const googleToken = response.credential;
+      console.log("Google Token:", googleToken);
       const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ googleToken }),
+        body: JSON.stringify({ googleToken, rememberMe }),
       };
-
+      console.log("Request options:", requestOptions);
       try {
         const res = await fetch(
           "http://localhost:8080/api/users/login-g",
@@ -567,6 +567,11 @@ function Login() {
                   </a>
                 </button>
               </section>
+              {error && (
+                <>
+                <p className="font-manjari text-center text-sm text-red-500 mt-2">{error}</p>
+                </>
+              )}
               <section className="mt-10 flex justify-between">
                 <GoogleLoginButton
                   clientId="677314278003-2ri0qhn89skjpfbq400n1n9ptl0n04gh.apps.googleusercontent.com"
