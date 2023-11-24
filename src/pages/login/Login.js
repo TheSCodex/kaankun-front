@@ -596,7 +596,7 @@ function Login() {
                   type="submit"
                   className="rounded-sm bg-[#43B8E8] font-manjari text-sm text-white w-[150px] h-[40px] p-2"
                 >
-                  Login
+                  Acceder
                 </button>
               </section>
               <section className="mt-12 font-manjari flex justify-center">
