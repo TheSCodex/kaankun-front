@@ -276,7 +276,7 @@ function Mercado() {
         description,
         precio,
         categoria,
-        tel,
+        tel: tel.toString(),
         ...locationData,
         imageUrl,
       };

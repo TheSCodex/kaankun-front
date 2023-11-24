@@ -139,7 +139,12 @@ function Login() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
+  
+    if (!validatePassword(password)) {
+      setError("La contraseña debe tener entre 6 y 12 carácteres.");
+      return;
+    }
+  
     try {
       const response = await fetch("http://localhost:8080/api/users", {
         method: "POST",
@@ -148,7 +153,7 @@ function Login() {
         },
         body: JSON.stringify({ userName, email, password, name, lastName }),
       });
-
+  
       if (response.ok) {
         Swal.fire({
           title: "Registro Exitoso",
@@ -165,7 +170,7 @@ function Login() {
         });
       } else {
         const text = await response.text();
-
+  
         if (text) {
           const data = JSON.parse(text);
           setError(data.message);
@@ -178,6 +183,12 @@ function Login() {
       setError("Error interno. Por favor, inténtalo de nuevo más tarde.");
     }
   };
+  
+  const validatePassword = (password) => {
+    const passwordWithoutSpaces = password.trim();
+      return passwordWithoutSpaces.length >= 6 && passwordWithoutSpaces.length <= 12;
+  };
+  
 
   const handleRecoverPassword = async (e) => {
     e.preventDefault();
@@ -281,7 +292,6 @@ function Login() {
       newCode[index] = value;
       setRecoveryCode(newCode);
 
-      // Verificar si el elemento existe antes de enfocarlo
       const nextInputElement = document.getElementById(
         `recoveryCode${index + 1}`
       );
@@ -292,7 +302,7 @@ function Login() {
   };
   return (
     <div className="bg-gradient-to-r from-white via-[#bedaf3] to-[#d7e1ed] w-screen h-screen flex items-center justify-center">
-      <div className="bg-white lg:w-[1000px] w-[350px] lg:h-[500px] flex flex-col lg:flex-row lg:rounded-md">
+      <div className="bg-white lg:w-[1000px] w-[350px] lg:h-[520px] flex flex-col lg:flex-row lg:rounded-md">
         <img
           className="lg:rounded-l-md lg:h-full lg:w-[430px] lg:object-cover lg:block hidden"
           src={catrin}
@@ -377,6 +387,9 @@ function Login() {
                   )}
                 </span>
               </section>
+              {error && (
+                <p className="text-red-500 font-manjari">{error}</p>
+              )}
               <label>Confirmar Contraseña</label>
               <section className="flex relative items-center">
                 <FontAwesomeIcon icon={faLock} className="absolute left-3" />

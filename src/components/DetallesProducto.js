@@ -58,11 +58,11 @@ const DetallesProducto = () => {
   };
 
   const handleContactarVendedor = () => {
-    const numeroVendedor = product ? product[0].tel : '';
+    const numeroVendedor = product ? product[0].tel : "";
     const url = `https://wa.me/${numeroVendedor}`;
 
     // Abrir enlace de WhatsApp en una nueva ventana o pestaña
-    window.open(url, '_blank');
+    window.open(url, "_blank");
   };
 
   const token = localStorage.getItem("token");
@@ -74,10 +74,13 @@ const DetallesProducto = () => {
   }
   const currentUserId = decodedToken ? decodedToken.userId : null;
   const source = decodedToken ? decodedToken.source : null;
-  
-  const isProductOwnedByCurrentUser = product.length > 0 &&
-    (source === 'Google' ? product[0].googleId === currentUserId : product[0].userId === currentUserId);
-  
+
+  const isProductOwnedByCurrentUser =
+    product &&
+    product.length > 0 &&
+    (source === "Google"
+      ? product[0].googleId === currentUserId
+      : product[0].userId === currentUserId);
 
   return (
     <>
@@ -86,30 +89,32 @@ const DetallesProducto = () => {
         <div className="bg-[#E7E7E7] h-full overflow-auto no-scrollbar">
           <div className="flex lg:flex-row flex-col lg:justify-between w-full p-10">
             <section>
-              {product && product.map((product) => (
-                <img
-                  key={product.id}
-                  className="lg:w-[700px] lg:h-[550px]"
-                  src={product.imageUrl}
-                  alt={product.name}
-                />
-              ))}
+              {product &&
+                product.map((product) => (
+                  <img
+                    key={product.id}
+                    className="lg:w-[700px] lg:h-[550px]"
+                    src={product.imageUrl}
+                    alt={product.name}
+                  />
+                ))}
             </section>
             <section>
               <div className="bg-white lg:h-full lg:w-[520px] p-8">
-                {product && product.map((product) => (
-                  <React.Fragment key={product.id}>
-                    <h2 className="text-xl font-bold font-montserrat">
-                      {product.name}
-                    </h2>
-                    <p className="font-montserrat mt-2">
-                      {product.description}
-                    </p>
-                    <p className="font-montserrat font-bold mt-2">
-                      ${product.precio}MXN
-                    </p>
-                  </React.Fragment>
-                ))}
+                {product &&
+                  product.map((product) => (
+                    <React.Fragment key={product.id}>
+                      <h2 className="text-xl font-bold font-montserrat">
+                        {product.name}
+                      </h2>
+                      <p className="font-montserrat mt-2">
+                        {product.description}
+                      </p>
+                      <p className="font-montserrat font-bold mt-2">
+                        ${product.precio}MXN
+                      </p>
+                    </React.Fragment>
+                  ))}
                 <div className="bg-[#00000063] h-[1px] w-[100%] mt-[30%] lg:mt-[50%]"></div>
                 <div>
                   {isLoggedIn && currentUserId && (
@@ -188,7 +193,7 @@ const DetallesProducto = () => {
                       className="font-manjari text-lg font-bold mt-2 text-[#43B8E8] bg-transparent hover:bg-blue-500  hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
                       onClick={handleContactarVendedor}
                     >
-                      Contactar al Vendedor 
+                      Contactar al Vendedor
                     </button>
                   )}
                 </div>
