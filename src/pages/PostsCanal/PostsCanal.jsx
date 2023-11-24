@@ -61,15 +61,15 @@ function PostsCanal() {
   const getCommentsByPost = async () => {
     try {
       const response = await fetch(`http://localhost:8080/api/getCommentsByPost/${id}`);
-  
+
       if (response.ok) {
         const data = await response.json();
         console.log('Datos recibidos:', data);
-  
+
         const filteredComments = data.filter(
           (comments) =>
             comments.content.toLowerCase().includes(searchText.toLowerCase())
-        );  
+        );
         setComments(filteredComments);
       } else {
         const errorData = await response.json();
@@ -79,7 +79,7 @@ function PostsCanal() {
       console.error('Error de red:', error);
     }
   };
-  
+
 
   useEffect(() => {
     GetPost();
@@ -120,7 +120,7 @@ function PostsCanal() {
       });
 
       if (response.ok) {
-        setMeGusta(!meGusta); 
+        setMeGusta(!meGusta);
       } else {
         console.error('Error al dar like:', response.statusText);
       }
@@ -143,13 +143,13 @@ function PostsCanal() {
         cancelButtonText: 'Regresar',
         cancelButtonColor: '#FF0000',
         preConfirm: () => {
-          window.location.href = '/login'; 
+          window.location.href = '/login';
         }
       });
     }
   };
-  
-  
+
+
 
   const handleCloseReply = () => {
     setCommentId(null);
@@ -188,10 +188,19 @@ function PostsCanal() {
       } else {
         const errorData = await response.json();
         console.error('Error al comentar:', errorData.message);
-      }
+      } Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ha ocurrido un error con la red'
+      });
     } catch (error) {
       console.error('Error de red:', error);
     }
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Por favor rellena todos los campos'
+    });
   };
 
   const OpenReply = (commentId) => {
@@ -396,6 +405,7 @@ function PostsCanal() {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 className="w-full"
+                required
               />
               <div className='flex items-center mt-4'>
                 <div className='mr-8 flex items-center'>
@@ -411,7 +421,7 @@ function PostsCanal() {
                     className="text-blue-500"
                     onClick={handleCloseReply}
                   >
-                    Cancelar
+                    Cerrar
                   </button>
                 </div>
               </div>
@@ -469,7 +479,7 @@ function PostsCanal() {
                         className="text-blue-500"
                         onClick={CloseReply}
                       >
-                        Cancelar
+                        Cerrar
                       </button>
                     </div>
                   </div>

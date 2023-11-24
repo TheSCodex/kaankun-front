@@ -28,7 +28,8 @@ const AppRoutes = () => {
     {path: '/post/:id', element: <Posts/>},
     {path: '/tarjeta', element:<Tarjeta/>},
     { path: "/recovery/:email", element: <Recover /> },
-    { path: "/mercado/:productId", element: <DetallesProducto /> }
+    { path: "/mercado/:productId", element: <DetallesProducto /> },
+    { path: "/mercado/:productId", element: <DetallesProducto /> },
   ]);
 
   return routes;
