@@ -130,9 +130,26 @@ function PostsCanal() {
   };
 
   const handleOpenReply = (commentId) => {
-    setCommentId(commentId);
-    setCommentVisible(true);
+    if (isLoggedIn) {
+      setCommentId(commentId);
+      setCommentVisible(true);
+    } else {
+      Swal.fire({
+        title: 'Debes estar logueado para realizar esta acción',
+        icon: 'warning',
+        confirmButtonText: 'Login',
+        confirmButtonColor: '#1E90FF',
+        showCancelButton: true,
+        cancelButtonText: 'Regresar',
+        cancelButtonColor: '#FF0000',
+        preConfirm: () => {
+          window.location.href = '/login'; 
+        }
+      });
+    }
   };
+  
+  
 
   const handleCloseReply = () => {
     setCommentId(null);
@@ -359,16 +376,12 @@ function PostsCanal() {
               <div className='flex items-center mt-4'>
                 <div className='mr-8 flex items-center' postId={post.id} onClick={BotMegusta} style={{ cursor: 'pointer' }}>
                   <FontAwesomeIcon icon={faThumbsUp} className={`text-xl ${meGusta ? 'text-blue-500' : ''}`} />
-                  <p className='mx-3 text-md'>Me gusta</p>
+                  <p className='mx-3 text-md' onClick={BotMegusta}>Me gusta</p>
                 </div>
                 <div className='comentar mr-8 flex items-center'>
                   <FontAwesomeIcon icon={faComment} className="text-xl" />
                   <p className='mx-3 text-md' onClick={handleOpenReply}>Comentar</p>
                 </div>
-                {/* <div className='mr-8 flex items-center'>
-                  <FontAwesomeIcon icon={faShare} className="text-xl" />
-                  <p className='mx-3 text-md'>Compartir</p>
-                </div> */} 
                 <div className='mr-8 flex items-center'>
                   <FontAwesomeIcon icon={faEllipsis} className="text-xl" />
                 </div>
