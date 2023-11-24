@@ -30,6 +30,7 @@ function Mercado() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [precio, setPrecio] = useState("");
+  const [tel, setTel] = useState("");
   const [categoria, setCategoria] = useState("");
   const [image, setImage] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -112,18 +113,17 @@ function Mercado() {
   const handleMapClick = (e) => {
     const { lng, lat } = e.lngLat;
     console.log("Clicked at:", lng, lat);
-  
+
     console.log("Updating latitude and longitude in locationData");
     setLocationData((prevData) => ({
       ...prevData,
       latitude: lat,
       longitude: lng,
     }));
-  
+
     console.log("Adding marker to mapRef");
     markerRef.current.setLngLat([lng, lat]).addTo(mapRef.current);
   };
-  
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -138,28 +138,31 @@ function Mercado() {
       console.log("Empty searchQuery, returning early");
       return;
     }
-  
-    const accessToken = "pk.eyJ1IjoicnZpbGxlZ2FzcyIsImEiOiJjbG9yYmJic3UwbzF5MmtsYTJka2c1eXB3In0.SV9Agi8TCgERUtXpUUNf_A";
+
+    const accessToken =
+      "pk.eyJ1IjoicnZpbGxlZ2FzcyIsImEiOiJjbG9yYmJic3UwbzF5MmtsYTJka2c1eXB3In0.SV9Agi8TCgERUtXpUUNf_A";
     const boundingBox = "-88.3992,18.1372,-86.1659,21.2202";
-  
+
     const geocodingEndpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${searchQuery}.json`;
-    const response = await fetch(`${geocodingEndpoint}?access_token=${accessToken}&bbox=${boundingBox}`);
+    const response = await fetch(
+      `${geocodingEndpoint}?access_token=${accessToken}&bbox=${boundingBox}`
+    );
     const data = await response.json();
-  
+
     if (data.features && data.features.length > 0) {
       const [longitude, latitude] = data.features[0].center;
-  
+
       if (mapRef.current && markerRef.current) {
         console.log("Flying to location and adding marker to mapRef");
         mapRef.current.flyTo({
           center: [longitude, latitude],
           zoom: 16,
         });
-  
+
         markerRef.current
           .setLngLat([longitude, latitude])
           .addTo(mapRef.current);
-  
+
         console.log("Updating latitude and longitude in locationData");
         setLocationData((prevData) => ({
           ...prevData,
@@ -169,7 +172,7 @@ function Mercado() {
       }
     }
   };
-  
+
   const getProducts = async () => {
     setLoading(true);
     try {
@@ -251,33 +254,43 @@ function Mercado() {
   const createProduct = async (e) => {
     e.preventDefault();
     if (showMap && (!locationData.latitude || !locationData.longitude)) {
-      console.log("Latitude or longitude is missing. Please select a location.");
+      console.log(
+        "Latitude or longitude is missing. Please select a location."
+      );
       return;
     }
 
     if (image) {
       const storageRef = ref(storage, `images/${image.name}`);
       try {
+        const loadingAlert = Swal.fire({
+          title: "Cargando...",
+          text: "Por favor, espera",
+          icon: "info",
+          showConfirmButton: false,
+          allowOutsideClick: false,
+        });
         const snapshot = await uploadBytes(storageRef, image);
         const imageUrl = await getDownloadURL(snapshot.ref);
 
-      await new Promise(resolve => {
-        setLocationData(prevData => ({
-          ...prevData,
-          imageUrl,
-        }));
-        resolve();
-      });
+        await new Promise((resolve) => {
+          setLocationData((prevData) => ({
+            ...prevData,
+            imageUrl,
+          }));
+          resolve();
+        });
 
-      const productDataWithLocation = {
-        userId,
-        name,
-        description,
-        precio,
-        categoria,
-        ...locationData,
-        imageUrl,
-      };
+        const productDataWithLocation = {
+          userId,
+          name,
+          description,
+          precio,
+          categoria,
+          ...locationData,
+          imageUrl,
+          tel,
+        };
 
         if (source === "Google") {
           fetch(serverGoogleUrl, {
@@ -291,6 +304,7 @@ function Mercado() {
               if (response.ok) {
                 console.log("Producto creado exitosamente");
                 console.log("Contenido enviado:", productDataWithLocation);
+                loadingAlert.close();
                 Swal.fire({
                   title: "Producto creado",
                   text: "El producto ha sido creado exitosamente",
@@ -300,13 +314,19 @@ function Mercado() {
                   setDescription("");
                   setPrecio("");
                   setCategoria("");
+                  setTel("");
                   setImage(null);
+                  const thumbnailContainer = document.getElementById("thumbnail-container");
+                  if (thumbnailContainer) {
+                    thumbnailContainer.innerHTML = "";
+                  }
                   getUserProducts();
                   getProducts();
                   setShowMap(false);
                 });
               } else {
                 console.error("Fallo al crear producto");
+                loadingAlert.close();
                 Swal.fire(
                   "Error",
                   "Ha ocurrido un error al crear el producto",
@@ -316,6 +336,7 @@ function Mercado() {
             })
             .catch((error) => {
               console.error("Fallo al crear producto:", error);
+              loadingAlert.close();
               Swal.fire(
                 "Error",
                 "Ha ocurrido un error al crear el producto",
@@ -333,6 +354,7 @@ function Mercado() {
             .then((response) => {
               if (response.ok) {
                 console.log("Producto creado exitosamente");
+                loadingAlert.close();
                 Swal.fire({
                   title: "Producto creado",
                   text: "El producto ha sido creado exitosamente",
@@ -342,7 +364,12 @@ function Mercado() {
                   setDescription("");
                   setPrecio("");
                   setCategoria("");
+                  setTel("");
                   setImage(null);
+                  const thumbnailContainer = document.getElementById("thumbnail-container");
+                  if (thumbnailContainer) {
+                    thumbnailContainer.innerHTML = "";
+                  }
                   getUserProducts();
                   getProducts();
                   setShowMap(false);
@@ -358,6 +385,7 @@ function Mercado() {
             })
             .catch((error) => {
               console.error("Fallo al crear producto:", error);
+              loadingAlert.close();
               Swal.fire(
                 "Error",
                 "Ha ocurrido un error al crear el producto",
@@ -375,14 +403,19 @@ function Mercado() {
     const selectedImage = e.target.files[0];
     setImage(selectedImage);
     const thumbnailContainer = document.getElementById("thumbnail-container");
+
     if (thumbnailContainer) {
-      thumbnailContainer.innerHTML = "";
-      const thumbnailImage = document.createElement("img");
-      thumbnailImage.className = "max-w-full h-auto mt-2";
-      thumbnailImage.style.maxWidth = "85px";
-      thumbnailImage.style.maxHeight = "85px";
-      thumbnailImage.src = URL.createObjectURL(selectedImage);
-      thumbnailContainer.appendChild(thumbnailImage);
+      if (selectedImage) {
+        thumbnailContainer.innerHTML = "";
+        const thumbnailImage = document.createElement("img");
+        thumbnailImage.className = "max-w-full h-auto mt-2";
+        thumbnailImage.style.maxWidth = "85px";
+        thumbnailImage.style.maxHeight = "100px";
+        thumbnailImage.src = URL.createObjectURL(selectedImage);
+        thumbnailContainer.appendChild(thumbnailImage);
+      } else {
+        thumbnailContainer.innerHTML = "";
+      }
     }
   };
 
@@ -589,10 +622,6 @@ function Mercado() {
                           })
                         )}
                       </div>
-                      {/* <div
-                        id="map-container"
-                        style={{ height: "400px", width: "100%" }}
-                      ></div> */}
                     </>
                   ) : (
                     <div>
@@ -608,6 +637,13 @@ function Mercado() {
                                 placeholder="Nombre del producto"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
+                                className="w-full p-2 border rounded-md"
+                              />
+                              <input
+                                type="number"
+                                placeholder="Número de telefono"
+                                value={tel}
+                                onChange={(e) => setTel(e.target.value)}
                                 className="w-full p-2 border rounded-md"
                               />
                               <select
@@ -657,10 +693,10 @@ function Mercado() {
                                   style={{ cursor: "pointer" }}
                                 />
                               </div>
-                              <div
-                                id="thumbnail-container"
-                                className="lg:ml-12 ml-32"
-                              ></div>
+                                <div
+                                  id="thumbnail-container"
+                                  className="lg:ml-12 ml-32"
+                                ></div>
                             </div>
                           </div>
                           <button
