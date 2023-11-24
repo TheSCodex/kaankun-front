@@ -151,7 +151,7 @@ const DetallesProducto = () => {
                   ))}
                 <div className="bg-[#00000063] h-[1px] w-[100%] mt-[30%] lg:mt-[20%]"></div>
                 <div>
-                  {isLoggedIn && currentUserId && (
+                  {isLoggedIn && isProductOwnedByCurrentUser && (
                     <>
                       <button
                         className="font-manjari text-lg font-bold mt-2 text-[#43B8E8]"
