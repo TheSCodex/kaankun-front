@@ -9,9 +9,9 @@ import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import lupa from "../../assets/lupa.png";
-import chan from "../../assets/blog-solid.svg"
-import publs from "../../assets/envelopes-bulk-solid.svg"
-import rules from "../../assets/scale-balanced-solid.svg"
+import chan from "../../assets/blog-solid.svg";
+import publs from "../../assets/envelopes-bulk-solid.svg";
+import rules from "../../assets/scale-balanced-solid.svg";
 import serpen from "../../assets/aaaaa.png";
 
 function Canal() {
@@ -24,6 +24,7 @@ function Canal() {
   const [posts, setPosts] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [noResults, setNoResults] = useState(false);
 
   let decodedToken;
   const userToken = localStorage.getItem("token");
@@ -99,7 +100,9 @@ function Canal() {
 
   const loadPosts = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/GetPostByChannel/${id}`);
+      const response = await fetch(
+        `http://localhost:8080/api/GetPostByChannel/${id}`
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -110,6 +113,7 @@ function Canal() {
             post.content.toLowerCase().includes(searchText.toLowerCase())
         );
         setPosts(filteredPosts);
+        setNoResults(filteredPosts.length === 0); // Establece noResults en true si no hay coincidencias
       } else {
         console.error("Error al obtener los posts:", response.statusText);
       }
@@ -121,7 +125,6 @@ function Canal() {
   useEffect(() => {
     loadPosts();
   }, [id, searchText]);
-  
 
   const loadChannel = async () => {
     try {
@@ -155,8 +158,9 @@ function Canal() {
       <Header />
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className={`lg:hidden absolute top-10 left-10 z-50 ${sidebarOpen ? "" : ""
-          }`}
+        className={`lg:hidden absolute top-10 left-10 z-50 ${
+          sidebarOpen ? "" : ""
+        }`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -183,7 +187,9 @@ function Canal() {
         </svg>
       </button>
       <div
-        className={`lg:fixed bg-white border lg:w-[325px] p-6 lg:h-screen ${sidebarOpen ? "" : "hidden"} lg:block`}
+        className={`lg:fixed bg-white border lg:w-[325px] p-6 lg:h-screen ${
+          sidebarOpen ? "" : "hidden"
+        } lg:block`}
       >
         <div>
           <div className="flex mb-4">
@@ -200,22 +206,18 @@ function Canal() {
               onChange={(e) => setSearchText(e.target.value)}
             />
             <i>
-              <img
-                src={lupa}
-                className="left-3 top-2 h-[18px] absolute"
-              />
+              <img src={lupa} className="left-3 top-2 h-[18px] absolute" />
             </i>
           </div>
           <div className="mt-10">
-          <Link to="/foro"
-              onClick={''}
+            <Link
+              to="/foro"
+              onClick={""}
               className="items-center focus:outline-none w-full"
             >
               <div className="flex">
                 <img src={chan} className="h-[30px] mr-6" />
-                <h1 className="font-montserrat font-semibold">
-                  Canales
-                </h1>
+                <h1 className="font-montserrat font-semibold">Canales</h1>
               </div>
             </Link>
           </div>
@@ -253,16 +255,17 @@ function Canal() {
               2. Relevancia del Tema:
             </h2>
             <p>
-              - Asegúrate de que tus mensajes estén relacionados al tema del canal.
+              - Asegúrate de que tus mensajes estén relacionados al tema del
+              canal.
             </p>
 
             <h2 className="font-montserrat font-semibold">
               2. Relevancia del Tema:
             </h2>
             <p>
-              - Asegúrate de que tus mensajes estén relacionados al tema del canal.
+              - Asegúrate de que tus mensajes estén relacionados al tema del
+              canal.
             </p>
-
           </div>
         </div>
       </div>
@@ -293,7 +296,9 @@ function Canal() {
               >
                 <Link to={`/post/${post.Id}`} className="mb-4">
                   <h2 className="font-monserrat font-semibold text-xl">
-                    {post.userName || post.name ? post.userName || post.name : "User Guest"}
+                    {post.userName || post.name
+                      ? post.userName || post.name
+                      : "User Guest"}
                   </h2>
                   <h2 className="font-monserrat font-semibold text-lg">
                     {post.title}
@@ -324,6 +329,11 @@ function Canal() {
                 </Link>
               </div>
             ))}
+            {noResults && (
+              <p className="text-black   mt-4">
+                No se encontraron coincidencias.
+              </p>
+            )}
           </div>
         </div>
         <div className="buscador ml-auto">

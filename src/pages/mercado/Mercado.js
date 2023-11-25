@@ -39,6 +39,7 @@ function Mercado() {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [tel, setTel] = useState("");
   const [map, setMap] = useState(null);
   const [showMap, setShowMap] = useState(false);
   const [latitude, setLatitude] = useState("");
@@ -52,6 +53,7 @@ function Mercado() {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const markerRef = useRef(null);
+  const [noResults, setNoResults] = useState(false);
 
   //pk.eyJ1IjoicnZpbGxlZ2FzcyIsImEiOiJjbG9yYmJic3UwbzF5MmtsYTJka2c1eXB3In0.SV9Agi8TCgERUtXpUUNf_A
 
@@ -190,6 +192,9 @@ function Mercado() {
       );
 
       setDatos(filteredProducts);
+
+      // Verifica si hay resultados de búsqueda
+      setNoResults(filteredProducts.length === 0);
     } catch (error) {
       console.log("Ha ocurrido un error:", error);
     } finally {
@@ -287,9 +292,9 @@ function Mercado() {
           description,
           precio,
           categoria,
+          tel: tel.toString(),
           ...locationData,
           imageUrl,
-          tel,
         };
 
         if (source === "Google") {
@@ -595,6 +600,10 @@ function Mercado() {
                               pulse
                             />
                           </div>
+                        ) : noResults ? (
+                         
+                          <p className="text-center  font-bold ">No se encontraron productos... ｡╯︵╰｡ </p>
+                       
                         ) : (
                           datos.map((product) => {
                             return (
