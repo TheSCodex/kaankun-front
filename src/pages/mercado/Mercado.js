@@ -38,7 +38,7 @@ function Mercado() {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [tel, setTel] = useState('');
+  const [tel, setTel] = useState("");
   const [map, setMap] = useState(null);
   const [showMap, setShowMap] = useState(false);
   const [latitude, setLatitude] = useState("");
@@ -52,6 +52,7 @@ function Mercado() {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const markerRef = useRef(null);
+  const [noResults, setNoResults] = useState(false);
 
   //pk.eyJ1IjoicnZpbGxlZ2FzcyIsImEiOiJjbG9yYmJic3UwbzF5MmtsYTJka2c1eXB3In0.SV9Agi8TCgERUtXpUUNf_A
 
@@ -113,18 +114,17 @@ function Mercado() {
   const handleMapClick = (e) => {
     const { lng, lat } = e.lngLat;
     console.log("Clicked at:", lng, lat);
-  
+
     console.log("Updating latitude and longitude in locationData");
     setLocationData((prevData) => ({
       ...prevData,
       latitude: lat,
       longitude: lng,
     }));
-  
+
     console.log("Adding marker to mapRef");
     markerRef.current.setLngLat([lng, lat]).addTo(mapRef.current);
   };
-  
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -139,28 +139,31 @@ function Mercado() {
       console.log("Empty searchQuery, returning early");
       return;
     }
-  
-    const accessToken = "pk.eyJ1IjoicnZpbGxlZ2FzcyIsImEiOiJjbG9yYmJic3UwbzF5MmtsYTJka2c1eXB3In0.SV9Agi8TCgERUtXpUUNf_A";
+
+    const accessToken =
+      "pk.eyJ1IjoicnZpbGxlZ2FzcyIsImEiOiJjbG9yYmJic3UwbzF5MmtsYTJka2c1eXB3In0.SV9Agi8TCgERUtXpUUNf_A";
     const boundingBox = "-88.3992,18.1372,-86.1659,21.2202";
-  
+
     const geocodingEndpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${searchQuery}.json`;
-    const response = await fetch(`${geocodingEndpoint}?access_token=${accessToken}&bbox=${boundingBox}`);
+    const response = await fetch(
+      `${geocodingEndpoint}?access_token=${accessToken}&bbox=${boundingBox}`
+    );
     const data = await response.json();
-  
+
     if (data.features && data.features.length > 0) {
       const [longitude, latitude] = data.features[0].center;
-  
+
       if (mapRef.current && markerRef.current) {
         console.log("Flying to location and adding marker to mapRef");
         mapRef.current.flyTo({
           center: [longitude, latitude],
           zoom: 16,
         });
-  
+
         markerRef.current
           .setLngLat([longitude, latitude])
           .addTo(mapRef.current);
-  
+
         console.log("Updating latitude and longitude in locationData");
         setLocationData((prevData) => ({
           ...prevData,
@@ -170,7 +173,7 @@ function Mercado() {
       }
     }
   };
-  
+
   const getProducts = async () => {
     setLoading(true);
     try {
@@ -188,6 +191,9 @@ function Mercado() {
       );
 
       setDatos(filteredProducts);
+
+      // Verifica si hay resultados de búsqueda
+      setNoResults(filteredProducts.length === 0);
     } catch (error) {
       console.log("Ha ocurrido un error:", error);
     } finally {
@@ -252,7 +258,9 @@ function Mercado() {
   const createProduct = async (e) => {
     e.preventDefault();
     if (showMap && (!locationData.latitude || !locationData.longitude)) {
-      console.log("Latitude or longitude is missing. Please select a location.");
+      console.log(
+        "Latitude or longitude is missing. Please select a location."
+      );
       return;
     }
 
@@ -262,24 +270,24 @@ function Mercado() {
         const snapshot = await uploadBytes(storageRef, image);
         const imageUrl = await getDownloadURL(snapshot.ref);
 
-      await new Promise(resolve => {
-        setLocationData(prevData => ({
-          ...prevData,
-          imageUrl,
-        }));
-        resolve();
-      });
+        await new Promise((resolve) => {
+          setLocationData((prevData) => ({
+            ...prevData,
+            imageUrl,
+          }));
+          resolve();
+        });
 
-      const productDataWithLocation = {
-        userId,
-        name,
-        description,
-        precio,
-        categoria,
-        tel: tel.toString(),
-        ...locationData,
-        imageUrl,
-      };
+        const productDataWithLocation = {
+          userId,
+          name,
+          description,
+          precio,
+          categoria,
+          tel: tel.toString(),
+          ...locationData,
+          imageUrl,
+        };
 
         if (source === "Google") {
           fetch(serverGoogleUrl, {
@@ -564,6 +572,10 @@ function Mercado() {
                               pulse
                             />
                           </div>
+                        ) : noResults ? (
+                         
+                          <p className="text-center  font-bold ">No se encontraron productos... ｡╯︵╰｡ </p>
+                       
                         ) : (
                           datos.map((product) => {
                             return (
