@@ -30,7 +30,6 @@ function Mercado() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [precio, setPrecio] = useState("");
-  const [tel, setTel] = useState("");
   const [categoria, setCategoria] = useState("");
   const [image, setImage] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);

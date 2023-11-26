@@ -56,15 +56,21 @@ function Canal() {
         content,
         Id_Channel: id,
       };
-
-      const response = await fetch("http://localhost:8080/api/createPost", {
+  
+      let UrlCreate = "http://localhost:8080/api/createPost";
+  
+      if (source === "Google") {
+        UrlCreate = "http://localhost:8080/api/createPostG";
+      }
+  
+      const response = await fetch(UrlCreate, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(postData),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         console.log(
@@ -97,6 +103,7 @@ function Canal() {
       });
     }
   };
+  
 
   const loadPosts = async () => {
     try {
@@ -187,9 +194,9 @@ function Canal() {
         </svg>
       </button>
       <div
-        className={`lg:fixed bg-white border lg:w-[325px] p-6 lg:h-screen ${
-          sidebarOpen ? "" : "hidden"
-        } lg:block`}
+        className={`lg:fixed bg-white border lg:w-[325px] p-6 lg:h-screen overflow-y-auto ${sidebarOpen ? "" : "hidden"
+          } lg:block`}
+        style={{ scrollbarWidth: "thin" }}
       >
         <div>
           <div className="flex mb-4">
@@ -249,14 +256,6 @@ function Canal() {
             </h2>
             <p>
               - No se permiten insultos, ofensas o discriminaciones por motivos
-            </p>
-
-            <h2 className="font-montserrat font-semibold">
-              2. Relevancia del Tema:
-            </h2>
-            <p>
-              - Asegúrate de que tus mensajes estén relacionados al tema del
-              canal.
             </p>
 
             <h2 className="font-montserrat font-semibold">

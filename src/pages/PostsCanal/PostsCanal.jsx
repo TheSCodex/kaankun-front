@@ -284,7 +284,9 @@ function PostsCanal() {
         </svg>
       </button>
       <div
-        className={`lg:fixed bg-white border lg:w-[325px] p-6 lg:h-screen ${sidebarOpen ? "" : "hidden"} lg:block`}
+        className={`lg:fixed bg-white border lg:w-[325px] p-6 lg:h-screen overflow-y-auto ${sidebarOpen ? "" : "hidden"
+          } lg:block`}
+        style={{ scrollbarWidth: "thin" }}
       >
         <div>
           <div className="flex mb-4">

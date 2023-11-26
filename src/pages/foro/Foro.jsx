@@ -3,12 +3,25 @@ import Cun from "../../assets/pexels-asad-photo-maldives-9656551.jpg";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleUser, faComment, faCommentDots, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import { useAuth } from "../../Auth.js";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import lupa from "../../assets/lupa.png";
+import chan from "../../assets/blog-solid.svg";
+import publs from "../../assets/envelopes-bulk-solid.svg";
+import rules from "../../assets/scale-balanced-solid.svg";
+import serpen from "../../assets/aaaaa.png";
 
 function Foro() {
+  const { isLoggedIn } = useAuth();
+  const [searchText, setSearchText] = useState("");
   const [channels, setChannels] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showChannels, setShowChannels] = useState(false);
+
+
+
   // const [count, setCount] = useState([]);
 
   // const CountPost = async () => {
@@ -29,7 +42,6 @@ function Foro() {
   // useEffect(() => {
   //   CountPost()
   // },[])
-
 
   useEffect(() => {
     fetch('http://localhost:8080/api/channels')
@@ -62,12 +74,126 @@ function Foro() {
 
   }, []);
 
+  const handleToggleChannels = () => {
+    setShowChannels(!showChannels);
+  };
+
   return (
     <div className='bg-[#E7E7E7] lg:h-full h-full font-montserrat lg:mt-[73px] mt-[122px] '>
       <Header />
-      <div className="relative">
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className={`lg:hidden absolute top-10 left-10 z-50 ${sidebarOpen ? "" : ""
+          }`}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          {sidebarOpen ? (
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          ) : (
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          )}
+        </svg>
+      </button>
+      <div
+        className={`lg:fixed bg-white border lg:w-[325px] p-6 lg:h-screen overflow-y-auto ${sidebarOpen ? "" : "hidden"
+          } lg:block`}
+        style={{ scrollbarWidth: "thin" }}
+      >
+        <div>
+          <div className="flex mb-4">
+            <h1 className="mr-20 font-bold font-montserrat text-2xl">
+              Foro Principal
+            </h1>
+            <img src={serpen} className="h-[60px]" />
+          </div>
+          <div className="relative">
+            <input
+              className="bg-[#D9D9D9] h-[35px] w-[245px] p-2 pl-12 font-montserrat rounded-sm"
+              placeholder="Busqueda"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+            <i>
+              <img src={lupa} className="left-3 top-2 h-[18px] absolute" />
+            </i>
+          </div>
+          <div className="mt-10">
+            <div className="">
+              <div onClick={handleToggleChannels} className=" flex cursor-pointer items-center focus:outline-none w-full">
+                <img src={chan} className="h-[30px] mr-6" />
+                <h1 className="font-montserrat font-semibold">Canales</h1>
+              </div>
+            </div>
+            {showChannels && (
+              <div className="ml-6 mt-4">
+                {channels.map((channel) => (
+                  <Link to={`/canal/${channel.Id}`} className="flex items-center " key={channel.Id}>
+                    <span className="mr-2">&#8226;</span>
+                    <p className='font-montserrat hover:underline'>{channel.nameC}</p>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+          {/* {isLoggedIn ? (
+            <div className="mt-8">
+              <button
+                onClick={"handleOpenModal"}
+                className="items-center focus:outline-none w-full"
+              >
+                <div className="flex">
+                  <img src={publs} className="h-[30px] mr-6" />
+                  <h1 className="font-montserrat font-semibold">Publicar</h1>
+                </div>
+              </button>
+            </div>
+          ) : (
+            ""
+          )} */}
+          <div className="mt-12">
+            <div className="bg-[#000] h-[.8px] w-[100%]"></div>
+            <div className="mb-6 flex items-center">
+              <img src={rules} className="h-[25px] mr-6" />
+              <h1 className="font-montserrat font-semibold text-xl mt-3">
+                Reglas de los canales:
+              </h1>
+            </div>
+            <h2 className="font-montserrat font-semibold">
+              1. Respeto y Cortesía:
+            </h2>
+            <p>
+              - No se permiten insultos, ofensas o discriminaciones por motivos
+            </p>
+
+            <h2 className="font-montserrat font-semibold">
+              2. Relevancia del Tema:
+            </h2>
+            <p>
+              - Asegúrate de que tus mensajes estén relacionados al tema del
+              canal.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="lg:ml-[335px] h-full w-[3/5]">
         <div
-          className="flex flex-col items-center justify-center pl-8 pr-8 foto bg-cover w-full shrink-0 h-[250px]"
+          className="flex flex-col items-center justify-center rounded-lg pl-8 pr-8 foto bg-cover w-[98%] shrink-0 h-[240px]"
           style={{ backgroundImage: `url(${Cun})` }}
         >
           <h1 className='mt-12 font-montserrat font-semibold text-4xl text-white text-center'>FOROS DE CANCÚN</h1>
@@ -107,8 +233,8 @@ function Foro() {
                 <p className="font-medium">{post.title}</p>
                 <p className="mb-3 text-sm font-semibold max-w-full overflow-ellipsis overflow-hidden whitespace-nowrap">{post.content}</p>
                 <p className="mb-3 text-xs font-semibold">
-                  {post.channelName ? post.channelName : "Noooooooo" }
-                  </p>
+                  {post.channelName ? post.channelName : "Noooooooo"}
+                </p>
                 <div className="flex justify-between w-full pr-2">
                   <div className="flex items-center ml-4">
                     <FontAwesomeIcon icon={faThumbsUp} className="text-md" />
@@ -125,7 +251,7 @@ function Foro() {
         </div>
       </div>
       <Footer />
-    </div>
+    </div >
   );
 }
 
