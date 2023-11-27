@@ -5,6 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import Sidebar from "../sidebar/Sidebar";
 import DashUser from "../dash-forms/DashUser";
 import DashProduct from "../dash-forms/DashProduct";
+import DashPost from "../dash-forms/DashPost";
 
 function DashTablas() {
   const [loading, setLoading] = useState(false);
@@ -18,8 +19,10 @@ function DashTablas() {
   const [editingProduct, setEditingProduct] = useState(false);
   const [addingUser, setAddingUser] = useState(false);
   const [addingProduct, setAddingProduct] = useState(false);
+  const [addingPost, setAddingPost] = useState(false);
   const [userToEdit, setUserToEdit] = useState(null);
   const [productToEdit, setProductToEdit] = useState(null);
+  const [channels, setChannels] = useState([]);
 
   let decodedToken;
   const userToken = localStorage.getItem("token");
@@ -90,6 +93,15 @@ function DashTablas() {
         alert("Algo salió mal");
       }
       posts = await results.json();
+      const uniqueChannels = await posts.map(post => ({
+        Id_Channel: post.Id_Channel,
+        channelName: post.channelName
+      }));
+      
+      const uniqueChannelsSet = new Set(uniqueChannels.map(channel => JSON.stringify(channel)));
+      const uniqueChannelsArray = Array.from(uniqueChannelsSet).map(channel => JSON.parse(channel));
+
+      setChannels(uniqueChannelsArray);
 
       console.log(posts);
       setPosts(posts);
@@ -386,7 +398,7 @@ function DashTablas() {
                       <th className="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
                         <a
                           onClick={() => {
-                            setAddingProduct(true);
+                            setAddingPost(true);
                           }}
                           className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
                         >
@@ -477,6 +489,9 @@ function DashTablas() {
             getProducts={getProducts}
             setAddingProduct={setAddingProduct}
           />
+        )}
+        {addingPost && (
+          <DashPost getPosts={getPosts} setAddingPost={setAddingPost} availableChannels={channels}/>
         )}
       </div>
     </div>
