@@ -231,7 +231,7 @@ function Foro() {
                     {post.userName || post.name ? post.userName || post.name : "User Guest"}
                   </h3>
                   <p className="font-montserrat text-sm">{new Date(post.created).toLocaleDateString()}</p>
-                </div>
+                </div> 
               </div>
               <p className="font-monserrat text-xl font-semibold">{post.title}</p>
               <p className="mb-3 text-sm font-semibold max-w-full overflow-ellipsis overflow-hidden whitespace-nowrap">{post.content}</p>
