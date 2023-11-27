@@ -1,23 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import Cun from "../../assets/pexels-asad-photo-maldives-9656551.jpg";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleUser, faComment, faCommentDots, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
+import { faBlog, faCircleUser, faComment, faCommentDots, faEllipsis, faHome, faScaleBalanced, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import { useAuth } from "../../Auth.js";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import lupa from "../../assets/lupa.png";
-import chan from "../../assets/blog-solid.svg";
-import publs from "../../assets/envelopes-bulk-solid.svg";
-import rules from "../../assets/scale-balanced-solid.svg";
 import serpen from "../../assets/aaaaa.png";
 
 function Foro() {
   const { isLoggedIn } = useAuth();
   const [searchText, setSearchText] = useState("");
-  const [channels, setChannels] = useState([]);
   const [posts, setPosts] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [channels, setChannels] = useState([]);
   const [showChannels, setShowChannels] = useState(false);
 
 
@@ -135,8 +132,12 @@ function Foro() {
           </div>
           <div className="mt-10">
             <div className="">
+              <Link to='/foro' className=" flex cursor-pointer  mb-5 items-center focus:outline-none w-full">
+                <FontAwesomeIcon icon={faHome} className='text-gray-600 h-[30px] mr-6' />
+                <h1 className="font-montserrat font-semibold">Principal</h1>
+              </Link>
               <div onClick={handleToggleChannels} className=" flex cursor-pointer items-center focus:outline-none w-full">
-                <img src={chan} className="h-[30px] mr-6" />
+                <FontAwesomeIcon icon={faBlog} className='h-[30px] mr-6' />
                 <h1 className="font-montserrat font-semibold">Canales</h1>
               </div>
             </div>
@@ -166,10 +167,10 @@ function Foro() {
           ) : (
             ""
           )} */}
-          <div className="mt-12">
+          <div className="mt-10">
             <div className="bg-[#000] h-[.8px] w-[100%]"></div>
             <div className="mb-6 flex items-center">
-              <img src={rules} className="h-[25px] mr-6" />
+              <FontAwesomeIcon icon={faScaleBalanced} className='h-[25px] mr-6' />
               <h1 className="font-montserrat font-semibold text-xl mt-3">
                 Reglas de los canales:
               </h1>
@@ -197,14 +198,14 @@ function Foro() {
           style={{ backgroundImage: `url(${Cun})` }}
         >
           <h1 className='mt-12 font-montserrat font-semibold text-4xl text-white text-center'>FOROS DE CANCÚN</h1>
-          <h2 className='font-montserrat font-medium text-xl text-white text-center'>Te damos la bienvenida a nuestros canales enfocados en Cancún</h2>
+          <h2 className='font-montserrat font-medium text-xl text-white text-center'>Te damos la bienvenida a nuestro foro enfocado en Cancún</h2>
         </div>
         <h2 className='font-monserrat font-semibold text-xl mt-4 ml-8 '>Explora algunos de nuestros canales más populares</h2>
         <div className="canales grid grid-cols-3 gap-4 p-8">
           {channels.map((channel) => (
             <Link to={`/canal/${channel.Id}`} className="bg-white shadow-md rounded p-4 lg:p-6 mb-4 lg:mb-0" key={channel.Id}>
               <div className="flex flex-col lg:flex-row justify-between items-start">
-                <div className="mb-2 lg:mb-0 lg:mr-4">
+                <div className="mb-2 lg:mb-0 lg:mr-4 w-full lg:w-auto"> {/* Cambio aquí */}
                   <h3 className="font-bold text-xl lg:text-2xl mb-1">{channel.nameC}</h3>
                   <FontAwesomeIcon icon={faCommentDots} className="text-xl lg:text-2xl" />
                   <p className="text-sm lg:text-base">{channel.descriptionC}</p>
@@ -216,39 +217,47 @@ function Foro() {
             </Link>
           ))}
         </div>
-        <h2 className='font-monserrat font-semibold text-xl mt-4 ml-8 '>Nuevas publicaciones</h2>
-        <div className="posts grid grid-cols-4 gap-4 p-8">
-          {posts.map((post) => (
-            <Link to={`/post/${post.Id}`} key={post.Id}>
-              <div className="bg-white shadow-md rounded p-6 flex flex-col items-start">
-                <div className="flex items-center">
-                  <FontAwesomeIcon icon={faCircleUser} className="text-4xl mr-2" />
-                  <div>
-                    <h3 className="font-bold font-montserrat text-xl">
-                      {post.userName || post.name ? post.userName || post.name : "User Guest"}
-                    </h3>
-                    <p className="font-montserrat text-sm">{new Date(post.created).toLocaleDateString()}</p>
-                  </div>
-                </div>
-                <p className="font-medium">{post.title}</p>
-                <p className="mb-3 text-sm font-semibold max-w-full overflow-ellipsis overflow-hidden whitespace-nowrap">{post.content}</p>
-                <p className="mb-3 text-xs font-semibold">
-                  {post.channelName ? post.channelName : "Noooooooo"}
-                </p>
-                <div className="flex justify-between w-full pr-2">
-                  <div className="flex items-center ml-4">
-                    <FontAwesomeIcon icon={faThumbsUp} className="text-md" />
-                    <p className="mx-1 text-md">Like</p>
-                  </div>
-                  <div className="flex items-center ml-4">
-                    <FontAwesomeIcon icon={faComment} className="text-md" />
-                    <p className="mx-1 text-md">Comment</p>
-                  </div>
+        <h2 className='font-monserrat font-semibold text-xl my-4 ml-8 '>Nuevas publicaciones</h2>
+        {posts.map((post) => (
+          <div
+            key={post.Id}
+            className="Post bg-white p-4 mx-3 mb-4 rounded-lg shadow-lg overflow-y-auto"
+          >
+            <Link to={`/post/${post.Id}`} className="mb-4">
+              <div className="flex items-center">
+                <FontAwesomeIcon icon={faCircleUser} className="text-4xl mr-2" />
+                <div>
+                  <h3 className="font-bold font-montserrat text-xl">
+                    {post.userName || post.name ? post.userName || post.name : "User Guest"}
+                  </h3>
+                  <p className="font-montserrat text-sm">{new Date(post.created).toLocaleDateString()}</p>
                 </div>
               </div>
+              <p className="font-monserrat text-xl font-semibold">{post.title}</p>
+              <p className="mb-3 text-sm font-semibold max-w-full overflow-ellipsis overflow-hidden whitespace-nowrap">{post.content}</p>
+              <p className="mb-3 text-xs font-semibold">
+                {post.channelName ? post.channelName : "Noooooooo"}
+              </p>
+              <div className="flex items-center my-4">
+                    <div className="mr-8 flex items-center">
+                      <FontAwesomeIcon icon={faThumbsUp} className="text-xl" />
+                      <p className="mx-3 text-md">Me gusta</p>
+                    </div>
+                    <div className="mr-8 flex items-center">
+                      <FontAwesomeIcon icon={faComment} className="text-xl" />
+                      <p className="mx-3 text-md">Comentar</p>
+                    </div>
+                    {/* <div className="mr-8 flex items-center">
+                      <FontAwesomeIcon icon={faShare} className="text-xl" />
+                      <p className="mx-3 text-md">Compartir</p>
+                    </div> */}
+                    <div className="mr-8 flex items-center">
+                      <FontAwesomeIcon icon={faEllipsis} className="text-xl" />
+                    </div>
+                  </div>
             </Link>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
       <Footer />
     </div >

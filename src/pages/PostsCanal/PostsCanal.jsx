@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleUser, faComment, faEllipsis, faShare, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
+import { faBlog, faCircleUser, faComment, faEllipsis, faHome, faScaleBalanced, faShare, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import { useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Cun from "../../assets/Cun.jpg";
@@ -10,9 +10,6 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../Auth.js";
 import { jwtDecode } from "jwt-decode";
 import lupa from "../../assets/lupa.png";
-import chan from "../../assets/blog-solid.svg"
-import publs from "../../assets/envelopes-bulk-solid.svg"
-import rules from "../../assets/scale-balanced-solid.svg"
 import serpen from "../../assets/aaaaa.png";
 
 function PostsCanal() {
@@ -28,6 +25,9 @@ function PostsCanal() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [meGusta, setMeGusta] = useState(false);
+  const [channels, setChannels] = useState([]);
+  const [showChannels, setShowChannels] = useState(false);
+
 
 
   let decodedToken;
@@ -39,6 +39,26 @@ function PostsCanal() {
   const userId = decodedToken ? decodedToken.userId : null;
   const source = decodedToken ? decodedToken.source : null;
 
+  useEffect(() => {
+    fetch('http://localhost:8080/api/channels')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Error al obtener los canales');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setChannels(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+  }, []);
+
+  const handleToggleChannels = () => {
+    setShowChannels(!showChannels);
+  };
 
   const GetPost = async () => {
     try {
@@ -84,11 +104,8 @@ function PostsCanal() {
   useEffect(() => {
     GetPost();
     getCommentsByPost();
-  }, [id]);
-
-  useEffect(() => {
     getReplys();
-  }, []);
+  }, [id]);
 
   const getReplys = async () => {
     try {
@@ -108,21 +125,22 @@ function PostsCanal() {
 
   const BotMegusta = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/GetMegustas/Like', {
+      const response = await fetch('http://localhost:8080/api/Megusta', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: id,
-          //Aqui debe ir el ID_post
+          Id_User: userId,
+          Id_Post: id
         }),
       });
 
       if (response.ok) {
+        const responseData = await response.json();
         setMeGusta(!meGusta);
       } else {
-        console.error('Error al dar like:', response.statusText);
+        console.error('Error al dar like:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Error al dar like:', error);
@@ -157,24 +175,45 @@ function PostsCanal() {
     setContent('');
   };
 
+  let lastSubmissionTime = 0;
+  let errorHandled = false;
+  const submissionInterval = 3000; // Intervalo en milisegundos (3 segundos en este caso)
+  
   const handleSubmitReply = async (e) => {
     e.preventDefault();
+  
+    const currentTime = new Date().getTime();
+  
+    if (currentTime - lastSubmissionTime < submissionInterval) {
+      // Si el tiempo transcurrido desde la última presentación es menor que el intervalo, no se permite otra presentación
+      Swal.fire({
+        icon: 'warning',
+        title: 'Espera un momento',
+        text: 'Por favor, espera unos segundos antes de enviar otro comentario.'
+      });
+      return;
+    }
     try {
-
       const postData = {
         content,
         Id_Post: id,
         Id_User: userId
       };
-
-      const response = await fetch('http://localhost:8080/api/CreateComment', {
+  
+      let UrlCreate = "http://localhost:8080/api/CreateComment";
+  
+      if (source === "Google") {
+        UrlCreate = "http://localhost:8080/api/CreateCommentG";
+      }
+  
+      const response = await fetch(UrlCreate, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(postData),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         console.log('Comentario exitoso. ID del comentario:', data.commentId);
@@ -182,27 +221,31 @@ function PostsCanal() {
         Swal.fire({
           icon: 'success',
           title: 'Agregado',
-          text: 'Se añadio el comentario'
+          text: 'Se añadió el comentario'
         });
         getCommentsByPost();
       } else {
         const errorData = await response.json();
         console.error('Error al comentar:', errorData.message);
-      } Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Ha ocurrido un error con la red'
-      });
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ha ocurrido un error en el servidor'
+        });
+        errorHandled = true;
+      }lastSubmissionTime = currentTime; 
     } catch (error) {
       console.error('Error de red:', error);
+      if (!errorHandled) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Por favor, rellena todos los campos'
+        });
+      }
     }
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Por favor rellena todos los campos'
-    });
   };
-
+  
   const OpenReply = (commentId) => {
     setCommentId(commentId);
     setReplyVisible(true);
@@ -245,6 +288,11 @@ function PostsCanal() {
       } else {
         const errorData = await response.json();
         console.error('Error al comentar:', errorData.message);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Ha ocurrido un error'
+        });
       }
     } catch (error) {
       console.error('Error de red:', error);
@@ -310,21 +358,31 @@ function PostsCanal() {
             </i>
           </div>
           <div className="mt-10">
-            <Link to="/foro"
-              className="items-center focus:outline-none w-full"
-            >
-              <div className="flex">
-                <img src={chan} className="h-[30px] mr-6" />
-                <h1 className="font-montserrat font-semibold">
-                  Canales
-                </h1>
+            <div className="">
+              <Link to='/foro' className=" flex cursor-pointer  mb-5 items-center focus:outline-none w-full">
+                <FontAwesomeIcon icon={faHome} className=' h-[30px] mr-6' />
+                <h1 className="font-montserrat font-semibold">Principal</h1>
+              </Link>
+              <div onClick={handleToggleChannels} className=" flex cursor-pointer items-center focus:outline-none w-full">
+                <FontAwesomeIcon icon={faBlog} className='h-[30px] mr-6' />
+                <h1 className="font-montserrat font-semibold">Canales</h1>
               </div>
-            </Link>
+            </div>
+            {showChannels && (
+              <div className="ml-6 mt-4">
+                {channels.map((channel) => (
+                  <Link to={`/canal/${channel.Id}`} className="flex items-center " key={channel.Id}>
+                    <span className="mr-2">&#8226;</span>
+                    <p className='font-montserrat hover:underline'>{channel.nameC}</p>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
           <div className="mt-12">
             <div className="bg-[#000] h-[.8px] w-[100%]"></div>
             <div className="mb-6 flex items-center">
-              <img src={rules} className="h-[25px] mr-6" />
+              <FontAwesomeIcon icon={faScaleBalanced} className='h-[25px] mr-6' />
               <h1 className="font-montserrat font-semibold text-xl mt-3">
                 Reglas de los canales:
               </h1>
@@ -403,7 +461,7 @@ function PostsCanal() {
             <div className="Respuesta bg-white rounded-lg shadow-lg p-6 flex flex-col items-start mb-4 mx-5 w-[60%]">
               <textarea
                 rows="4"
-                placeholder="Postea tu respuesta!"
+                placeholder="Postea tu respuesta!1"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 className="w-full"
