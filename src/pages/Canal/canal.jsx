@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faComment,
-  faEllipsis,
-  faThumbsUp,
-} from "@fortawesome/free-solid-svg-icons";
+import { faComment, faEllipsis, faThumbsUp, } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../Auth.js";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
@@ -37,6 +33,8 @@ function Canal() {
   }
 
   const userId = decodedToken ? decodedToken.userId : null;
+  const source = decodedToken ? decodedToken.source : null;
+
 
   const handleOpenModal = () => {
     setModalVisible(true);
@@ -58,15 +56,21 @@ function Canal() {
         content,
         Id_Channel: id,
       };
-
-      const response = await fetch("http://localhost:8080/api/createPost", {
+  
+      let UrlCreate = "http://localhost:8080/api/createPost";
+  
+      if (source === "Google") {
+        UrlCreate = "http://localhost:8080/api/createPostG";
+      }
+  
+      const response = await fetch(UrlCreate, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(postData),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         console.log(
@@ -99,6 +103,7 @@ function Canal() {
       });
     }
   };
+  
 
   const loadPosts = async () => {
     try {
@@ -189,9 +194,9 @@ function Canal() {
         </svg>
       </button>
       <div
-        className={`lg:fixed bg-white border lg:w-[325px] p-6 lg:h-screen ${
-          sidebarOpen ? "" : "hidden"
-        } lg:block`}
+        className={`lg:fixed bg-white border lg:w-[325px] p-6 lg:h-screen overflow-y-auto ${sidebarOpen ? "" : "hidden"
+          } lg:block`}
+        style={{ scrollbarWidth: "thin" }}
       >
         <div>
           <div className="flex mb-4">
@@ -260,14 +265,6 @@ function Canal() {
               - Asegúrate de que tus mensajes estén relacionados al tema del
               canal.
             </p>
-
-            <h2 className="font-montserrat font-semibold">
-              2. Relevancia del Tema:
-            </h2>
-            <p>
-              - Asegúrate de que tus mensajes estén relacionados al tema del
-              canal.
-            </p>
           </div>
         </div>
       </div>
@@ -278,26 +275,25 @@ function Canal() {
               <h1 className="font-semibold text-left text-5xl mt-5 ml-4">
                 {channel && channel.nameC}
               </h1>
-              <h2 className="font-semibold text-left text-2xl mt-2 ml-4">
-                {channel && channel.descriptionC}
+              <h2 className="font-semibold text-left text-xl mt-2 ml-4">
+                {channel.descriptionC}
               </h2>
               {isLoggedIn ? (
-                <button
-                  onClick={handleOpenModal}
-                  className="my-4 ml-4 w-3/5 bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
-                >
-                  Crea tu publicación
-                </button>
-              ) : (
-                ""
-              )}
+              <button
+                onClick={handleOpenModal}
+                className="my-4 ml-4 w-3/5 bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
+              >
+                Crea tu publicación
+              </button>) : (
+            <h1 className=" ml-4 font-montserrat text-blue-500 font-semibold text-xl">Para publicar inicia sesion</h1>
+          )}
             </div>
             {posts.map((post) => (
               <div
                 key={post.Id}
                 className="Post bg-white p-4 mx-3 mb-4 rounded-lg shadow-lg overflow-y-auto"
               >
-                <Link to={`/post/${post.Id}`}>
+                <Link to={`/post/${post.Id}`} className="mb-4">
                   <h2 className="font-monserrat font-semibold text-xl">
                     {post.userName || post.name
                       ? post.userName || post.name
@@ -340,73 +336,56 @@ function Canal() {
           </div>
         </div>
         <div className="buscador ml-auto">
-          <div className="relative mt-9 ml-9 w-4/5">
-            <div className="relative flex items-center">
-              <img src={lupa} className="left-3 top-2 h-[18px] absolute" />
-              <input
-                type="text"
-                className="pl-10 w-full border rounded-md p-2"
-                placeholder="Buscar publicaciones"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-              />
-            </div>
-          </div>
           <div className="foroCanal lg:justify-center items-center flex lg:flex-row flex-row lg:mb-[30px] mb-[300px] lg:mt-[340px] mt-[760px] h-[300px] border w-full">
-            {/* <div className="fotoCanal h-full">
-              <img
-                src={faro}
-                className="h-[300px] w-[350px] lg:rounded-l-md object-cover"
-              />
+            <div className="fotoCanal h-full">            
             </div>
-            {/* <div className="info bg-black h-[300px] w-[350px] lg:rounded-l-md object-cover flex flex-col">
-              * Contenido del div de info *
-            </div> */}
-          </div>
         </div>
       </div>
-      {isModalVisible && (
-        <div className="fixed top-0 left-0 w-full h-full lg:mt-[73px] mt-[122px] flex items-center justify-center bg-gray-900 bg-opacity-80">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Crea tu publicación</h2>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label htmlFor="title">Título</label>
-                <input
-                  type="text"
-                  id="title"
-                  name="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full border rounded-md p-2"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="content">Contenido</label>
-                <textarea
-                  id="content"
-                  name="content"
-                  rows="4"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  className="w-full border rounded-md p-2"
-                />
-              </div>
-              <button
-                type="submit"
-                className="bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
-              >
-                Crear Publicación
-              </button>
-            </form>
-            <button onClick={handleCloseModal} className="text-blue-500 mt-4">
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
-      <Footer />
     </div>
+      {
+    isModalVisible && (
+      <div className="fixed top-0 left-0 w-full h-full lg:mt-[73px] mt-[122px] flex items-center justify-center bg-gray-900 bg-opacity-80">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-xl font-semibold mb-4">Crea tu publicación</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label htmlFor="title">Título</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="content">Contenido</label>
+              <textarea
+                id="content"
+                name="content"
+                rows="4"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+            <button
+              type="submit"
+              className="bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
+            >
+              Crear Publicación
+            </button>
+          </form>
+          <button onClick={handleCloseModal} className="text-blue-500 mt-4">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    )
+  }
+  <Footer />
+    </div >
   );
 }
 

@@ -26,7 +26,7 @@ function PostsCanal() {
   const [replys, setReplys] = useState([]);
   const [post, setPost] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState('');
   const [meGusta, setMeGusta] = useState(false);
 
 
@@ -37,6 +37,8 @@ function PostsCanal() {
   }
 
   const userId = decodedToken ? decodedToken.userId : null;
+  const source = decodedToken ? decodedToken.source : null;
+
 
   const GetPost = async () => {
     try {
@@ -62,7 +64,13 @@ function PostsCanal() {
 
       if (response.ok) {
         const data = await response.json();
-        setComments(data);
+        console.log('Datos recibidos:', data);
+
+        const filteredComments = data.filter(
+          (comments) =>
+            comments.content.toLowerCase().includes(searchText.toLowerCase())
+        );
+        setComments(filteredComments);
       } else {
         const errorData = await response.json();
         console.error('Error al obtener comentarios:', errorData.message);
@@ -71,6 +79,7 @@ function PostsCanal() {
       console.error('Error de red:', error);
     }
   };
+
 
   useEffect(() => {
     GetPost();
@@ -111,7 +120,7 @@ function PostsCanal() {
       });
 
       if (response.ok) {
-        setMeGusta(!meGusta); 
+        setMeGusta(!meGusta);
       } else {
         console.error('Error al dar like:', response.statusText);
       }
@@ -121,9 +130,26 @@ function PostsCanal() {
   };
 
   const handleOpenReply = (commentId) => {
-    setCommentId(commentId);
-    setCommentVisible(true);
+    if (isLoggedIn) {
+      setCommentId(commentId);
+      setCommentVisible(true);
+    } else {
+      Swal.fire({
+        title: 'Debes estar logueado para realizar esta acción',
+        icon: 'warning',
+        confirmButtonText: 'Login',
+        confirmButtonColor: '#1E90FF',
+        showCancelButton: true,
+        cancelButtonText: 'Regresar',
+        cancelButtonColor: '#FF0000',
+        preConfirm: () => {
+          window.location.href = '/login';
+        }
+      });
+    }
   };
+
+
 
   const handleCloseReply = () => {
     setCommentId(null);
@@ -162,10 +188,19 @@ function PostsCanal() {
       } else {
         const errorData = await response.json();
         console.error('Error al comentar:', errorData.message);
-      }
+      } Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ha ocurrido un error con la red'
+      });
     } catch (error) {
       console.error('Error de red:', error);
     }
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Por favor rellena todos los campos'
+    });
   };
 
   const OpenReply = (commentId) => {
@@ -249,7 +284,9 @@ function PostsCanal() {
         </svg>
       </button>
       <div
-        className={`lg:fixed bg-white border lg:w-[325px] p-6 lg:h-screen ${sidebarOpen ? "" : "hidden"} lg:block`}
+        className={`lg:fixed bg-white border lg:w-[325px] p-6 lg:h-screen overflow-y-auto ${sidebarOpen ? "" : "hidden"
+          } lg:block`}
+        style={{ scrollbarWidth: "thin" }}
       >
         <div>
           <div className="flex mb-4">
@@ -350,16 +387,12 @@ function PostsCanal() {
               <div className='flex items-center mt-4'>
                 <div className='mr-8 flex items-center' postId={post.id} onClick={BotMegusta} style={{ cursor: 'pointer' }}>
                   <FontAwesomeIcon icon={faThumbsUp} className={`text-xl ${meGusta ? 'text-blue-500' : ''}`} />
-                  <p className='mx-3 text-md'>Me gusta</p>
+                  <p className='mx-3 text-md' onClick={BotMegusta}>Me gusta</p>
                 </div>
                 <div className='comentar mr-8 flex items-center'>
                   <FontAwesomeIcon icon={faComment} className="text-xl" />
                   <p className='mx-3 text-md' onClick={handleOpenReply}>Comentar</p>
                 </div>
-                {/* <div className='mr-8 flex items-center'>
-                  <FontAwesomeIcon icon={faShare} className="text-xl" />
-                  <p className='mx-3 text-md'>Compartir</p>
-                </div> */}
                 <div className='mr-8 flex items-center'>
                   <FontAwesomeIcon icon={faEllipsis} className="text-xl" />
                 </div>
@@ -374,6 +407,7 @@ function PostsCanal() {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 className="w-full"
+                required
               />
               <div className='flex items-center mt-4'>
                 <div className='mr-8 flex items-center'>
@@ -389,7 +423,7 @@ function PostsCanal() {
                     className="text-blue-500"
                     onClick={handleCloseReply}
                   >
-                    Cancelar
+                    Cerrar
                   </button>
                 </div>
               </div>
@@ -447,7 +481,7 @@ function PostsCanal() {
                         className="text-blue-500"
                         onClick={CloseReply}
                       >
-                        Cancelar
+                        Cerrar
                       </button>
                     </div>
                   </div>
