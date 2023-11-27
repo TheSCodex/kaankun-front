@@ -52,6 +52,7 @@ function Mercado() {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const markerRef = useRef(null);
+  const [noResults, setNoResults] = useState(false);
 
   //pk.eyJ1IjoicnZpbGxlZ2FzcyIsImEiOiJjbG9yYmJic3UwbzF5MmtsYTJka2c1eXB3In0.SV9Agi8TCgERUtXpUUNf_A
 
@@ -191,6 +192,9 @@ function Mercado() {
       );
 
       setDatos(filteredProducts);
+
+      // Verifica si hay resultados de búsqueda
+      setNoResults(filteredProducts.length === 0);
     } catch (error) {
       console.log("Ha ocurrido un error:", error);
     } finally {
@@ -274,6 +278,13 @@ function Mercado() {
         const snapshot = await uploadBytes(storageRef, image);
         const imageUrl = await getDownloadURL(snapshot.ref);
 
+        await new Promise((resolve) => {
+          setLocationData((prevData) => ({
+            ...prevData,
+            imageUrl,
+          }));
+          resolve();
+        });
         await new Promise((resolve) => {
           setLocationData((prevData) => ({
             ...prevData,
@@ -608,6 +619,10 @@ function Mercado() {
                               pulse
                             />
                           </div>
+                        ) : noResults ? (
+                         
+                          <p className="text-center  font-bold ">No se encontraron productos... ｡╯︵╰｡ </p>
+                       
                         ) : (
                           datos.map((product) => {
                             return (
