@@ -2,13 +2,8 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import calavera from "../../assets/calavera.jpg";
-import {
-  faLock,
-  faEye,
-  faEyeSlash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faLock, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 
 function Recover() {
   const navigate = useNavigate();
@@ -20,6 +15,13 @@ function Recover() {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
+  const validatePassword = (password) => {
+    const passwordWithoutSpaces = password.trim();
+    return (
+      passwordWithoutSpaces.length >= 6 && passwordWithoutSpaces.length <= 12
+    );
+  };
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -30,7 +32,25 @@ function Recover() {
 
   const handlePasswordReset = async (e) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword) {
+    const trimmedNewPassword = newPassword.trim();
+    const trimmedConfirmPassword = confirmPassword.trim();
+
+    if (!trimmedNewPassword || !trimmedConfirmPassword) {
+      setError("Las contraseñas no pueden estar vacías.");
+      return;
+    }
+
+    if (
+      trimmedNewPassword.length < 6 ||
+      trimmedNewPassword.length > 12 ||
+      trimmedConfirmPassword.length < 6 ||
+      trimmedConfirmPassword.length > 12
+    ) {
+      setError("La contraseña debe tener entre 6 y 12 caracteres.");
+      return;
+    }
+
+    if (trimmedNewPassword !== trimmedConfirmPassword) {
       setError("Las contraseñas no coinciden.");
       return;
     }
@@ -43,10 +63,9 @@ function Recover() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, newPassword }),
+          body: JSON.stringify({ email, newPassword: trimmedNewPassword }),
         }
       );
-
       if (response.ok) {
         setSuccess(true);
         setError(null);
@@ -72,6 +91,7 @@ function Recover() {
       setError("Error interno. Por favor, inténtalo de nuevo más tarde.");
     }
   };
+
   return (
     <div className="bg-gradient-to-r from-white via-[#FFC8E6] to-[#FB99C0] w-screen h-screen flex items-center justify-center">
       <div className="bg-white w-[1000px] lg:h-[500px] flex-shrink-0 flex lg:rounded-md">
@@ -84,7 +104,9 @@ function Recover() {
             onSubmit={handlePasswordReset}
             className="w-full lg:py-16 p-6 font-manjari font-semibold"
           >
-            <h1 className="font-manjari font-bold text-xl mb-8">Establece tu nueva contraseña</h1>
+            <h1 className="font-manjari font-bold text-xl mb-8">
+              Establece tu nueva contraseña
+            </h1>
             <label>Contraseña</label>
             <section className="flex relative items-center mb-6">
               <FontAwesomeIcon icon={faLock} className="absolute left-3" />
@@ -139,7 +161,10 @@ function Recover() {
                 )}
               </span>
             </section>
-            <section className="mt-6 flex justify-center">
+            <section className="mt-6 flex flex-col items-center justify-center">
+              {error && (
+                <p className="text-red-500 font-manjari">{error}</p>
+              )}
               <button
                 type="submit"
                 className="rounded-sm bg-[#43B8E8] font-manjari text-sm text-white w-[150px] h-[30px] p-2"

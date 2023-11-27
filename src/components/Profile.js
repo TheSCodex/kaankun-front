@@ -42,50 +42,48 @@ function Profile({ user, setViewingProfile, getLoggedUser, source }) {
 
   const editProfile = async (e) => {
     e.preventDefault();
+  
+    const data = {
+      bio: editedUser.bio,
+    };
+  
     if (image) {
       const storageRef = ref(storage, `images/${image.name}`);
       try {
         const snapshot = await uploadBytes(storageRef, image);
         const profileImage = await getDownloadURL(snapshot.ref);
-
-        const data = {
-          bio: editedUser.bio,
-          profileImage,
-        };
-
-        if (editedUser.userName !== user.userName) {
-          data.userName = editedUser.userName;
-        }
-        console.log(data);
-        try {
-          const userId = parseInt(user.id, 10);
-          console.log(userId);
-          const response = await fetch(
-            `http://localhost:8080/api/users/${userId}`,
-            {
-              method: "PATCH",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(data),
-            }
-          );
-
-          if (response.status === 200) {
-            console.log("Profile update successful");
-            getLoggedUser();
-            setEditing(false);
-          } else {
-            console.log("Profile update failed");
-          }
-        } catch (error) {
-          console.error("Error sending request:", error);
-        }
+        data.profileImage = profileImage;
       } catch (error) {
-        console.error("Error uploading image:", error);
+        console.error("Error subiendo imagen:", error);
       }
     }
+  
+    if (editedUser.userName !== user.userName) {
+      data.userName = editedUser.userName;
+    }
+  
+    try {
+      const userId = parseInt(user.id, 10);
+      const response = await fetch(`http://localhost:8080/api/users/${userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+  
+      if (response.status === 200) {
+        console.log("Perfil actualizado exitosamente");
+        getLoggedUser();
+        setEditing(false);
+      } else {
+        console.log("Fallo al actualizar perfil");
+      }
+    } catch (error) {
+      console.error("Error enviando solicitud:", error);
+    }
   };
+  
 
   return (
     <div className="relative lg:max-w-lg w-[70%] ml-[15%] lg:ml-[62%] my-2 bg-white rounded-lg shadow-md p-5">

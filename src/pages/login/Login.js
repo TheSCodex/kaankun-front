@@ -57,23 +57,39 @@ function Login() {
 
       if (response.ok) {
         const data = await response.json();
-        const token = data.token;
+        const { token, user } = data;
         localStorage.setItem("token", token);
         console.log("Inicio de Sesión exitoso");
         login();
-        Swal.fire({
-          title: "Inicio de Sesión exitoso",
-          html: "Redireccionando",
-          icon: "success",
-          timer: 1000,
-          timerProgressBar: true,
-          showConfirmButton: false,
-          onBeforeOpen: () => {
-            Swal.showLoading();
-          },
-        }).then(() => {
-          navigate("/");
-        });
+        if (user.userTypeId === 1) {
+          Swal.fire({
+            title: "Inicio de Sesión exitoso",
+            html: "Redireccionando",
+            icon: "success",
+            timer: 1000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            onBeforeOpen: () => {
+              Swal.showLoading();
+            },
+          }).then(() => {
+            navigate("/");
+          });
+        } else if (user.userTypeId === 2) {
+          Swal.fire({
+            title: "Inicio de Sesión exitoso",
+            html: "Redireccionando",
+            icon: "success",
+            timer: 1000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            onBeforeOpen: () => {
+              Swal.showLoading();
+            },
+          }).then(() => {
+            navigate("/dashboard");
+          });
+        }
       } else if (response.status === 401) {
         setError("Credenciales inválidas. Verifica tu email y contraseña.");
         console.log(error);
@@ -139,12 +155,30 @@ function Login() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-  
-    if (!validatePassword(password)) {
-      setError("La contraseña debe tener entre 6 y 12 carácteres.");
+
+    if (
+      !validatePassword(password) ||
+      !userName.trim() ||
+      !email.trim() ||
+      !password.trim() ||
+      !name.trim() ||
+      !lastName.trim()
+    ) {
+      setError("Por favor, completa todos los campos.");
       return;
     }
-  
+
+    if (
+      userName[0] === " " ||
+      email[0] === " " ||
+      password[0] === " " ||
+      name[0] === " " ||
+      lastName[0] === " "
+    ) {
+      setError("Los campos no deben empezar con espacios.");
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:8080/api/users", {
         method: "POST",
@@ -153,7 +187,7 @@ function Login() {
         },
         body: JSON.stringify({ userName, email, password, name, lastName }),
       });
-  
+
       if (response.ok) {
         Swal.fire({
           title: "Registro Exitoso",
@@ -168,9 +202,15 @@ function Login() {
         }).then(() => {
           setRegister(false);
         });
+      } else if (response.status === 409) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "El nombre de usuario ya está en uso. Por favor, elige otro.",
+        });
       } else {
         const text = await response.text();
-  
+
         if (text) {
           const data = JSON.parse(text);
           setError(data.message);
@@ -183,41 +223,60 @@ function Login() {
       setError("Error interno. Por favor, inténtalo de nuevo más tarde.");
     }
   };
-  
+
   const validatePassword = (password) => {
     const passwordWithoutSpaces = password.trim();
-      return passwordWithoutSpaces.length >= 6 && passwordWithoutSpaces.length <= 12;
+    return (
+      passwordWithoutSpaces.length >= 6 && passwordWithoutSpaces.length <= 12
+    );
   };
-  
 
   const handleRecoverPassword = async (e) => {
     e.preventDefault();
     try {
-      setIsSendingEmail(true);
-      setEmailSentMessage("Enviando correo...");
-      setCountdown(30);
-
-      const response = await fetch("http://localhost:8080/api/users/recover", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userEmail: email }),
-      });
-
-      if (response.ok) {
-        setEmailSentMessage("Correo enviado. Puedes enviar otro después de:");
-      } else {
-        const text = await response.text();
-
-        if (text) {
-          const data = JSON.parse(text);
-          setError(data.message);
-        } else {
-          setError(
-            "Error al solicitar la recuperación de contraseña. Por favor, inténtalo de nuevo."
-          );
+      const checkEmailResponse = await fetch(
+        "http://localhost:8080/api/email-check",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userEmail: email }),
         }
+      );
+
+      if (checkEmailResponse.ok) {
+        setError("");
+        setIsSendingEmail(true);
+        setEmailSentMessage("Enviando correo...");
+        setCountdown(30);
+        const response = await fetch(
+          "http://localhost:8080/api/users/recover",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userEmail: email }),
+          }
+        );
+
+        if (response.ok) {
+          setEmailSentMessage("Correo enviado. Puedes enviar otro después de:");
+        } else {
+          const text = await response.text();
+
+          if (text) {
+            const data = JSON.parse(text);
+            setError(data.message);
+          } else {
+            setError(
+              "Error al solicitar la recuperación de contraseña. Por favor, inténtalo de nuevo."
+            );
+          }
+        }
+      } else {
+        setError("El correo no corresponde a una cuenta registrada.");
       }
     } catch (error) {
       console.error(error);
@@ -387,9 +446,6 @@ function Login() {
                   )}
                 </span>
               </section>
-              {error && (
-                <p className="text-red-500 font-manjari">{error}</p>
-              )}
               <label>Confirmar Contraseña</label>
               <section className="flex relative items-center">
                 <FontAwesomeIcon icon={faLock} className="absolute left-3" />
@@ -417,7 +473,9 @@ function Login() {
                   )}
                 </span>
               </section>
-              <section className="mt-6 flex justify-center">
+
+              <section className="mt-6 flex flex-col items-center justify-center">
+                {error && <p className="text-red-500 font-manjari">{error}</p>}
                 <button
                   type="submit"
                   className="rounded-sm bg-[#43B8E8] font-manjari text-sm text-white w-[150px] h-[30px] p-2"
@@ -445,7 +503,14 @@ function Login() {
                   className="bg-[#ECECEC] rounded-lg pt-1 h-[30px] w-full pl-8"
                 />
               </section>
-              <div className="flex justify-center items-center">
+              <div className="flex flex-col justify-center items-center">
+                {error && (
+                  <>
+                    <p className="font-manjari text-center text-sm text-red-500 mt-2">
+                      {error}
+                    </p>
+                  </>
+                )}
                 {isSendingEmail ? (
                   <p className="text-blue-600 font-manjari flex flex-col items-center">
                     {emailSentMessage} {countdown} segundos.
@@ -582,7 +647,9 @@ function Login() {
               </section>
               {error && (
                 <>
-                <p className="font-manjari text-center text-sm text-red-500 mt-2">{error}</p>
+                  <p className="font-manjari text-center text-sm text-red-500 mt-2">
+                    {error}
+                  </p>
                 </>
               )}
               <section className="mt-10 flex justify-between">
