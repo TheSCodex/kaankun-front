@@ -434,11 +434,7 @@ function DashTablas() {
                           </td>
                           <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                             <div className="text-sm leading-5 text-gray-900">
-                              {(post.userName === null ||
-                                post.userName === "") &&
-                              (post.g_user === null || post.g_user === "")
-                                ? "Agregado por administrador"
-                                : post.userName || post.g_user}
+                              {post.userName ? post.userName : "Agregado por administrador"}
                             </div>
                           </td>
                           <td className="px-6 py-4 text-sm leading-5 text-gray-500 whitespace-no-wrap border-b border-gray-200">
