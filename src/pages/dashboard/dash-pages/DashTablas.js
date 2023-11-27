@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 import { useAuth } from "../../../Auth";
 import { jwtDecode } from "jwt-decode";
 import Sidebar from "../sidebar/Sidebar";
@@ -12,6 +13,7 @@ function DashTablas() {
   const [posts, setPosts] = useState([]);
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [showAllProducts, setShowAllProducts] = useState(false);
+  const [showAllPosts, setShowAllPosts] = useState(false);
   const [editingUser, setEditingUser] = useState(false);
   const [editingProduct, setEditingProduct] = useState(false);
   const [addingUser, setAddingUser] = useState(false);
@@ -31,6 +33,10 @@ function DashTablas() {
 
   useEffect(() => {
     getProducts();
+  }, []);
+
+  useEffect(() => {
+    getPosts();
   }, []);
 
   const getUsers = async () => {
@@ -74,12 +80,82 @@ function DashTablas() {
     }
   };
 
+  const getPosts = async () => {
+    try {
+      setLoading(true);
+      let posts;
+      const results = await fetch(`http:localhost:8080/api/Getpost`);
+      if (!results.ok) {
+        console.log(results);
+        alert("Algo salió mal");
+      }
+      posts = await results.json();
+
+      console.log(posts);
+      setPosts(posts);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (userId) => {
+    try {
+      const result = await Swal.fire({
+        title: "¿Estás seguro?",
+        text: "¡No podrás revertir esto!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+      });
+
+      if (result.isConfirmed) {
+        const url = `http://localhost:8080/turuta/quenoexiste/${userId}`;
+        const response = await fetch(url, {
+          method: "DELETE",
+        });
+
+        if (response.status === 500) {
+          console.log("Ha ocurrido un error");
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "No se ha podido eliminar el post correctamente.",
+          });
+        } else if (response.status === 200) {
+          console.log("Perfil eliminado exitosamente");
+          Swal.fire({
+            icon: "success",
+            title: "Eliminación exitosa",
+            text: "Post eliminado correctamente.",
+          });
+          getPosts();
+        }
+      }
+    } catch (error) {
+      console.error("Error enviando solicitud:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Hubo un error al enviar la solicitud de eliminación.",
+      });
+    }
+  };
+
   const toggleShowAllUsers = () => {
     setShowAllUsers(!showAllUsers);
   };
 
   const toggleShowAllProducts = () => {
     setShowAllProducts(!showAllProducts);
+  };
+
+  const toggleShowAllPosts = () => {
+    setShowAllPosts(!showAllPosts);
   };
 
   return (
@@ -288,6 +364,92 @@ function DashTablas() {
                   onClick={toggleShowAllProducts}
                 >
                   {showAllProducts ? "Ver menos" : "Ver más"}
+                </button>
+              )}
+              <h2 className="font-manjari mt-4 text-lg">Publicaciones</h2>
+              <div className="inline-block min-w-full overflow-hidden align-middle border-b border-gray-200 shadow-md">
+                <table className="min-w-full">
+                  <thead>
+                    <tr>
+                      <th class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                        Titulo
+                      </th>
+                      <th class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                        Canal
+                      </th>
+                      <th class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                        Contenido
+                      </th>
+                      <th class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                        Usuario
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                        <a
+                          onClick={() => {
+                            setAddingProduct(true);
+                          }}
+                          className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
+                        >
+                          Agregar
+                        </a>
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody className="bg-white">
+                    {posts
+                      .sort((a, b) => new Date(b.created) - new Date(a.created))
+                      .slice(0, showAllPosts ? posts.length : 3)
+                      .map((post) => (
+                        <tr key={post.Id}>
+                          <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <div className="text-sm font-medium leading-5 text-gray-900">
+                              {post.title}
+                            </div>
+                          </td>
+
+                          <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <div className="ml-4">
+                              <div className="text-sm font-medium leading-5 text-gray-900">
+                                {post.channelName}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <div className="text-sm leading-5 text-gray-900 line-clamp-1">
+                              {post.content}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <div className="text-sm leading-5 text-gray-900">
+                              {(post.userName === null ||
+                                post.userName === "") &&
+                              (post.g_user === null || post.g_user === "")
+                                ? "Agregado por administrador"
+                                : post.userName || post.g_user}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-sm leading-5 text-gray-500 whitespace-no-wrap border-b border-gray-200">
+                            <a
+                              onClick={() => {
+                                handleDelete(post.Id);
+                              }}
+                              className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
+                            >
+                              Eliminar
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+              {posts.length > 3 && (
+                <button
+                  className="text-indigo-600 hover:text-indigo-900 underline"
+                  onClick={toggleShowAllPosts}
+                >
+                  {showAllPosts ? "Ver menos" : "Ver más"}
                 </button>
               )}
             </div>
