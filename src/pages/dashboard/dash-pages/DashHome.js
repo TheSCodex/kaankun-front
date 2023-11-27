@@ -7,6 +7,7 @@ function DashHome() {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [products, setProducts] = useState([]);
+  const [posts, setPosts] = useState([]);
 
   let decodedToken;
   const userToken = localStorage.getItem("token");
@@ -20,6 +21,10 @@ function DashHome() {
 
   useEffect(() => {
     getProducts();
+  }, []);
+
+  useEffect(() => {
+    getPosts();
   }, []);
 
   const getUsers = async () => {
@@ -56,6 +61,26 @@ function DashHome() {
 
       console.log(products);
       setProducts(products);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getPosts = async () => {
+    try {
+      setLoading(true);
+      let posts;
+      const results = await fetch(`http:localhost:8080/api/Getpost`);
+      if (!results.ok) {
+        console.log(results);
+        alert("Algo salió mal");
+      }
+      posts = await results.json();
+
+      console.log(posts);
+      setPosts(posts);
     } catch (error) {
       console.log(error);
     } finally {
@@ -145,7 +170,7 @@ function DashHome() {
 
                   <div class="mx-5">
                     <h4 class="text-2xl font-semibold text-gray-700">
-                      200,521
+                      {posts.length}
                     </h4>
                     <div class="text-gray-500">Posts</div>
                   </div>
@@ -261,9 +286,7 @@ function DashHome() {
                   </tbody>
                 </table>
               </div>
-              <h2 className="font-manjari mt-4 text-lg">
-                Productos Recientes
-              </h2>
+              <h2 className="font-manjari mt-4 text-lg">Productos Recientes</h2>
               <div class="inline-block min-w-full overflow-hidden align-middle border-b border-gray-200 shadow-md">
                 <table class="min-w-full">
                   <thead>
@@ -327,6 +350,57 @@ function DashHome() {
                                 ? product.g_user
                                 : product.userName}
                             </div>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+              <h2 className="font-manjari mt-4 font-lg">Posts recientes</h2>
+              <div class="inline-block min-w-full overflow-hidden align-middle border-b border-gray-200 shadow-md">
+                <table class="min-w-full">
+                  <thead>
+                    <tr>
+                      <th class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                        Titulo
+                      </th>
+                      <th class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                        Canal
+                      </th>
+                      <th class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                        Contenido
+                      </th>
+                      <th class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                       Usuario 
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody class="bg-white">
+                    {posts
+                      .sort((a, b) => new Date(b.created) - new Date(a.created))
+                      .slice(0, 3)
+                      .map((post) => (
+                        <tr key={post.id}>
+                          <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                              <div class="text-sm font-medium leading-5 text-gray-900">
+                                {post.title}
+                              </div>
+                          </td>
+                          <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <div class="text-sm leading-5 text-gray-900">
+                              {post.channelName}
+                            </div>
+                          </td>
+
+                          <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <div class="text-sm leading-5 text-gray-900">
+                              {post.content}
+                            </div>
+                          </td>
+
+                          <td class="px-6 py-4 text-sm leading-5 text-gray-500 whitespace-no-wrap border-b border-gray-200">
+                            {post.userName}
                           </td>
                         </tr>
                       ))}

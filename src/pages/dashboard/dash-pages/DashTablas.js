@@ -3,16 +3,21 @@ import { useAuth } from "../../../Auth";
 import { jwtDecode } from "jwt-decode";
 import Sidebar from "../sidebar/Sidebar";
 import DashUser from "../dash-forms/DashUser";
+import DashProduct from "../dash-forms/DashProduct";
 
 function DashTablas() {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [products, setProducts] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [showAllProducts, setShowAllProducts] = useState(false);
   const [editingUser, setEditingUser] = useState(false);
   const [editingProduct, setEditingProduct] = useState(false);
+  const [addingUser, setAddingUser] = useState(false);
+  const [addingProduct, setAddingProduct] = useState(false);
   const [userToEdit, setUserToEdit] = useState(null);
+  const [productToEdit, setProductToEdit] = useState(null);
 
   let decodedToken;
   const userToken = localStorage.getItem("token");
@@ -80,7 +85,7 @@ function DashTablas() {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="ml-[250px] mt-[83px] w-full bg-slate-200 h-screen">
+      <div className="ml-[250px] mt-[43px] w-full bg-slate-200 h-screen">
         <div className="p-6 overflow-auto bg-slate-200">
           <div className="flex flex-col mt-8">
             <div className="py-2 -my-2 -mx-6 px-6">
@@ -104,7 +109,16 @@ function DashTablas() {
                       <th className="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
                         Rol
                       </th>
-                      <th className="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50"></th>
+                      <th className="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                        <a
+                          onClick={() => {
+                            setAddingUser(true);
+                          }}
+                          className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
+                        >
+                          Agregar
+                        </a>
+                      </th>
                     </tr>
                   </thead>
 
@@ -168,13 +182,13 @@ function DashTablas() {
                 </table>
               </div>
               {users.length > 3 && (
-                  <button
-                    className="text-indigo-600 hover:text-indigo-900 underline"
-                    onClick={toggleShowAllUsers}
-                  >
-                    {showAllUsers ? "Ver menos" : "Ver más"}
-                  </button>
-                )}
+                <button
+                  className="text-indigo-600 hover:text-indigo-900 underline"
+                  onClick={toggleShowAllUsers}
+                >
+                  {showAllUsers ? "Ver menos" : "Ver más"}
+                </button>
+              )}
               <h2 className="font-manjari mt-4 text-lg">Productos</h2>
               <div className="inline-block min-w-full overflow-hidden align-middle border-b border-gray-200 shadow-md">
                 <table className="min-w-full">
@@ -194,6 +208,16 @@ function DashTablas() {
                       </th>
                       <th className="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
                         Usuario
+                      </th>
+                      <th className="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                        <a
+                          onClick={() => {
+                            setAddingProduct(true);
+                          }}
+                          className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
+                        >
+                          Agregar
+                        </a>
                       </th>
                     </tr>
                   </thead>
@@ -235,10 +259,23 @@ function DashTablas() {
                           </td>
                           <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                             <div className="text-sm leading-5 text-gray-900">
-                              {product.userName === null
-                                ? product.g_user
-                                : product.userName}
+                              {(product.userName === null ||
+                                product.userName === "") &&
+                              (product.g_user === null || product.g_user === "")
+                                ? "Agregado por administrador"
+                                : product.userName || product.g_user}
                             </div>
+                          </td>
+                          <td className="px-6 py-4 text-sm leading-5 text-gray-500 whitespace-no-wrap border-b border-gray-200">
+                            <a
+                              onClick={() => {
+                                setEditingProduct(true);
+                                setProductToEdit(product);
+                              }}
+                              className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
+                            >
+                              Editar
+                            </a>
                           </td>
                         </tr>
                       ))}
@@ -256,7 +293,29 @@ function DashTablas() {
             </div>
           </div>
         </div>
-        {editingUser && <DashUser getUsers={getUsers} setEditingUser={setEditingUser} user={userToEdit} />}
+        {editingUser && (
+          <DashUser
+            getUsers={getUsers}
+            setEditingUser={setEditingUser}
+            user={userToEdit}
+          />
+        )}
+        {editingProduct && (
+          <DashProduct
+            getProducts={getProducts}
+            setEditingProduct={setEditingProduct}
+            product={productToEdit}
+          />
+        )}
+        {addingUser && (
+          <DashUser getUsers={getUsers} setAddingUser={setAddingUser} />
+        )}
+        {addingProduct && (
+          <DashProduct
+            getProducts={getProducts}
+            setAddingProduct={setAddingProduct}
+          />
+        )}
       </div>
     </div>
   );
