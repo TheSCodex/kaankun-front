@@ -35,6 +35,8 @@ function Canal() {
 
   const userId = decodedToken ? decodedToken.userId : null;
   const source = decodedToken ? decodedToken.source : null;
+  const username = decodedToken ? decodedToken.userName : null;
+
 
   useEffect(() => {
     fetch('http://localhost:8080/api/channels')
@@ -60,6 +62,7 @@ function Canal() {
   const handleOpenModal = () => {
     setModalVisible(true);
     console.log(userId);
+    console.log(username);
   };
 
   const handleCloseModal = () => {
@@ -76,6 +79,7 @@ function Canal() {
         title,
         content,
         Id_Channel: id,
+        userName: username
       };
 
       let UrlCreate = "http://localhost:8080/api/createPost";
