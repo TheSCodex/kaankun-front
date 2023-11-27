@@ -38,7 +38,6 @@ function Mercado() {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [tel, setTel] = useState("");
   const [map, setMap] = useState(null);
   const [showMap, setShowMap] = useState(false);
   const [latitude, setLatitude] = useState("");
@@ -63,6 +62,7 @@ function Mercado() {
   }
   const userId = decodedToken ? decodedToken.userId : null;
   const source = decodedToken ? decodedToken.source : null;
+  const userName = decodedToken ? decodedToken.userName : null;
 
   useLayoutEffect(() => {
     if (showMap) {
@@ -284,19 +284,28 @@ function Mercado() {
           }));
           resolve();
         });
-
-        const productDataWithLocation = {
-          userId,
-          name,
-          description,
-          precio,
-          categoria,
-          tel: tel.toString(),
-          ...locationData,
-          imageUrl,
-        };
+        await new Promise((resolve) => {
+          setLocationData((prevData) => ({
+            ...prevData,
+            imageUrl,
+          }));
+          resolve();
+        });
 
         if (source === "Google") {
+
+          const productDataWithLocation = {
+            userId,
+            name,
+            description,
+            precio,
+            categoria,
+            ...locationData,
+            imageUrl,
+            tel,
+            userName,
+          };
+
           fetch(serverGoogleUrl, {
             method: "POST",
             headers: {
@@ -348,6 +357,16 @@ function Mercado() {
               );
             });
         } else {
+          const productDataWithLocation = {
+            userId,
+            name,
+            description,
+            precio,
+            categoria,
+            ...locationData,
+            imageUrl,
+            tel,
+          };
           fetch(serverUrl, {
             method: "POST",
             headers: {

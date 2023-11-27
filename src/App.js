@@ -1,4 +1,10 @@
-import { useRoutes, BrowserRouter as Router } from "react-router-dom";
+import { useContext } from "react";
+import {
+  useRoutes,
+  BrowserRouter as Router,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import "./index.css";
 
 //Páginas
@@ -8,28 +14,32 @@ import Foro from "./pages/foro/Foro.jsx";
 import Login from "./pages/login/Login.js";
 import Nosotros from "./pages/nosotros/Nosotros.js";
 import Contacto from "./pages/contacto/Contacto.js";
-import { AuthProvider } from "./Auth";
+import { AuthProvider, useAuth } from "./Auth"; 
 import Recover from "./pages/login/Recover.js";
 import DetallesProducto from "./components/DetallesProducto.js";
-import Canal from './pages/Canal/canal.jsx';
-import Posts from './pages/PostsCanal/PostsCanal.jsx'
+import Canal from "./pages/Canal/canal.jsx";
+import Posts from "./pages/PostsCanal/PostsCanal.jsx";
 import Tarjeta from "./pages/PostsCanal/tarjeta";
-
+import DashHome from "./pages/dashboard/dash-pages/DashHome.js";
+import DashTablas from "./pages/dashboard/dash-pages/DashTablas.js";
 
 const AppRoutes = () => {
+  const { isLoggedIn } = useAuth();
+
   let routes = useRoutes([
     { path: "/", element: <Inicio /> },
     { path: "/mercado", element: <Mercado /> },
     { path: "/foro", element: <Foro /> },
     { path: "/nosotros", element: <Nosotros /> },
     { path: "/login", element: <Login /> },
-    { path: "/contacto", element: <Contacto /> },,
-    {path: '/canal/:id', element: <Canal/>},
-    {path: '/post/:id', element: <Posts/>},
-    {path: '/tarjeta', element:<Tarjeta/>},
+    { path: "/contacto", element: <Contacto /> },
+    { path: "/canal/:id", element: <Canal /> },
+    { path: "/post/:id", element: <Posts /> },
+    { path: "/tarjeta", element: <Tarjeta /> },
     { path: "/recovery/:email", element: <Recover /> },
     { path: "/mercado/:productId", element: <DetallesProducto /> },
-    { path: "/mercado/:productId", element: <DetallesProducto /> },
+    { path: "/dashboard", element: <DashHome /> },
+    { path: "/dashboard/tablas", element: <DashTablas /> },
   ]);
 
   return routes;

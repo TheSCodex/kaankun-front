@@ -1,24 +1,57 @@
 // AuthContext.js
 import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+  const [user, setUser] = useState(null);
+
+  let decodedToken;
+  const userToken = localStorage.getItem("token");
+  if (userToken) {
+    decodedToken = jwtDecode(userToken);
+  }
+
+  const userId = decodedToken ? decodedToken.userId : null;
+
+  const getLoggedUser = async () => {
+    try {
+      let user;
+      if (decodedToken.source === 'Google') {
+        user = decodedToken;
+      } else {
+        const results = await fetch(`http://localhost:8080/api/users/${userId}`);
+        if (!results.ok) {
+          console.log(results);
+          alert("Algo salió mal");
+        }
+        user = await results.json();
+      }
+      console.log(user);
+      setUser(user);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const login = () => {
     setIsLoggedIn(true);
+    getLoggedUser();
   };
+
 
   const logout = () => {
     setIsLoggedIn(false);
+    setUser(null);
     localStorage.removeItem("token");
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
