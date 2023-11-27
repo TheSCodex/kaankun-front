@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment, faEllipsis, faThumbsUp, } from "@fortawesome/free-solid-svg-icons";
+import { faBlog, faComment, faEllipsis, faHome, faScaleBalanced, faThumbsUp, } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../Auth.js";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
@@ -9,9 +9,7 @@ import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import lupa from "../../assets/lupa.png";
-import chan from "../../assets/blog-solid.svg";
 import publs from "../../assets/envelopes-bulk-solid.svg";
-import rules from "../../assets/scale-balanced-solid.svg";
 import serpen from "../../assets/aaaaa.png";
 
 function Canal() {
@@ -25,6 +23,9 @@ function Canal() {
   const [searchText, setSearchText] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [noResults, setNoResults] = useState(false);
+  const [channels, setChannels] = useState([]);
+  const [showChannels, setShowChannels] = useState(false);
+
 
   let decodedToken;
   const userToken = localStorage.getItem("token");
@@ -35,6 +36,26 @@ function Canal() {
   const userId = decodedToken ? decodedToken.userId : null;
   const source = decodedToken ? decodedToken.source : null;
 
+  useEffect(() => {
+    fetch('http://localhost:8080/api/channels')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Error al obtener los canales');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setChannels(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+  }, []);
+
+  const handleToggleChannels = () => {
+    setShowChannels(!showChannels);
+  };
 
   const handleOpenModal = () => {
     setModalVisible(true);
@@ -56,21 +77,21 @@ function Canal() {
         content,
         Id_Channel: id,
       };
-  
+
       let UrlCreate = "http://localhost:8080/api/createPost";
-  
+
       if (source === "Google") {
         UrlCreate = "http://localhost:8080/api/createPostG";
       }
-  
+
       const response = await fetch(UrlCreate, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(postData),
-      });
-  
+      })
+
       if (response.ok) {
         const data = await response.json();
         console.log(
@@ -103,7 +124,7 @@ function Canal() {
       });
     }
   };
-  
+
 
   const loadPosts = async () => {
     try {
@@ -165,9 +186,8 @@ function Canal() {
       <Header />
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className={`lg:hidden absolute top-10 left-10 z-50 ${
-          sidebarOpen ? "" : ""
-        }`}
+        className={`lg:hidden absolute top-10 left-10 z-50 ${sidebarOpen ? "" : ""
+          }`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -217,19 +237,29 @@ function Canal() {
             </i>
           </div>
           <div className="mt-10">
-            <Link
-              to="/foro"
-              onClick={""}
-              className="items-center focus:outline-none w-full"
-            >
-              <div className="flex">
-                <img src={chan} className="h-[30px] mr-6" />
+            <div className="">
+              <Link to='/foro' className=" flex cursor-pointer mb-5 items-center focus:outline-none w-full">
+                <FontAwesomeIcon icon={faHome} className=' h-[30px] mr-6' />
+                <h1 className="font-montserrat font-semibold">Principal</h1>
+              </Link>
+              <div onClick={handleToggleChannels} className=" flex cursor-pointer items-center focus:outline-none w-full">
+                <FontAwesomeIcon icon={faBlog} className='h-[30px] mr-6' />
                 <h1 className="font-montserrat font-semibold">Canales</h1>
               </div>
-            </Link>
+            </div>
+            {showChannels && (
+              <div className="ml-6 mt-4">
+                {channels.map((channel) => (
+                  <Link to={`/canal/${channel.Id}`} className="flex items-center " key={channel.Id}>
+                    <span className="mr-2">&#8226;</span>
+                    <p className='font-montserrat hover:underline'>{channel.nameC}</p>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
           {isLoggedIn ? (
-            <div className="mt-8">
+            <div className="mt-4">
               <button
                 onClick={handleOpenModal}
                 className="items-center focus:outline-none w-full"
@@ -243,10 +273,10 @@ function Canal() {
           ) : (
             ""
           )}
-          <div className="mt-12">
+          <div className="mt-10">
             <div className="bg-[#000] h-[.8px] w-[100%]"></div>
             <div className="mb-6 flex items-center">
-              <img src={rules} className="h-[25px] mr-6" />
+              <FontAwesomeIcon icon={faScaleBalanced} className='h-[25px] mr-6' />
               <h1 className="font-montserrat font-semibold text-xl mt-3">
                 Reglas de los canales:
               </h1>
@@ -279,14 +309,14 @@ function Canal() {
                 {channel.descriptionC}
               </h2>
               {isLoggedIn ? (
-              <button
-                onClick={handleOpenModal}
-                className="my-4 ml-4 w-3/5 bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
-              >
-                Crea tu publicación
-              </button>) : (
-            <h1 className=" ml-4 font-montserrat text-blue-500 font-semibold text-xl">Para publicar inicia sesion</h1>
-          )}
+                <button
+                  onClick={handleOpenModal}
+                  className="my-4 ml-4 w-3/5 bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
+                >
+                  Crea tu publicación
+                </button>) : (
+                <h1 className=" ml-4 font-montserrat text-blue-500 font-semibold text-xl">Para publicar inicia sesion</h1>
+              )}
             </div>
             {posts.map((post) => (
               <div
@@ -337,54 +367,54 @@ function Canal() {
         </div>
         <div className="buscador ml-auto">
           <div className="foroCanal lg:justify-center items-center flex lg:flex-row flex-row lg:mb-[30px] mb-[300px] lg:mt-[340px] mt-[760px] h-[300px] border w-full">
-            <div className="fotoCanal h-full">            
+            <div className="fotoCanal h-full">
             </div>
+          </div>
         </div>
       </div>
-    </div>
       {
-    isModalVisible && (
-      <div className="fixed top-0 left-0 w-full h-full lg:mt-[73px] mt-[122px] flex items-center justify-center bg-gray-900 bg-opacity-80">
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Crea tu publicación</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label htmlFor="title">Título</label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full border rounded-md p-2"
-              />
+        isModalVisible && (
+          <div className="fixed top-0 left-0 w-full h-full lg:mt-[73px] mt-[122px] flex items-center justify-center bg-gray-900 bg-opacity-80">
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <h2 className="text-xl font-semibold mb-4">Crea tu publicación</h2>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                  <label htmlFor="title">Título</label>
+                  <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full border rounded-md p-2"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="content">Contenido</label>
+                  <textarea
+                    id="content"
+                    name="content"
+                    rows="4"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    className="w-full border rounded-md p-2"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
+                >
+                  Crear Publicación
+                </button>
+              </form>
+              <button onClick={handleCloseModal} className="text-blue-500 mt-4">
+                Cancelar
+              </button>
             </div>
-            <div className="mb-4">
-              <label htmlFor="content">Contenido</label>
-              <textarea
-                id="content"
-                name="content"
-                rows="4"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="w-full border rounded-md p-2"
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
-            >
-              Crear Publicación
-            </button>
-          </form>
-          <button onClick={handleCloseModal} className="text-blue-500 mt-4">
-            Cancelar
-          </button>
-        </div>
-      </div>
-    )
-  }
-  <Footer />
+          </div>
+        )
+      }
+      <Footer />
     </div >
   );
 }
