@@ -310,24 +310,12 @@ function Foro() {
               </p>
               </Link>
               <div className=" ml-4 flex items-center mt-3">
-                <div className='mr-8 flex items-center' onClick={async () => {
-                  await BotMegusta(post.Id);
-                  getLikes();
-                }} style={{ cursor: 'pointer' }}>
-                  <FontAwesomeIcon icon={faThumbsUp} className={`text-xl ${meGusta[post.Id] ? 'text-blue-500' : ''}`} />
-                  <span className='font-monserrat font-semibold ml-2 text-lg'>{likesCount}</span>
-                </div>
-                <div className="mr-8 flex items-center">
-                  <FontAwesomeIcon icon={faComment} className="text-xl" />
-                  <p className="mx-3 text-md">Comentarios</p>
-                </div>
+                
                 {/* <div className="mr-8 flex items-center">
                       <FontAwesomeIcon icon={faShare} className="text-xl" />
                       <p className="mx-3 text-md">Compartir</p>
                     </div> */}
-                <div className="mr-8 flex items-center">
-                  <FontAwesomeIcon icon={faEllipsis} className="text-xl" />
-                </div>
+                
               </div>
             
           </div>

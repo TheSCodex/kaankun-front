@@ -369,32 +369,16 @@ function Canal() {
                       ? post.userName || post.name
                       : "User Guest"}
                   </h2>
-                  <h2 className="font-monserrat font-semibold text-lg">
+                  <h2 className="font-monserrat font-semibold text-2xl">
                     {post.title}
                   </h2>
-                  <h3 className="font-monserrat font-medium text-lg max-w-full overflow-ellipsis overflow-hidden whitespace-nowrap">
+                  <h3 className="font-monserrat font-medium text-xl max-w-full overflow-ellipsis overflow-hidden whitespace-nowrap">
                     {post.content}
                   </h3>
                   <p className="text-md">
                     {new Date(post.created).toLocaleDateString()}
                   </p>
-                  <div className="flex items-center my-4">
-                    <div className="mr-8 flex items-center">
-                      <FontAwesomeIcon icon={faThumbsUp} className="text-xl" />
-                      <p className="mx-3 text-md">Me gusta</p>
-                    </div>
-                    <div className="mr-8 flex items-center">
-                      <FontAwesomeIcon icon={faComment} className="text-xl" />
-                      <p className="mx-3 text-md">Comentar</p>
-                    </div>
-                    {/* <div className="mr-8 flex items-center">
-                      <FontAwesomeIcon icon={faShare} className="text-xl" />
-                      <p className="mx-3 text-md">Compartir</p>
-                    </div> */}
-                    <div className="mr-8 flex items-center">
-                      <FontAwesomeIcon icon={faEllipsis} className="text-xl" />
-                    </div>
-                  </div>
+                  
                 </Link>
               </div>
             ))}

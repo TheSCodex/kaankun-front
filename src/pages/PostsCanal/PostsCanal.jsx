@@ -130,8 +130,20 @@ function PostsCanal() {
 
   const BotMegusta = async () => {
     try {
+      // Verificar si el usuario está logueado
+      if (!isLoggedIn) {
+        // Mostrar alerta con SweetAlert2 si el usuario no está logueado
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Oops...',
+          text: 'Debes iniciar sesión para dar like.',
+          confirmButtonText: 'OK',
+        });
+        return;
+      }
+  
       setBotonDesactivado(true);
-
+  
       const response = await fetch('http://localhost:8080/api/Megusta', {
         method: 'POST',
         headers: {
@@ -142,13 +154,13 @@ function PostsCanal() {
           Id_Post: id,
         }),
       });
-
+  
       if (response.ok) {
         const responseData = await response.json();
         // Verificar el estado actual y actualizar en consecuencia
         const newMeGusta = !meGusta;
         setMeGusta(newMeGusta);
-
+  
         // Actualizar el estado en el almacenamiento local
         localStorage.setItem(`like_${id}`, newMeGusta.toString());
         getLikes();
