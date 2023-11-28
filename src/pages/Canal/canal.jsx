@@ -363,7 +363,7 @@ function Canal() {
               </div>
             ))}
             {noResults && (
-              <p className="text-black   mt-4">
+              <p className="text-black ml-80  text-3xl  mt-4">
                 No se encontraron coincidencias.
               </p>
             )}

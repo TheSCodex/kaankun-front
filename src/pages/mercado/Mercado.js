@@ -294,7 +294,6 @@ function Mercado() {
         });
 
         if (source === "Google") {
-
           const productDataWithLocation = {
             userId,
             name,
@@ -330,7 +329,9 @@ function Mercado() {
                   setCategoria("");
                   setTel("");
                   setImage(null);
-                  const thumbnailContainer = document.getElementById("thumbnail-container");
+                  const thumbnailContainer = document.getElementById(
+                    "thumbnail-container"
+                  );
                   if (thumbnailContainer) {
                     thumbnailContainer.innerHTML = "";
                   }
@@ -390,7 +391,9 @@ function Mercado() {
                   setCategoria("");
                   setTel("");
                   setImage(null);
-                  const thumbnailContainer = document.getElementById("thumbnail-container");
+                  const thumbnailContainer = document.getElementById(
+                    "thumbnail-container"
+                  );
                   if (thumbnailContainer) {
                     thumbnailContainer.innerHTML = "";
                   }
@@ -620,9 +623,11 @@ function Mercado() {
                             />
                           </div>
                         ) : noResults ? (
-                         
-                          <p className="text-center  font-bold ">No se encontraron productos... ｡╯︵╰｡ </p>
-                       
+                          <div className="flex items-center ml-80 justify-center h-screen">
+                            <h1 className="text-5xl font-bold  ml-80 text-center text-gray-700 whitespace-nowrap">
+                              No se encontraron productos.
+                            </h1>
+                          </div>
                         ) : (
                           datos.map((product) => {
                             return (
@@ -721,10 +726,10 @@ function Mercado() {
                                   style={{ cursor: "pointer" }}
                                 />
                               </div>
-                                <div
-                                  id="thumbnail-container"
-                                  className="lg:ml-12 ml-32"
-                                ></div>
+                              <div
+                                id="thumbnail-container"
+                                className="lg:ml-12 ml-32"
+                              ></div>
                             </div>
                           </div>
                           <button
