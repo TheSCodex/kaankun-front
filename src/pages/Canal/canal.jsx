@@ -11,6 +11,12 @@ import { jwtDecode } from "jwt-decode";
 import lupa from "../../assets/lupa.png";
 import publs from "../../assets/envelopes-bulk-solid.svg";
 import serpen from "../../assets/aaaaa.png";
+import imagen1 from "../../assets/image1.jpg"
+import imagen2 from "../../assets/image2.jpg"
+import imagen3 from "../../assets/image3.jpg"
+import imagen4 from "../../assets/image4.jpg"
+import imagen5 from "../../assets/image5.jpg"
+import imagen6 from "../../assets/image6.jpg"
 
 function Canal() {
   const { id } = useParams();
@@ -37,6 +43,31 @@ function Canal() {
   const source = decodedToken ? decodedToken.source : null;
   const username = decodedToken ? decodedToken.userName : null;
 
+
+  let channelImage;
+  switch (parseInt(id, 10)) {
+    case 1:
+      channelImage = imagen1;
+      break;
+    case 2:
+      channelImage = imagen2;
+      break;
+    case 3:
+      channelImage = imagen3;
+      break;
+    case 4:
+      channelImage = imagen4;
+      break;
+    case 5:
+      channelImage = imagen5;
+      break;
+    case 6:
+      channelImage = imagen6;
+      break;
+    default:
+      channelImage = imagen2; 
+      break;
+  }
 
   useEffect(() => {
     fetch('http://localhost:8080/api/channels')
@@ -302,26 +333,31 @@ function Canal() {
           </div>
         </div>
       </div>
-      <div className="lg:ml-[335px] h-full w-[3/5]">
-        <div className="">
+      <div className="lg:ml-[335px] h-full w-[3/5] relative">
+        <div
+        >
           <div className="p-6 lg:pl-14">
-            <div className=" flex flex-col justify-center  w-4/6 shrink-0 h-[200px]">
-              <h1 className="font-semibold text-left text-5xl mt-5 ml-4">
-                {channel && channel.nameC}
-              </h1>
-              <h2 className="font-semibold text-left text-xl mt-2 ml-4">
-                {channel.descriptionC}
-              </h2>
-              {isLoggedIn ? (
-                <button
-                  onClick={handleOpenModal}
-                  className="my-4 ml-4 w-3/5 bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
-                >
-                  Crea tu publicación
-                </button>) : (
-                <h1 className=" ml-4 font-montserrat text-blue-500 font-semibold text-xl">Para publicar inicia sesion</h1>
-              )}
-            </div>
+              <div
+                key={channel.Id}
+                className="flex flex-col text-white justify-center rounded-md shadow-lg pl-8 pr-8 foto bg-cover w-full shrink-0 h-[200px]"
+                style={{ backgroundImage: `url(${channelImage})` }}
+              >
+                <h1 className="font-semibold text-left text-5xl mt-5 ml-4">
+                  {channel.nameC}
+                </h1>
+                <h2 className="font-semibold text-left text-xl mt-2 ml-4">
+                  {channel.descriptionC}
+                </h2>
+              </div>
+            {isLoggedIn ? (
+              <button
+                onClick={handleOpenModal}
+                className="my-4 ml-4 w-3/5 bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
+              >
+                Crea tu publicación
+              </button>) : (
+              <h1 className=" ml-4 font-montserrat text-blue-500 font-semibold text-xl">Para publicar inicia sesion</h1>
+            )}
             {posts.map((post) => (
               <div
                 key={post.Id}

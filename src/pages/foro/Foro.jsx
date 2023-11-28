@@ -3,7 +3,6 @@ import Cun from "../../assets/pexels-asad-photo-maldives-9656551.jpg";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBlog, faCircleUser, faComment, faCommentDots, faEllipsis, faHome, faScaleBalanced, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
-import { useAuth } from "../../Auth.js";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import lupa from "../../assets/lupa.png";
@@ -20,12 +19,19 @@ import imagen6 from "../../assets/image6.jpg"
 
 
 function Foro() {
-  const { isLoggedIn } = useAuth();
   const [searchText, setSearchText] = useState("");
   const [posts, setPosts] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [channels, setChannels] = useState([]);
   const [showChannels, setShowChannels] = useState(false);
+  const [meGusta, setMeGusta] = useState(
+    localStorage.getItem(`like_${id}`) === 'true' ? true : false
+  );
+  const [botonDesactivado, setBotonDesactivado] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [postId, setPostId] = useState(null);
+
+
 
   const images = [imagen1, imagen2, imagen3, imagen4, imagen5, imagen6];
 
@@ -39,26 +45,59 @@ function Foro() {
     autoplaySpeed: 5000,
   };
 
-  // const [count, setCount] = useState([]);
+  useEffect(() => {
+    getLikes();
+  }, [id]);
 
-  // const CountPost = async () => {
-  //   try {
-  //     const response = await fetch(`http://localhost:8080/api/CountPosts/${id}`);
+  const getLikes = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/GetMegustas/${id}`);
+      if (response.ok) {
+        const likesData = await response.json();
+        setLikesCount(likesData.length);
+        const userLike = likesData.some((like) => like.Id_User === userId);
+        setMeGusta(userLike);
+      } else {
+        console.error('Error al obtener los likes:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error al obtener los likes:', error);
+    }
+  };
 
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       setCount(data);
-  //     } else {
-  //       console.error('Error al obtener la cantidad de posts:', response.statusText);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error de red:', error);
-  //   }
-  // };
+  const BotMegusta = async () => {
+    try {
+      setBotonDesactivado(true);
 
-  // useEffect(() => {
-  //   CountPost()
-  // },[])
+      const response = await fetch('http://localhost:8080/api/Megusta', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          Id_User: userId,
+          Id_Post: id,
+        }),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        // Verificar el estado actual y actualizar en consecuencia
+        const newMeGusta = !meGusta;
+        setMeGusta(newMeGusta);
+
+        // Actualizar el estado en el almacenamiento local
+        localStorage.setItem(`like_${id}`, newMeGusta.toString());
+        getLikes();
+      } else {
+        console.error('Error al dar like:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error al dar like:', error);
+    } finally {
+      setBotonDesactivado(false);
+    }
+  };
 
   useEffect(() => {
     fetch('http://localhost:8080/api/channels')
@@ -220,7 +259,7 @@ function Foro() {
           <h1 className='mt-12 font-montserrat font-semibold text-4xl text-white text-center'>FOROS DE CANCÚN</h1>
           <h2 className='font-montserrat font-medium text-xl text-white text-center'>Te damos la bienvenida a nuestro foro enfocado en Cancún</h2>
         </div>
-        <h2 className='font-monserrat font-semibold text-xl mt-4 ml-8 '>Explora algunos de nuestros canales más populares</h2>
+        <h2 className='font-monserrat font-semibold text-xl mt-4 ml-8 '>Explora algunos de nuestros canales</h2>
         <Slider {...settings} className="ml-5 w-[95%]" >
           {channels.map((channel, index) => (
             <div key={channel.Id} className="w-full">
@@ -264,9 +303,9 @@ function Foro() {
                 Publicado en: {post.channelName ? post.channelName : "Noooooooo"}
               </p>
               <div className=" ml-4 flex items-center mt-3">
-                <div className="mr-8 flex items-center">
-                  <FontAwesomeIcon icon={faThumbsUp} className="text-xl" />
-                  <p className="mx-3 text-md">Me gusta</p>
+                <div className='mr-8 flex items-center' postId={post.Id} onClick={BotMegusta} style={{ cursor: 'pointer' }}>
+                  <FontAwesomeIcon icon={faThumbsUp} className={`text-xl ${meGusta ? 'text-blue-500' : ''}`} />
+                  <span className='font-monserrat font-semibold ml-2 text-lg'>{likesCount}</span>
                 </div>
                 <div className="mr-8 flex items-center">
                   <FontAwesomeIcon icon={faComment} className="text-xl" />

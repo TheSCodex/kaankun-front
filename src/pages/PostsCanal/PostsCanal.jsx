@@ -15,18 +15,20 @@ import serpen from "../../assets/aaaaa.png";
 function PostsCanal() {
   const { id } = useParams();
   const { isLoggedIn } = useAuth();
-  const [isReplyVisible, setReplyVisible] = useState(false);
   const [isCommentVisible, setCommentVisible] = useState(false);
   const [content, setContent] = useState('');
   const [commentId, setCommentId] = useState(null);
   const [comments, setComments] = useState([]);
-  const [replys, setReplys] = useState([]);
   const [post, setPost] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [meGusta, setMeGusta] = useState(false);
+  const [meGusta, setMeGusta] = useState(
+    localStorage.getItem(`like_${id}`) === 'true' ? true : false
+  );
   const [channels, setChannels] = useState([]);
   const [showChannels, setShowChannels] = useState(false);
+  const [botonDesactivado, setBotonDesactivado] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
 
 
 
@@ -100,31 +102,36 @@ function PostsCanal() {
     }
   };
 
+  const getLikes = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/GetMegustas/${id}`);
+      if (response.ok) {
+        const likesData = await response.json();
+        setLikesCount(likesData.length);
+        const userLike = likesData.some((like) => like.Id_User === userId);
+        setMeGusta(userLike);
+      } else {
+        console.error('Error al obtener los likes:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error al obtener los likes:', error);
+    }
+  };
+
+
+
 
   useEffect(() => {
     GetPost();
     getCommentsByPost();
-    getReplys();
+    getLikes();
   }, [id]);
 
-  const getReplys = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/GetReplys/${commentId}`);
-
-      if (response.ok) {
-        const data = await response.json();
-        setReplys(data);
-      } else {
-        const errorData = await response.json();
-        console.error('Error al obtener las respuestas:', errorData.message);
-      }
-    } catch (error) {
-      console.error('Error de red:', error);
-    }
-  }
 
   const BotMegusta = async () => {
     try {
+      setBotonDesactivado(true);
+
       const response = await fetch('http://localhost:8080/api/Megusta', {
         method: 'POST',
         headers: {
@@ -132,18 +139,26 @@ function PostsCanal() {
         },
         body: JSON.stringify({
           Id_User: userId,
-          Id_Post: id
+          Id_Post: id,
         }),
       });
 
       if (response.ok) {
         const responseData = await response.json();
-        setMeGusta(!meGusta);
+        // Verificar el estado actual y actualizar en consecuencia
+        const newMeGusta = !meGusta;
+        setMeGusta(newMeGusta);
+
+        // Actualizar el estado en el almacenamiento local
+        localStorage.setItem(`like_${id}`, newMeGusta.toString());
+        getLikes();
       } else {
         console.error('Error al dar like:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Error al dar like:', error);
+    } finally {
+      setBotonDesactivado(false);
     }
   };
 
@@ -177,15 +192,14 @@ function PostsCanal() {
 
   let lastSubmissionTime = 0;
   let errorHandled = false;
-  const submissionInterval = 3000; // Intervalo en milisegundos (3 segundos en este caso)
-  
+  const submissionInterval = 3000;
+
   const handleSubmitReply = async (e) => {
     e.preventDefault();
-  
+
     const currentTime = new Date().getTime();
-  
+
     if (currentTime - lastSubmissionTime < submissionInterval) {
-      // Si el tiempo transcurrido desde la última presentación es menor que el intervalo, no se permite otra presentación
       Swal.fire({
         icon: 'warning',
         title: 'Espera un momento',
@@ -199,13 +213,13 @@ function PostsCanal() {
         Id_Post: id,
         Id_User: userId
       };
-  
+
       let UrlCreate = "http://localhost:8080/api/CreateComment";
-  
+
       if (source === "Google") {
         UrlCreate = "http://localhost:8080/api/CreateCommentG";
       }
-  
+
       const response = await fetch(UrlCreate, {
         method: 'POST',
         headers: {
@@ -213,7 +227,7 @@ function PostsCanal() {
         },
         body: JSON.stringify(postData),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         console.log('Comentario exitoso. ID del comentario:', data.commentId);
@@ -233,7 +247,7 @@ function PostsCanal() {
           text: 'Ha ocurrido un error en el servidor'
         });
         errorHandled = true;
-      }lastSubmissionTime = currentTime; 
+      } lastSubmissionTime = currentTime;
     } catch (error) {
       console.error('Error de red:', error);
       if (!errorHandled) {
@@ -245,59 +259,10 @@ function PostsCanal() {
       }
     }
   };
-  
-  const OpenReply = (commentId) => {
-    setCommentId(commentId);
-    setReplyVisible(true);
-  };
 
-  const CloseReply = () => {
-    setCommentId(null);
-    setReplyVisible(false);
-    setContent('');
-  };
 
-  const SubmitReply = async (e) => {
-    e.preventDefault();
-    try {
 
-      const postData = {
-        content,
-        Id_Comment: commentId,
-        Id_User: userId
-      };
 
-      const response = await fetch('http://localhost:8080/api/ReplyComment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postData),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Comentario exitoso. ID del comentario:', data.commentId);
-        CloseReply();
-        Swal.fire({
-          icon: 'success',
-          title: 'Agregado',
-          text: 'La respuesta fue exitosa'
-        });
-        getReplys();
-      } else {
-        const errorData = await response.json();
-        console.error('Error al comentar:', errorData.message);
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Ha ocurrido un error'
-        });
-      }
-    } catch (error) {
-      console.error('Error de red:', error);
-    }
-  };
 
   return (
     <div className="bg-[#E7E7E7] lg:h-full h-full font-montserrat lg:mt-[73px] mt-[122px]">
@@ -434,7 +399,7 @@ function PostsCanal() {
           )}
           {post && (
             <h2 className='font-monserrat font-medium text-xl mt-4 ml-8 '>
-              Publicado por: {post.userName ? post.userName : "User Guest"}
+              Publicado por: {post.userName ? post.userName : "Administrador"}
             </h2>
           )}
           {post && (
@@ -443,9 +408,9 @@ function PostsCanal() {
               <h3 className="font-monserrat font-medium text-lg">{post.content}</h3>
               <p className='font-monserrat text-md'>{new Date(post.created).toLocaleDateString()}</p>
               <div className='flex items-center mt-4'>
-                <div className='mr-8 flex items-center' postId={post.id} onClick={BotMegusta} style={{ cursor: 'pointer' }}>
+                <div className='mr-8 flex items-center' postId={post.Id} onClick={BotMegusta} style={{ cursor: 'pointer' }}>
                   <FontAwesomeIcon icon={faThumbsUp} className={`text-xl ${meGusta ? 'text-blue-500' : ''}`} />
-                  <p className='mx-3 text-md' onClick={BotMegusta}>Me gusta</p>
+                  <span className='font-monserrat font-semibold ml-2 text-lg'>{likesCount}</span>
                 </div>
                 <div className='comentar mr-8 flex items-center'>
                   <FontAwesomeIcon icon={faComment} className="text-xl" />
@@ -461,10 +426,10 @@ function PostsCanal() {
             <div className="Respuesta bg-white rounded-lg shadow-lg p-6 flex flex-col items-start mb-4 mx-5 w-[60%]">
               <textarea
                 rows="4"
-                placeholder="Postea tu respuesta!1"
+                placeholder="Postea tu respuesta!"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full"
+                className="w-full text-lg"
                 required
               />
               <div className='flex items-center mt-4'>
@@ -488,65 +453,24 @@ function PostsCanal() {
             </div>
           )}
           <div className="Linea separadora bg-[#43B8E8] h-[3px] mb-4 w-[97%] mx-4"></div>
-          {comments.map((comment) => (
-            <div key={comment.Id_Comment} className="Respuesta bg-white rounded-lg shadow-lg p-6 flex flex-col items-start mb-4 mx-5 w-[60%]">
-              <div className="flex items-center">
-                <FontAwesomeIcon icon={faCircleUser} className="text-4xl mr-2" />
-                <div>
-                  <h3 className="font-bold font-montserrat text-xl">
-                    {comment.userName ? comment.userName : "User Guest"}
-                  </h3>
-                  <p className="font-montserrat text-sm">{new Date(comment.created).toLocaleDateString()}</p>
-                </div>
-              </div>
-              <p className="font-medium font-montserrat max-w-full overflow-ellipsis overflow-hidden whitespace-nowrap">{comment.content}</p>
-              <div className="flex items-center mt-4">
-                <div className="mr-8 flex items-center">
-                  <FontAwesomeIcon icon={faThumbsUp} className="text-xl" />
-                  <p className="mx-3 text-md">Me gusta</p>
-                </div>
-                <div className="mr-8 flex items-center">
-                  <FontAwesomeIcon icon={faComment} className="text-xl" />
-                  <p className="mx-3 text-md" onClick={() => OpenReply(comment.Id_Comment)}>Responder</p>
-                </div>
-                {getReplys ? (
-                  <p className="hover:underline" onClick={() => getReplys(comment.Id_Comment)}>Ver respuestas</p>
-                ) : (
-                  ('')
-                )}
-              </div>
-              {isReplyVisible && commentId === commentId && (
-                <div >
-                  <div className="Linea separadora bg-[#43B8E8] h-[3px] mt-4 w-[%] mx-4"></div>
-                  <textarea
-                    rows="4"
-                    placeholder="Postea tu respuesta!"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    className="w-full mt-4"
-                  />
-                  <div className='flex items-center mt-4'>
-                    <div className='mr-8 flex items-center'>
-                      <button
-                        className="bg-blue-500 hover-bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl"
-                        onClick={SubmitReply}
-                      >
-                        Enviar Respuesta
-                      </button>
-                    </div>
-                    <div className='mr-8 flex items-center'>
-                      <button
-                        className="text-blue-500"
-                        onClick={CloseReply}
-                      >
-                        Cerrar
-                      </button>
-                    </div>
+          {comments.length === 0 ? (
+            <p className='font-monserrat text-lg font-semibold ml-4'>No hay comentarios.</p>
+          ) : (
+            comments.map((comment) => (
+              <div key={comment.Id_Comment} className="Respuesta bg-white rounded-lg shadow-lg p-6 flex flex-col items-start mb-4 mx-5 w-[60%]">
+                <div className="flex items-center">
+                  <FontAwesomeIcon icon={faCircleUser} className="text-4xl mr-2" />
+                  <div>
+                    <h3 className="font-bold font-montserrat text-xl">
+                      {comment.userName ? comment.userName : "User Guest"}
+                    </h3>
+                    <p className="font-montserrat text-sm">{new Date(comment.created).toLocaleDateString()}</p>
                   </div>
                 </div>
-              )}
-            </div>
-          ))}
+                <p className="font-medium font-montserrat max-w-full overflow-ellipsis overflow-hidden whitespace-nowrap">{comment.content}</p>
+              </div>
+            ))
+          )}
         </div>
       </div>
       <Footer />
