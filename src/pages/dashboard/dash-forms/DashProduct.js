@@ -22,12 +22,15 @@ function DashProduct({
   const [image, setImage] = useState(null);
 
   const navigate = useNavigate();
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEditedProduct({ ...editedProduct, [name]: value });
+  
+    // If the input is 'tel', convert the value to a string
+    const processedValue = name === 'tel' ? String(value) : value;
+  
+    setEditedProduct({ ...editedProduct, [name]: processedValue });
   };
-
+  
   const handleDelete = async () => {
     const result = await Swal.fire({
       title: "¿Seguro que quieres eliminar este producto?",
@@ -75,11 +78,15 @@ function DashProduct({
   const handleSave = async (e) => {
     e.preventDefault();
 
-    if (
-      !editedProduct.name.trim() ||
-      !editedProduct.description.trim() ||
-      !editedProduct.tel.trim() ||
-      !editedProduct.precio.trim()
+    const telValue = typeof editedProduct.tel === 'string'
+    ? editedProduct.tel.trim()
+    : String(editedProduct.tel).trim();
+
+  if (
+    !editedProduct.name.trim() ||
+    !editedProduct.description.trim() ||
+    !telValue ||
+    !editedProduct.precio.trim()
     ) {
       Swal.fire({
         icon: "error",

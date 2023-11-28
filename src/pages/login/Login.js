@@ -36,6 +36,7 @@ function Login() {
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [emailSentMessage, setEmailSentMessage] = useState("");
 
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -176,6 +177,11 @@ function Login() {
       lastName[0] === " "
     ) {
       setError("Los campos no deben empezar con espacios.");
+      return;
+    }
+
+    if (password !== passwordConfirm) {
+      setError("Las contraseñas no coinciden.");
       return;
     }
 

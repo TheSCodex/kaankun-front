@@ -4,6 +4,7 @@ import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../Auth";
 import { storage } from "../firebaseConfig.js";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import Swal from "sweetalert2";
 
 function Profile({ user, setViewingProfile, getLoggedUser, source }) {
   const { logout } = useAuth();
@@ -46,6 +47,20 @@ function Profile({ user, setViewingProfile, getLoggedUser, source }) {
     const data = {
       bio: editedUser.bio,
     };
+
+    if (image) {
+      const allowedExtensions = [".jpg", ".jpeg", ".png"];
+      const extension = image.name.split(".").pop().toLowerCase();
+
+      if (!allowedExtensions.includes(`.${extension}`)) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "La imagen debe ser en formato .jpg, .jpeg o .png.",
+        });
+        return;
+      }
+    }
   
     if (image) {
       const storageRef = ref(storage, `images/${image.name}`);
@@ -75,9 +90,19 @@ function Profile({ user, setViewingProfile, getLoggedUser, source }) {
       if (response.status === 200) {
         console.log("Perfil actualizado exitosamente");
         getLoggedUser();
+        Swal.fire({
+          icon: "success",
+          title: "Éxito",
+          text: "Perfil actualizado exitosamente.",
+        });
         setEditing(false);
       } else {
         console.log("Fallo al actualizar perfil");
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Ocurrió un error al actualizar perfil.",
+        });
       }
     } catch (error) {
       console.error("Error enviando solicitud:", error);

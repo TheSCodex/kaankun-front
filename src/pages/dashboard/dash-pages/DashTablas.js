@@ -112,7 +112,7 @@ function DashTablas() {
     }
   };
 
-  const handleDelete = async (userId) => {
+  const handleDelete = async (postId) => {
     try {
       const result = await Swal.fire({
         title: "¿Estás seguro?",
@@ -126,7 +126,7 @@ function DashTablas() {
       });
 
       if (result.isConfirmed) {
-        const url = `http://localhost:8080/turuta/quenoexiste/${userId}`;
+        const url = `http://localhost:8080/api/deletepost/${postId}`;
         const response = await fetch(url, {
           method: "DELETE",
         });

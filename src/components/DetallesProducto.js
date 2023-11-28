@@ -173,7 +173,7 @@ const DetallesProducto = () => {
                       )}
                     </>
                   )}
-
+                  
                   <div>
                     {product && product[0].latitude && product[0].longitude ? (
                       <div id="map" style={{ height: "200px" }}></div>

@@ -8,7 +8,10 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+  console.log("Initial value of isLoggedIn:", isLoggedIn);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [userTypeId, setUserTypeId] = useState(null);
 
   let decodedToken;
   const userToken = localStorage.getItem("token");
@@ -20,8 +23,12 @@ export function AuthProvider({ children }) {
 
   const getLoggedUser = async () => {
     try {
+      console.log("getLoggedUser - Start");
+      setLoading(true);
+      setLoading(true);
       let user;
-      if (decodedToken.source === 'Google') {
+  
+      if (decodedToken.source && decodedToken.source === 'Google') {
         user = decodedToken;
       } else {
         const results = await fetch(`http://localhost:8080/api/users/${userId}`);
@@ -31,12 +38,25 @@ export function AuthProvider({ children }) {
         }
         user = await results.json();
       }
-      console.log(user);
-      setUser(user);
+
+      console.log("User data:", user);
+      console.log("User type ID:", userTypeId);
+      console.log("isLoggedIn:", isLoggedIn);
+
+      if (user) {
+        setUser(user);
+        setUserTypeId(user.userTypeId);
+        setLoading(false);
+      } else {
+        console.error("User data not available.");
+        setLoading(false);
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      setLoading(false);
     }
   };
+  
 
   const login = () => {
     setIsLoggedIn(true);
@@ -44,14 +64,18 @@ export function AuthProvider({ children }) {
   };
 
 
-  const logout = () => {
-    setIsLoggedIn(false);
-    setUser(null);
-    localStorage.removeItem("token");
-  };
+const logout = () => {
+  console.log("Logging out...");
+  setIsLoggedIn(false);
+  setUser(null);
+  localStorage.removeItem("token");
+  console.log("Local Storage after logout:", localStorage.getItem("token"));
+};
+
+
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, userTypeId, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
