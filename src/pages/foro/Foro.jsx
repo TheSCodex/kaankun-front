@@ -16,7 +16,8 @@ import imagen3 from "../../assets/image3.jpg"
 import imagen4 from "../../assets/image4.jpg"
 import imagen5 from "../../assets/image5.jpg"
 import imagen6 from "../../assets/image6.jpg"
-
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../../Auth.js";
 
 function Foro() {
   const [searchText, setSearchText] = useState("");
@@ -24,14 +25,19 @@ function Foro() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [channels, setChannels] = useState([]);
   const [showChannels, setShowChannels] = useState(false);
-  const [meGusta, setMeGusta] = useState(
-    localStorage.getItem(`like_${id}`) === 'true' ? true : false
-  );
+  const [meGusta, setMeGusta] = useState({});
   const [botonDesactivado, setBotonDesactivado] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const [postId, setPostId] = useState(null);
+  
 
+  let decodedToken;
+  const userToken = localStorage.getItem("token");
+  if (userToken) {
+    decodedToken = jwtDecode(userToken);
+  }
 
+  const userId = decodedToken ? decodedToken.userId : null;
 
   const images = [imagen1, imagen2, imagen3, imagen4, imagen5, imagen6];
 
@@ -47,16 +53,16 @@ function Foro() {
 
   useEffect(() => {
     getLikes();
-  }, [id]);
+  }, [postId]);
 
   const getLikes = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/GetMegustas/${id}`);
+      const response = await fetch(`http://localhost:8080/api/GetMegustas/${postId}`);
       if (response.ok) {
         const likesData = await response.json();
-        setLikesCount(likesData.length);
         const userLike = likesData.some((like) => like.Id_User === userId);
-        setMeGusta(userLike);
+        setMeGusta((prevMeGusta) => ({ ...prevMeGusta, [postId]: userLike }));
+        setLikesCount(likesData.length);
       } else {
         console.error('Error al obtener los likes:', response.status, response.statusText);
       }
@@ -65,7 +71,7 @@ function Foro() {
     }
   };
 
-  const BotMegusta = async () => {
+  const BotMegusta = async (postId) => {
     try {
       setBotonDesactivado(true);
 
@@ -76,28 +82,38 @@ function Foro() {
         },
         body: JSON.stringify({
           Id_User: userId,
-          Id_Post: id,
+          Id_Post: postId,
         }),
       });
 
-      if (response.ok) {
-        const responseData = await response.json();
-        // Verificar el estado actual y actualizar en consecuencia
-        const newMeGusta = !meGusta;
-        setMeGusta(newMeGusta);
+      if (!response.ok) {
+        console.error('Error al dar/quitar like:', response.status, response.statusText);
+        return;
+      }
 
-        // Actualizar el estado en el almacenamiento local
-        localStorage.setItem(`like_${id}`, newMeGusta.toString());
-        getLikes();
+      // Actualizar el estado local (toggle)
+      const newMeGusta = !meGusta[postId];
+      setMeGusta((prevMeGusta) => ({ ...prevMeGusta, [postId]: newMeGusta }));
+
+      // Actualizar el estado en el almacenamiento local
+      localStorage.setItem(`like_${postId}`, newMeGusta.toString());
+
+      // Realizar la solicitud para obtener la cantidad actualizada de likes
+      const likesResponse = await fetch(`http://localhost:8080/api/likes/${postId}`);
+
+      if (likesResponse.ok) {
+        const likesData = await likesResponse.json();
+        setLikesCount(likesData.length);
       } else {
-        console.error('Error al dar like:', response.status, response.statusText);
+        console.error('Error al obtener los likes:', likesResponse.status, likesResponse.statusText);
       }
     } catch (error) {
-      console.error('Error al dar like:', error);
+      console.error('Error al dar/quitar like:', error);
     } finally {
       setBotonDesactivado(false);
     }
   };
+
 
   useEffect(() => {
     fetch('http://localhost:8080/api/channels')
@@ -123,6 +139,10 @@ function Foro() {
       })
       .then((data) => {
         setPosts(data);
+        if (data.length > 0) {
+          const postId = data[0].id;
+          setPostId(postId);
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -132,6 +152,7 @@ function Foro() {
 
   const handleToggleChannels = () => {
     setShowChannels(!showChannels);
+    console.log(postId);
   };
 
   return (
@@ -211,21 +232,6 @@ function Foro() {
               </div>
             )}
           </div>
-          {/* {isLoggedIn ? (
-            <div className="mt-8">
-              <button
-                onClick={"handleOpenModal"}
-                className="items-center focus:outline-none w-full"
-              >
-                <div className="flex">
-                  <img src={publs} className="h-[30px] mr-6" />
-                  <h1 className="font-montserrat font-semibold">Publicar</h1>
-                </div>
-              </button>
-            </div>
-          ) : (
-            ""
-          )} */}
           <div className="mt-10">
             <div className="bg-[#000] h-[.8px] w-[100%]"></div>
             <div className="mb-6 flex items-center">
@@ -302,9 +308,13 @@ function Foro() {
               <p className="mb-3 text-sm ml-4 font-semibold">
                 Publicado en: {post.channelName ? post.channelName : "Noooooooo"}
               </p>
+              </Link>
               <div className=" ml-4 flex items-center mt-3">
-                <div className='mr-8 flex items-center' postId={post.Id} onClick={BotMegusta} style={{ cursor: 'pointer' }}>
-                  <FontAwesomeIcon icon={faThumbsUp} className={`text-xl ${meGusta ? 'text-blue-500' : ''}`} />
+                <div className='mr-8 flex items-center' onClick={async () => {
+                  await BotMegusta(post.Id);
+                  getLikes();
+                }} style={{ cursor: 'pointer' }}>
+                  <FontAwesomeIcon icon={faThumbsUp} className={`text-xl ${meGusta[post.Id] ? 'text-blue-500' : ''}`} />
                   <span className='font-monserrat font-semibold ml-2 text-lg'>{likesCount}</span>
                 </div>
                 <div className="mr-8 flex items-center">
@@ -319,7 +329,7 @@ function Foro() {
                   <FontAwesomeIcon icon={faEllipsis} className="text-xl" />
                 </div>
               </div>
-            </Link>
+            
           </div>
         ))}
       </div>
