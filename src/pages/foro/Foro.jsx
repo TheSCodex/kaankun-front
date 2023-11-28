@@ -199,17 +199,7 @@ function Foro() {
             </h1>
             <img src={serpen} className="h-[60px]" />
           </div>
-          <div className="relative">
-            <input
-              className="bg-[#D9D9D9] h-[35px] w-[245px] p-2 pl-12 font-montserrat rounded-sm"
-              placeholder="Busqueda"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-            <i>
-              <img src={lupa} className="left-3 top-2 h-[18px] absolute" />
-            </i>
-          </div>
+          
           <div className="mt-10">
             <div className="">
               <Link to='/foro' className=" flex cursor-pointer  mb-5 items-center focus:outline-none w-full">
