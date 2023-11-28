@@ -91,7 +91,7 @@ function Header() {
                   </h1>
                 </Link>
                 <Link to="/mercado">
-                  <h1 className="hover:text-gray-300 hover:cursor-pointer mr-6 lg:mr-8">
+                  <h1 className="hover:text-gray-300 hover:cursor-pointer mr-6 lg:mr-16">
                     <strong>TIENDA</strong>
                   </h1>
                 </Link>

@@ -64,12 +64,15 @@ function EditProductForm({
 
   const handleSave = async () => {
     try {
+
+      const { created, ...editedProductWithoutCreated } = editedProduct;
+
       const response = await fetch(`http://localhost:8080/api/products/${product.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(editedProduct),
+        body: JSON.stringify(editedProductWithoutCreated),
       });
   
       if (response.ok) {
