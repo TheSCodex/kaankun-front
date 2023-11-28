@@ -179,6 +179,11 @@ function Login() {
       return;
     }
 
+    if (password !== passwordConfirm) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:8080/api/users", {
         method: "POST",

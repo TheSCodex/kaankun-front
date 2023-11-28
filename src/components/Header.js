@@ -33,7 +33,7 @@ function Header() {
   const source = decodedToken ? decodedToken.source : null;
 
   useEffect(() => {
-    if(userId != null){
+    if (userId != null) {
       getLoggedUser();
     }
   }, []);
@@ -42,10 +42,12 @@ function Header() {
     try {
       setLoading(true);
       let user;
-      if (decodedToken.source === 'Google') {
+      if (decodedToken.source === "Google") {
         user = decodedToken;
       } else {
-        const results = await fetch(`http://localhost:8080/api/users/${userId}`);
+        const results = await fetch(
+          `http://localhost:8080/api/users/${userId}`
+        );
         if (!results.ok) {
           console.log(results);
           alert("Algo salió mal");
@@ -60,7 +62,6 @@ function Header() {
       setLoading(false);
     }
   };
-  
 
   return (
     <header className="fixed top-0 bottom-0 w-full z-50 max-h-[73px] ">
@@ -94,6 +95,13 @@ function Header() {
                     <strong>TIENDA</strong>
                   </h1>
                 </Link>
+                {isLoggedIn && user.userTypeId === 2 && (
+                  <Link to='/dashboard'>
+                    <h1 className="hover:text-gray-300 hover:cursor-pointer mr-6 lg:mr-8">
+                      <strong>DASHBOARD</strong>
+                    </h1>
+                  </Link>
+                )}
               </nav>
               <div className="lg:w-[1px] lg:h-[40px] h-[20px] mr-[40px] border bg-[rgba(0, 0, 0, 0.17)]"></div>
               <div>
@@ -111,7 +119,14 @@ function Header() {
           </div>
         </div>
       </div>
-      {viewingProfile && <Profile user={user} getLoggedUser={getLoggedUser} setViewingProfile={setViewingProfile} source={source}/>}
+      {viewingProfile && (
+        <Profile
+          user={user}
+          getLoggedUser={getLoggedUser}
+          setViewingProfile={setViewingProfile}
+          source={source}
+        />
+      )}
     </header>
   );
 }

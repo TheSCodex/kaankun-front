@@ -9,6 +9,7 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   let decodedToken;
   const userToken = localStorage.getItem("token");
@@ -20,6 +21,7 @@ export function AuthProvider({ children }) {
 
   const getLoggedUser = async () => {
     try {
+      setLoading(true);
       let user;
       if (decodedToken.source === 'Google') {
         user = decodedToken;
@@ -33,8 +35,11 @@ export function AuthProvider({ children }) {
       }
       console.log(user);
       setUser(user);
+      setLoading(false);
+
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   };
 
@@ -50,8 +55,10 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("token");
   };
 
+  const userTypeId = user ? user.userTypeId : null;
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, userTypeId, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
