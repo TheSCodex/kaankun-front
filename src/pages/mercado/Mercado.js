@@ -42,6 +42,7 @@ function Mercado() {
   const [showMap, setShowMap] = useState(false);
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
+  const [tel, setTel] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [locationData, setLocationData] = useState({
