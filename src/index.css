@@ -45,3 +45,8 @@
   background-color: #f1f1f1; 
 }
   
+.slider-link {
+  display: block;
+  height: 100%;
+}
+
