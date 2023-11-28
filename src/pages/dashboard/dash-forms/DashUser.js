@@ -41,6 +41,10 @@ function DashUser({ user, setEditingUser, getUsers, setAddingUser }) {
     const { password, ...userWithoutPassword } = editedUser;
 
     if (
+      !editedUser.userName.trim() ||
+      !editedUser.bio.trim() ||
+      !editedUser.name.trim() ||
+      !editedUser.lastName.trim() &&
       !validatePassword(editedUser.password) ||
       !userWithoutPassword.userName.trim() ||
       !userWithoutPassword.bio.trim() ||
@@ -74,10 +78,9 @@ function DashUser({ user, setEditingUser, getUsers, setAddingUser }) {
 
     if (image) {
       const allowedExtensions = [".jpg", ".jpeg", ".png"];
-      const extension = image.name.slice(
-        ((image.name.lastIndexOf(".") - 1) >>> 0) + 2
-      );
-      if (!allowedExtensions.includes(extension.toLowerCase())) {
+      const extension = image.name.split(".").pop().toLowerCase();
+
+      if (!allowedExtensions.includes(`.${extension}`)) {
         Swal.fire({
           icon: "error",
           title: "Error",
@@ -86,7 +89,7 @@ function DashUser({ user, setEditingUser, getUsers, setAddingUser }) {
         return;
       }
     }
-
+    
     const data = {
       bio: editedUser.bio,
       ...(editedUser.password && { password: editedUser.password }),

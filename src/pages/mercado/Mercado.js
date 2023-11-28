@@ -193,7 +193,6 @@ function Mercado() {
 
       setDatos(filteredProducts);
 
-      // Verifica si hay resultados de búsqueda
       setNoResults(filteredProducts.length === 0);
     } catch (error) {
       console.log("Ha ocurrido un error:", error);
