@@ -23,6 +23,14 @@ import Tarjeta from "./pages/PostsCanal/tarjeta";
 import DashHome from "./pages/dashboard/dash-pages/DashHome.js";
 import DashTablas from "./pages/dashboard/dash-pages/DashTablas.js";
 
+const PrivateRoute = ({ element, allowedUserTypes }) => {
+  const { isLoggedIn, userTypeId } = useAuth();
+
+  const isUserAuthorized = isLoggedIn && allowedUserTypes.includes(userTypeId);
+
+  return isUserAuthorized ? element : <Navigate to="/login" />;
+};
+
 const AppRoutes = () => {
   const { isLoggedIn } = useAuth();
 
@@ -38,8 +46,9 @@ const AppRoutes = () => {
     { path: "/tarjeta", element: <Tarjeta /> },
     { path: "/recovery/:email", element: <Recover /> },
     { path: "/mercado/:productId", element: <DetallesProducto /> },
-    { path: "/dashboard", element: <DashHome /> },
-    { path: "/dashboard/tablas", element: <DashTablas /> },
+    //Rutas protegidas
+    {path: "/dashboard", element: <PrivateRoute element={<DashHome />} allowedUserTypes={[2]} />,},
+    {path: "/dashboard/tablas",element: <PrivateRoute element={<DashTablas />} allowedUserTypes={[2]} />,},
   ]);
 
   return routes;
