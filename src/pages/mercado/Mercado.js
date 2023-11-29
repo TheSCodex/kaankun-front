@@ -257,173 +257,373 @@ function Mercado() {
 
   const createProduct = async (e) => {
     e.preventDefault();
-    if (showMap && (!locationData.latitude || !locationData.longitude)) {
-      console.log(
-        "Latitude or longitude is missing. Please select a location."
-      );
+
+    if (
+      !name.trim() ||
+      !description.trim() ||
+      !precio.trim() ||
+      !categoria.trim() ||
+      !tel.trim()
+    ) {
+      Swal.fire({
+        title: "Campos vacíos",
+        text: "Por favor, completa todos los campos obligatorios.",
+        icon: "error",
+      });
       return;
     }
 
-    if (image) {
-      const storageRef = ref(storage, `images/${image.name}`);
-      try {
-        const loadingAlert = Swal.fire({
-          title: "Cargando...",
-          text: "Por favor, espera",
-          icon: "info",
-          showConfirmButton: false,
-          allowOutsideClick: false,
-        });
-        const snapshot = await uploadBytes(storageRef, image);
-        const imageUrl = await getDownloadURL(snapshot.ref);
+    if (showMap && (!locationData.latitude || !locationData.longitude)) {
+      Swal.fire({
+        title: "Ubicación incompleta",
+        text: "Latitude o longitude está faltando. Por favor, selecciona una ubicación.",
+        icon: "error",
+      });
+      return;
+    }
 
-        await new Promise((resolve) => {
-          setLocationData((prevData) => ({
-            ...prevData,
-            imageUrl,
-          }));
-          resolve();
-        });
-        await new Promise((resolve) => {
-          setLocationData((prevData) => ({
-            ...prevData,
-            imageUrl,
-          }));
-          resolve();
-        });
+    if (!image) {
+      Swal.fire({
+        title: "Imagen faltante",
+        text: "Por favor, selecciona una imagen.",
+        icon: "error",
+      });
+      return;
+    }
 
-        if (source === "Google") {
-          const productDataWithLocation = {
-            userId,
-            name,
-            description,
-            precio,
-            categoria,
-            ...locationData,
-            imageUrl,
-            tel,
-            userName,
-          };
+    if (name.trimStart() !== name || description.trimStart() !== description || precio.trimStart() !== precio || categoria.trimStart() !== categoria || tel.trimStart() !== tel) {
+      Swal.fire({
+        title: "Intentalo de nuevo",
+        text: "Los campos no pueden empezar con espacios.",
+        icon: "info",
+      });
+      return;
+    }
 
-          fetch(serverGoogleUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(productDataWithLocation),
-          })
-            .then((response) => {
-              if (response.ok) {
-                console.log("Producto creado exitosamente");
-                console.log("Contenido enviado:", productDataWithLocation);
-                loadingAlert.close();
-                Swal.fire({
-                  title: "Producto creado",
-                  text: "El producto ha sido creado exitosamente",
-                  icon: "success",
-                }).then(() => {
-                  setName("");
-                  setDescription("");
-                  setPrecio("");
-                  setCategoria("");
-                  setTel("");
-                  setImage(null);
-                  const thumbnailContainer = document.getElementById(
-                    "thumbnail-container"
-                  );
-                  if (thumbnailContainer) {
-                    thumbnailContainer.innerHTML = "";
-                  }
-                  getUserProducts();
-                  getProducts();
-                  setShowMap(false);
-                });
-              } else {
-                console.error("Fallo al crear producto");
-                loadingAlert.close();
-                Swal.fire(
-                  "Error",
-                  "Ha ocurrido un error al crear el producto",
-                  "error"
+    const storageRef = ref(storage, `images/${image.name}`);
+    try {
+      const loadingAlert = Swal.fire({
+        title: "Cargando...",
+        text: "Por favor, espera",
+        icon: "info",
+        showConfirmButton: false,
+        allowOutsideClick: false,
+      });
+      const snapshot = await uploadBytes(storageRef, image);
+      const imageUrl = await getDownloadURL(snapshot.ref);
+
+      await new Promise((resolve) => {
+        setLocationData((prevData) => ({
+          ...prevData,
+          imageUrl,
+        }));
+        resolve();
+      });
+
+      if (source === "Google") {
+        const productDataWithLocation = {
+          userId,
+          name,
+          description,
+          precio,
+          categoria,
+          ...locationData,
+          imageUrl,
+          tel,
+          userName,
+        };
+
+        fetch(serverGoogleUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(productDataWithLocation),
+        })
+          .then((response) => {
+            if (response.ok) {
+              console.log("Producto creado exitosamente");
+              console.log("Contenido enviado:", productDataWithLocation);
+              loadingAlert.close();
+              Swal.fire({
+                title: "Producto creado",
+                text: "El producto ha sido creado exitosamente",
+                icon: "success",
+              }).then(() => {
+                setName("");
+                setDescription("");
+                setPrecio("");
+                setCategoria("");
+                setTel("");
+                setImage(null);
+                const thumbnailContainer = document.getElementById(
+                  "thumbnail-container"
                 );
-              }
-            })
-            .catch((error) => {
-              console.error("Fallo al crear producto:", error);
+                if (thumbnailContainer) {
+                  thumbnailContainer.innerHTML = "";
+                }
+                getUserProducts();
+                getProducts();
+                setShowMap(false);
+              });
+            } else {
+              console.error("Fallo al crear producto");
               loadingAlert.close();
               Swal.fire(
                 "Error",
                 "Ha ocurrido un error al crear el producto",
                 "error"
               );
-            });
-        } else {
-          const productDataWithLocation = {
-            userId,
-            name,
-            description,
-            precio,
-            categoria,
-            ...locationData,
-            imageUrl,
-            tel,
-          };
-          fetch(serverUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(productDataWithLocation),
+            }
           })
-            .then((response) => {
-              if (response.ok) {
-                console.log("Producto creado exitosamente");
-                loadingAlert.close();
-                Swal.fire({
-                  title: "Producto creado",
-                  text: "El producto ha sido creado exitosamente",
-                  icon: "success",
-                }).then(() => {
-                  setName("");
-                  setDescription("");
-                  setPrecio("");
-                  setCategoria("");
-                  setTel("");
-                  setImage(null);
-                  const thumbnailContainer = document.getElementById(
-                    "thumbnail-container"
-                  );
-                  if (thumbnailContainer) {
-                    thumbnailContainer.innerHTML = "";
-                  }
-                  getUserProducts();
-                  getProducts();
-                  setShowMap(false);
-                });
-              } else {
-                console.error("Fallo al crear producto");
-                Swal.fire(
-                  "Error",
-                  "Ha ocurrido un error al crear el producto",
-                  "error"
+          .catch((error) => {
+            console.error("Fallo al crear producto:", error);
+            loadingAlert.close();
+            Swal.fire(
+              "Error",
+              "Ha ocurrido un error al crear el producto",
+              "error"
+            );
+          });
+      } else {
+        const productDataWithLocation = {
+          userId,
+          name,
+          description,
+          precio,
+          categoria,
+          ...locationData,
+          imageUrl,
+          tel,
+        };
+
+        fetch(serverUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(productDataWithLocation),
+        })
+          .then((response) => {
+            if (response.ok) {
+              console.log("Producto creado exitosamente");
+              console.log("Contenido enviado:", productDataWithLocation);
+              loadingAlert.close();
+              Swal.fire({
+                title: "Producto creado",
+                text: "El producto ha sido creado exitosamente",
+                icon: "success",
+              }).then(() => {
+                setName("");
+                setDescription("");
+                setPrecio("");
+                setCategoria("");
+                setTel("");
+                setImage(null);
+                const thumbnailContainer = document.getElementById(
+                  "thumbnail-container"
                 );
-              }
-            })
-            .catch((error) => {
-              console.error("Fallo al crear producto:", error);
+                if (thumbnailContainer) {
+                  thumbnailContainer.innerHTML = "";
+                }
+                getUserProducts();
+                getProducts();
+                setShowMap(false);
+              });
+            } else {
+              console.error("Fallo al crear producto");
               loadingAlert.close();
               Swal.fire(
                 "Error",
                 "Ha ocurrido un error al crear el producto",
                 "error"
               );
-            });
-        }
-      } catch (error) {
-        console.error("Error subiendo imagen o generando URL:", error);
+            }
+          })
+          .catch((error) => {
+            console.error("Fallo al crear producto:", error);
+            loadingAlert.close();
+            Swal.fire(
+              "Error",
+              "Ha ocurrido un error al crear el producto",
+              "error"
+            );
+          });
       }
+    } catch (error) {
+      console.error("Error subiendo imagen o generando URL:", error);
     }
   };
+
+  // const createProduct = async (e) => {
+  //   e.preventDefault();
+  //   if (showMap && (!locationData.latitude || !locationData.longitude)) {
+  //     console.log(
+  //       "Latitude or longitude is missing. Please select a location."
+  //     );
+  //     return;
+  //   }
+
+  //   if (image) {
+  //     const storageRef = ref(storage, `images/${image.name}`);
+  //     try {
+  //       const loadingAlert = Swal.fire({
+  //         title: "Cargando...",
+  //         text: "Por favor, espera",
+  //         icon: "info",
+  //         showConfirmButton: false,
+  //         allowOutsideClick: false,
+  //       });
+  //       const snapshot = await uploadBytes(storageRef, image);
+  //       const imageUrl = await getDownloadURL(snapshot.ref);
+
+  //       await new Promise((resolve) => {
+  //         setLocationData((prevData) => ({
+  //           ...prevData,
+  //           imageUrl,
+  //         }));
+  //         resolve();
+  //       });
+  //       await new Promise((resolve) => {
+  //         setLocationData((prevData) => ({
+  //           ...prevData,
+  //           imageUrl,
+  //         }));
+  //         resolve();
+  //       });
+
+  //       if (source === "Google") {
+  //         const productDataWithLocation = {
+  //           userId,
+  //           name,
+  //           description,
+  //           precio,
+  //           categoria,
+  //           ...locationData,
+  //           imageUrl,
+  //           tel,
+  //           userName,
+  //         };
+
+  //         fetch(serverGoogleUrl, {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify(productDataWithLocation),
+  //         })
+  //           .then((response) => {
+  //             if (response.ok) {
+  //               console.log("Producto creado exitosamente");
+  //               console.log("Contenido enviado:", productDataWithLocation);
+  //               loadingAlert.close();
+  //               Swal.fire({
+  //                 title: "Producto creado",
+  //                 text: "El producto ha sido creado exitosamente",
+  //                 icon: "success",
+  //               }).then(() => {
+  //                 setName("");
+  //                 setDescription("");
+  //                 setPrecio("");
+  //                 setCategoria("");
+  //                 setTel("");
+  //                 setImage(null);
+  //                 const thumbnailContainer = document.getElementById(
+  //                   "thumbnail-container"
+  //                 );
+  //                 if (thumbnailContainer) {
+  //                   thumbnailContainer.innerHTML = "";
+  //                 }
+  //                 getUserProducts();
+  //                 getProducts();
+  //                 setShowMap(false);
+  //               });
+  //             } else {
+  //               console.error("Fallo al crear producto");
+  //               loadingAlert.close();
+  //               Swal.fire(
+  //                 "Error",
+  //                 "Ha ocurrido un error al crear el producto",
+  //                 "error"
+  //               );
+  //             }
+  //           })
+  //           .catch((error) => {
+  //             console.error("Fallo al crear producto:", error);
+  //             loadingAlert.close();
+  //             Swal.fire(
+  //               "Error",
+  //               "Ha ocurrido un error al crear el producto",
+  //               "error"
+  //             );
+  //           });
+  //       } else {
+  //         const productDataWithLocation = {
+  //           userId,
+  //           name,
+  //           description,
+  //           precio,
+  //           categoria,
+  //           ...locationData,
+  //           imageUrl,
+  //           tel,
+  //         };
+  //         fetch(serverUrl, {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify(productDataWithLocation),
+  //         })
+  //           .then((response) => {
+  //             if (response.ok) {
+  //               console.log("Producto creado exitosamente");
+  //               loadingAlert.close();
+  //               Swal.fire({
+  //                 title: "Producto creado",
+  //                 text: "El producto ha sido creado exitosamente",
+  //                 icon: "success",
+  //               }).then(() => {
+  //                 setName("");
+  //                 setDescription("");
+  //                 setPrecio("");
+  //                 setCategoria("");
+  //                 setTel("");
+  //                 setImage(null);
+  //                 const thumbnailContainer = document.getElementById(
+  //                   "thumbnail-container"
+  //                 );
+  //                 if (thumbnailContainer) {
+  //                   thumbnailContainer.innerHTML = "";
+  //                 }
+  //                 getUserProducts();
+  //                 getProducts();
+  //                 setShowMap(false);
+  //               });
+  //             } else {
+  //               console.error("Fallo al crear producto");
+  //               Swal.fire(
+  //                 "Error",
+  //                 "Ha ocurrido un error al crear el producto",
+  //                 "error"
+  //               );
+  //             }
+  //           })
+  //           .catch((error) => {
+  //             console.error("Fallo al crear producto:", error);
+  //             loadingAlert.close();
+  //             Swal.fire(
+  //               "Error",
+  //               "Ha ocurrido un error al crear el producto",
+  //               "error"
+  //             );
+  //           });
+  //       }
+  //     } catch (error) {
+  //       console.error("Error subiendo imagen o generando URL:", error);
+  //     }
+  //   }
+  // };
 
   const handleImageChange = (e) => {
     const selectedImage = e.target.files[0];
