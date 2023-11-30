@@ -29,8 +29,15 @@ function PostsCanal() {
   const [showChannels, setShowChannels] = useState(false);
   const [botonDesactivado, setBotonDesactivado] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
+  const [isModalOpen, setModalOpen] = useState(false);
 
+  const OpenModal = () => {
+    setModalOpen(true);
+  };
 
+  const CloseModal = () => {
+    setModalOpen(false);
+  };
 
   let decodedToken;
   const userToken = localStorage.getItem("token");
@@ -40,6 +47,8 @@ function PostsCanal() {
 
   const userId = decodedToken ? decodedToken.userId : null;
   const source = decodedToken ? decodedToken.source : null;
+  const username = decodedToken ? decodedToken.userName : null;
+
 
   useEffect(() => {
     fetch('http://localhost:8080/api/channels')
@@ -118,9 +127,6 @@ function PostsCanal() {
     }
   };
 
-
-
-
   useEffect(() => {
     GetPost();
     getCommentsByPost();
@@ -130,9 +136,7 @@ function PostsCanal() {
 
   const BotMegusta = async () => {
     try {
-      // Verificar si el usuario está logueado
       if (!isLoggedIn) {
-        // Mostrar alerta con SweetAlert2 si el usuario no está logueado
         await Swal.fire({
           icon: 'warning',
           title: 'Oops...',
@@ -141,26 +145,25 @@ function PostsCanal() {
         });
         return;
       }
-  
       setBotonDesactivado(true);
-  
+
       const response = await fetch('http://localhost:8080/api/Megusta', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          Id_User: userId,
+          Id_User: source === 'Google' ? null : userId,
+          googleId: source === 'Google' ? userId : null,
           Id_Post: id,
         }),
       });
-  
+
       if (response.ok) {
         const responseData = await response.json();
         // Verificar el estado actual y actualizar en consecuencia
         const newMeGusta = !meGusta;
         setMeGusta(newMeGusta);
-  
         // Actualizar el estado en el almacenamiento local
         localStorage.setItem(`like_${id}`, newMeGusta.toString());
         getLikes();
@@ -194,8 +197,6 @@ function PostsCanal() {
     }
   };
 
-
-
   const handleCloseReply = () => {
     setCommentId(null);
     setCommentVisible(false);
@@ -223,7 +224,8 @@ function PostsCanal() {
       const postData = {
         content,
         Id_Post: id,
-        Id_User: userId
+        Id_User: userId,
+        userName: username
       };
 
       let UrlCreate = "http://localhost:8080/api/CreateComment";
@@ -272,12 +274,8 @@ function PostsCanal() {
     }
   };
 
-
-
-
-
   return (
-    <div className="bg-[#E7E7E7] lg:h-full h-full font-montserrat lg:mt-[73px] mt-[122px]">
+    <div className="bg-[#E7E7E7] lg:h-full h-full font-montserrat  lg:mt-[73px] mt-[122px]">
       <Header />
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -309,7 +307,7 @@ function PostsCanal() {
         </svg>
       </button>
       <div
-        className={`lg:fixed bg-white border lg:w-[325px] p-6 lg:h-screen overflow-y-auto ${sidebarOpen ? "" : "hidden"
+        className={`lg:fixed bg-white border lg:h-[600px]  lg:w-[325px] p-6 h-screen overflow-y-auto ${sidebarOpen ? "" : "hidden"
           } lg:block`}
         style={{ scrollbarWidth: "thin" }}
       >
@@ -321,18 +319,6 @@ function PostsCanal() {
             <img src={serpen} className="h-[60px]" />
           </div>
           <div className="relative">
-            <input
-              className="bg-[#D9D9D9] h-[35px] w-[245px] p-2 pl-12 font-montserrat rounded-sm"
-              placeholder="Buscar en el canal"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-            <i>
-              <img
-                src={lupa}
-                className="left-3 top-2 h-[18px] absolute"
-              />
-            </i>
           </div>
           <div className="mt-10">
             <div className="">
@@ -398,7 +384,6 @@ function PostsCanal() {
             <p>
               - Contribuye positivamente y participa activamente en las discusiones.
             </p>
-
           </div>
         </div>
       </div>
@@ -429,7 +414,7 @@ function PostsCanal() {
                   <p className='mx-3 text-md' onClick={handleOpenReply}>Comentar</p>
                 </div>
                 <div className='mr-8 flex items-center'>
-                  <FontAwesomeIcon icon={faEllipsis} className="text-xl" />
+                  <FontAwesomeIcon icon={faEllipsis} className="text-xl" onClick={OpenModal} style={{ cursor: 'pointer' }} />
                 </div>
               </div>
             </div>
@@ -470,18 +455,33 @@ function PostsCanal() {
           ) : (
             comments.map((comment) => (
               <div key={comment.Id_Comment} className="Respuesta bg-white rounded-lg shadow-lg p-6 flex flex-col items-start mb-4 mx-5 w-[60%]">
-                <div className="flex items-center">
-                  <FontAwesomeIcon icon={faCircleUser} className="text-4xl mr-2" />
-                  <div>
-                    <h3 className="font-bold font-montserrat text-xl">
-                      {comment.userName ? comment.userName : "User Guest"}
-                    </h3>
-                    <p className="font-montserrat text-sm">{new Date(comment.created).toLocaleDateString()}</p>
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center">
+                    <FontAwesomeIcon icon={faCircleUser} className="text-4xl mr-2" />
+                    <div>
+                      <h3 className="font-bold font-montserrat text-xl">
+                        {comment.userName ? comment.userName : "User Guest"}
+                      </h3>
+                      <p className="font-montserrat text-sm">{new Date(comment.created).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  <div className='flex items-center'>
+                    <FontAwesomeIcon icon={faEllipsis} className="text-xl" onClick={OpenModal} style={{ cursor: 'pointer' }} />
                   </div>
                 </div>
                 <p className="font-medium font-montserrat max-w-full overflow-ellipsis overflow-hidden whitespace-nowrap">{comment.content}</p>
               </div>
             ))
+          )}
+          {isModalOpen && (
+            <div className="modal">
+              {/* Contenido del modal */}
+              <div className="modal-content">
+                {/* Puedes agregar aquí cualquier contenido que desees en tu modal */}
+                <p>Contenido del modal</p>
+                <button onClick={CloseModal}>Cerrar modal</button>
+              </div>
+            </div>
           )}
         </div>
       </div>

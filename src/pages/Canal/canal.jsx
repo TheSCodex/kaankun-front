@@ -249,7 +249,7 @@ function Canal() {
         </svg>
       </button>
       <div
-        className={`lg:fixed bg-white border lg:w-[325px] p-6 lg:h-screen overflow-y-auto ${sidebarOpen ? "" : "hidden"
+        className={`lg:fixed bg-white border lg:h-[600px]  lg:w-[325px] p-6 h-screen overflow-y-auto ${sidebarOpen ? "" : "hidden"
           } lg:block`}
         style={{ scrollbarWidth: "thin" }}
       >
@@ -320,20 +320,40 @@ function Canal() {
               1. Respeto y Cortesía:
             </h2>
             <p>
-              - No se permiten insultos, ofensas o discriminaciones por motivos
+              - No se permiten insultos, ofensas o discriminaciones por motivos.
             </p>
 
             <h2 className="font-montserrat font-semibold">
               2. Relevancia del Tema:
             </h2>
             <p>
-              - Asegúrate de que tus mensajes estén relacionados al tema del
-              canal.
+              - Asegúrate de que tus mensajes estén relacionados al tema del canal.
+            </p>
+
+            <h2 className="font-montserrat font-semibold">
+              3. No Spam ni Publicidad No Solicitada:
+            </h2>
+            <p>
+              - Evita el spam y la publicidad no solicitada.
+            </p>
+
+            <h2 className="font-montserrat font-semibold">
+              4. Uso Adecuado del Lenguaje:
+            </h2>
+            <p>
+              - Expresa tus ideas de manera clara y evita mayúsculas innecesarias.
+            </p>
+
+            <h2 className="font-montserrat font-semibold">
+              5. Colaboración y Participación Activa:
+            </h2>
+            <p>
+              - Contribuye positivamente y participa activamente en las discusiones.
             </p>
           </div>
         </div>
       </div>
-      <div className="lg:ml-[335px] h-full w-[3/5] relative">
+      <div className="lg:ml-[335px] h-full w-[3/5]">
         <div
         >
           <div className="p-6 lg:pl-14">
@@ -365,9 +385,7 @@ function Canal() {
               >
                 <Link to={`/post/${post.Id}`} className="mb-4">
                   <h2 className="font-monserrat font-semibold text-xl">
-                    {post.userName || post.name
-                      ? post.userName || post.name
-                      : "User Guest"}
+                    {post.userName || post.name ? post.userName || post.name: "Administrador"}
                   </h2>
                   <h2 className="font-monserrat font-semibold text-2xl">
                     {post.title}
