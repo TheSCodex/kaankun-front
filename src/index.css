@@ -1,3 +1,52 @@
+@import url("https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;1,500&family=Manjari:wght@100;400;700&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,500;1,600;1,700;1,800;1,900&family=Oswald:wght@300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manjari:wght@100;400;700&family=Oswald:wght@300&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    @variants responsive {
+      /* Hide scrollbar for Chrome, Safari, and Opera */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+  
+  
+      /* Hide scrollbar for IE, Edge, and Firefox */
+      .no-scrollbar {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+      }
+    }
+  }
+
+
+  .map-css {
+    height: 230px;
+    width: 100%;
+  }
+  
+  @media (min-width: 768px) {
+    .map-css {
+      width: 50%;
+    }
+  }
+
+::-webkit-scrollbar {
+  width: 6px; 
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 8px; 
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1; 
+}
+  
+.slider-link {
+  display: block;
+  height: 100%;
+}
+
